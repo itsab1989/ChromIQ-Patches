@@ -331,6 +331,20 @@ def main() -> int:
 
     dlg._engine_active = _engine_always_active
 
+    # The engine layout panel is hidden in this build, so nothing lets the
+    # user pick the layout instrument — whatever the loaded chart or the
+    # last-used state carried would silently decide the strip geometry.
+    # Pin the standalone to the i1Pro layout: get_recipe() is the single
+    # choke point both the preview and the save renders read from.
+    _orig_get_recipe = dlg._engine_panel.get_recipe
+
+    def _i1pro_recipe():
+        rec = _orig_get_recipe()
+        rec.instrument = "i1"
+        return rec
+
+    dlg._engine_panel.get_recipe = _i1pro_recipe
+
     # Preview: skip the printtarg regen pass entirely — it only existed to
     # seed the printtarg preview; the engine preview derives everything from
     # the grid. (Callers that pass save_to use the old printtarg save path,
@@ -358,10 +372,10 @@ def main() -> int:
             dlg._loaded_printtarg_chart = False
             try:
                 from workflow.layout_engine.presets import default_recipe
-                spec = dlg._spec
-                inst = ("i1" if spec.instrument_flag in ("i1", "3p")
-                        else spec.instrument_flag)
-                rec = default_recipe(inst, spec.paper_flag)
+                # Always the i1Pro layout (see the get_recipe pin above) —
+                # seeding with it too keeps the instrument-default margins
+                # consistent with the forced instrument.
+                rec = default_recipe("i1", dlg._spec.paper_flag)
                 rec.randomize = False
                 dlg._engine_panel.set_recipe(rec)
             except Exception:
