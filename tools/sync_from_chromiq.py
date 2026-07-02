@@ -92,6 +92,7 @@ TREES = [
 ASSETS = [
     "assets/app_icon.png",
     "assets/app_icon.icns",
+    "assets/settings_v2.png",
     "assets/arrow_down.svg",
     "assets/arrow_down_dark.svg",
     "assets/arrow_up.svg",
