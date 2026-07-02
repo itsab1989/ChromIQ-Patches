@@ -89,7 +89,6 @@ try:
         log.warning("QtWebEngine not available — 3D patch cube will be disabled")
 
     from PyQt6.QtGui import QFontDatabase
-    from core.argyll_runner import ArgyllRunner
     from core.resource_path import resource_path
     from core.settings import AppSettings
     from ui.dialogs.ti2_relayout_dialog import Ti2RelayoutDialog
@@ -158,11 +157,6 @@ def main() -> int:
     if icon_path.exists():
         app.setWindowIcon(QIcon(str(icon_path)))
 
-    # The editor drives ArgyllCMS printtarg ONLY to re-render charts that were
-    # originally laid out by printtarg; everything the app creates itself uses
-    # the built-in layout engine, so Argyll is an optional dependency here.
-    runner = ArgyllRunner(settings)
-
     # Standalone wording overrides, applied at tr() lookup time so the
     # vendored editor stays byte-identical: everywhere the editor teaches
     # ChromIQ's button names ("Save & apply…", "Apply / Save…", the Create
@@ -189,18 +183,40 @@ def main() -> int:
              "keeps your work."),
     }
 
+    # The New-chart ⓘ help documents the (here removed) "Seed from targen"
+    # source mode. The help is one huge catalog key, so instead of rewording
+    # the key, edit the TRANSLATED text: every language keeps the targen
+    # bullet on its own "– … targen …" line, and the "four ways" count is a
+    # one-word swap per language (each pair only ever matches its own text).
+    _WAYS_COUNT = (
+        ("four ways", "three ways"), ("vier Wege", "drei Wege"),
+        ("cuatro formas", "tres formas"), ("quatre méthodes", "trois méthodes"),
+        ("quattro modi", "tre modi"), ("4 つの方法", "3 つの方法"),
+        ("vier manieren", "drie manieren"), ("fire måter", "tre måter"),
+        ("cztery sposoby", "trzy sposoby"), ("quatro formas", "três formas"),
+        ("четыре способа", "три способа"), ("fyra sätt", "tre sätt"),
+        ("四种方式", "三种方式"),
+    )
+
     def _tr_standalone(text: str) -> str:
         hit = _REWORDS.get(text)
         # The reworded English is itself a tr() key: once the language
         # catalogs carry translations for the standalone strings, they show
         # up here automatically instead of pinning these lines to English.
-        return _orig_tr(hit) if hit is not None else _orig_tr(text)
+        out = _orig_tr(hit) if hit is not None else _orig_tr(text)
+        if "Seed from targen — enter a number" in text:
+            out = "\n".join(
+                line for line in out.split("\n")
+                if not ("targen" in line and line.lstrip().startswith("–")))
+            for four, three in _WAYS_COUNT:
+                out = out.replace(four, three)
+        return out
 
     _editor_mod.tr = _tr_standalone
 
     # New chart / Add patches: put "Generate colour sets" and its sub-options
     # at the top of the Patches box — in the standalone it's the lead way to
-    # build a chart (targen/paste are the alternatives, layout comes later).
+    # build a chart (paste/blank are the alternatives, layout comes later).
     # Done by moving the two layout items (mode radio + generate panel) to the
     # front at construction time, via subclasses installed over the module
     # attributes — the vendored dialog classes stay untouched.
@@ -217,6 +233,29 @@ def main() -> int:
         except Exception:
             log.exception("could not reorder Generate colour sets to the top")
 
+    # "Seed from targen" is removed from the New-chart window: it's the one
+    # feature that needs ArgyllCMS installed, and the generators cover the
+    # same ground without it. Hide the radio and its patch-count row; the
+    # widgets stay constructed so the vendored persistence code keeps working.
+    # (The Add-patches window has no targen mode — nothing to remove there.)
+    def _drop_targen_seed(d) -> None:
+        try:
+            sl = d._mode_seed.parentWidget().layout()
+            for i in range(sl.count()):
+                row = sl.itemAt(i).layout()
+                if row and any(row.itemAt(j).widget() is d._count
+                               for j in range(row.count())):
+                    for j in range(row.count()):
+                        w = row.itemAt(j).widget()
+                        if w is not None:
+                            w.hide()
+                    break
+            d._mode_seed.hide()
+            if d._mode_seed.isChecked():
+                d._mode_generate.setChecked(True)
+        except Exception:
+            log.exception("could not remove the targen seed option")
+
     _OrigNewChart = _editor_mod._NewChartDialog
     _OrigAddPatches = _editor_mod._AddPatchesDialog
 
@@ -224,6 +263,16 @@ def main() -> int:
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             _generate_sets_first(self)
+            _drop_targen_seed(self)
+
+        def _apply_gen_state(self, st):
+            # Saved window state, "Load setup from preset" recipes (the preset
+            # store is shared with ChromIQ) and the factory defaults can all
+            # carry mode "seed" — land those on the generators instead of the
+            # hidden radio.
+            if isinstance(st, dict) and st.get("mode") == "seed":
+                st = {**st, "mode": "generate"}
+            super()._apply_gen_state(st)
 
     class _StandaloneAddPatchesDialog(_OrigAddPatches):
         def __init__(self, *args, **kwargs):
@@ -251,7 +300,11 @@ def main() -> int:
         def __getattr__(self, name):
             return getattr(self._inner, name)
 
-    dlg = Ti2RelayoutDialog(runner, _ForceEngineSettings(settings))
+    # The editor takes an ArgyllRunner as its first argument but never uses
+    # it (it shells printtarg via _RegenWorker, and the standalone renders
+    # engine-only anyway) — with the targen seed mode removed, nothing in
+    # this app touches ArgyllCMS, so no runner is constructed at all.
+    dlg = Ti2RelayoutDialog(None, _ForceEngineSettings(settings))
     apply_appearance(app, dlg, settings.get("appearance", "auto"))
 
     # As ChromIQ's tool it runs as a modal-ish QDialog; as THE app window it
@@ -411,16 +464,14 @@ def main() -> int:
     from PyQt6.QtCore import Qt, QSize
     from PyQt6.QtWidgets import (
         QDialog, QDialogButtonBox, QFormLayout, QHBoxLayout, QLabel,
-        QLineEdit, QPushButton, QToolButton, QVBoxLayout, QWidget,
+        QToolButton, QVBoxLayout, QWidget,
     )
     from PyQt6.QtGui import QPixmap
-    from core.argyll_detect import find_argyll_bin_path
     from core.i18n import available_languages, tr
-    from core.platform_paths import default_argyll_bin_dir
     from pathlib import Path
     from ui.theme import resolve_mode
     from ui.widgets import (
-        NoScrollComboBox, apply_themed_icons, open_dir_dialog,
+        NoScrollComboBox, apply_themed_icons,
         reapply_groupbox_surface, reapply_input_stylesheet,
     )
 
@@ -513,10 +564,10 @@ def main() -> int:
         _refresh_gear_icon()
 
     def _open_settings() -> None:
-        """Minimal standalone preferences: language, appearance and the
-        ArgyllCMS location (only needed for the targen option in New chart /
-        Add patches and for re-rendering printtarg-built charts) — everything
-        else the editor needs lives in the editor itself."""
+        """Minimal standalone preferences: language and appearance —
+        everything else the editor needs lives in the editor itself.
+        (Nothing here touches ArgyllCMS any more: with the targen seed mode
+        removed, the app never runs an Argyll binary.)"""
         sdlg = QDialog(dlg)
         sdlg.setWindowTitle(tr("Preferences"))
         sdlg.setMinimumWidth(520)
@@ -547,45 +598,6 @@ def main() -> int:
         note.setStyleSheet("font-size: 11px;")
         lay.addWidget(note)
 
-        # ArgyllCMS location — same row as ChromIQ's Preferences. Optional:
-        # only the targen patch-set option and printtarg re-rendering use it.
-        argyll_row = QHBoxLayout()
-        argyll_edit = QLineEdit(
-            settings.get("argyll_bin_path", default_argyll_bin_dir()), sdlg)
-        argyll_row.addWidget(argyll_edit, 1)
-        browse_btn = QPushButton(tr("Browse…"), sdlg)
-        browse_btn.clicked.connect(lambda: (
-            (lambda d: argyll_edit.setText(d) if d else None)(
-                open_dir_dialog(sdlg, tr("Select ArgyllCMS bin directory"),
-                                start_dir=argyll_edit.text()
-                                or default_argyll_bin_dir()))))
-        argyll_row.addWidget(browse_btn)
-        detect_btn = QPushButton(tr("Auto-detect"), sdlg)
-        argyll_row.addWidget(detect_btn)
-        argyll_form = QFormLayout()
-        argyll_form.addRow(tr("ArgyllCMS folder:"), argyll_row)
-        lay.addLayout(argyll_form)
-        argyll_status = QLabel(
-            tr("Optional — only needed for the targen option when creating a "
-               "new chart or adding patches."), sdlg)
-        argyll_status.setWordWrap(True)
-        argyll_status.setStyleSheet("font-size: 11px;")
-        lay.addWidget(argyll_status)
-
-        def _auto_detect() -> None:
-            detected = find_argyll_bin_path()
-            if detected:
-                argyll_edit.setText(str(detected))
-                argyll_status.setStyleSheet("color: #4caf50; font-size: 11px;")
-                argyll_status.setText(
-                    tr("Auto-detected at {detected}").format(detected=detected))
-            else:
-                argyll_status.setStyleSheet("color: #ff5252; font-size: 11px;")
-                argyll_status.setText(
-                    tr("ArgyllCMS not found in any known location. "
-                       "Install it or set the path manually."))
-        detect_btn.clicked.connect(_auto_detect)
-
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok
                               | QDialogButtonBox.StandardButton.Cancel, sdlg)
         bb.accepted.connect(sdlg.accept)
@@ -595,12 +607,6 @@ def main() -> int:
         if sdlg.exec() != QDialog.DialogCode.Accepted:
             return
         settings.set("language", lang_combo.currentData())
-        new_argyll = argyll_edit.text().strip()
-        if new_argyll != settings.get("argyll_bin_path", ""):
-            settings.set("argyll_bin_path", new_argyll)
-            # The editor snapshots the bin dir at construction — refresh it so
-            # targen/printtarg pick up the new path without a restart.
-            dlg._bin_dir = Path(new_argyll)
         new_mode = mode_combo.currentData()
         if new_mode != settings.get("appearance", "auto"):
             settings.set("appearance", new_mode)
@@ -646,7 +652,7 @@ def main() -> int:
     _refresh_gear_icon()
     gear.setFixedSize(36, 36)
     gear.setAutoRaise(True)
-    gear.setToolTip(tr("Preferences — language, appearance and ArgyllCMS location"))
+    gear.setToolTip(tr("Preferences — language and appearance"))
     gear.setCursor(Qt.CursorShape.PointingHandCursor)
     gear.clicked.connect(_open_settings)
 

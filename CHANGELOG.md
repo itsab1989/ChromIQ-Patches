@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.0
+
+- The "Seed from targen" option is removed from the New chart window — the
+  colour-set generators cover the same ground without needing ArgyllCMS.
+- Preferences: the ArgyllCMS location section is gone; with targen removed,
+  the app never runs an Argyll binary, so nothing needs the path any more.
+- The New-chart help text no longer describes the removed targen mode
+  (in all 12 languages).
+
 ## v1.0.1
 
 - ChromIQ Patches branding throughout: masthead wordmark (with the ChromIQ
