@@ -181,6 +181,41 @@ def main() -> int:
 
     _editor_mod.tr = _tr_standalone
 
+    # New chart / Add patches: put "Generate colour sets" and its sub-options
+    # at the top of the Patches box — in the standalone it's the lead way to
+    # build a chart (targen/paste are the alternatives, layout comes later).
+    # Done by moving the two layout items (mode radio + generate panel) to the
+    # front at construction time, via subclasses installed over the module
+    # attributes — the vendored dialog classes stay untouched.
+    def _generate_sets_first(d) -> None:
+        try:
+            box = d._mode_generate.parentWidget()
+            sl = box.layout()
+            idx = next(i for i in range(sl.count())
+                       if sl.itemAt(i).widget() is d._mode_generate)
+            panel = sl.takeAt(idx + 1)   # the generators sub-panel (a layout)
+            radio = sl.takeAt(idx)       # the "Generate colour sets" radio
+            sl.insertItem(0, radio)
+            sl.insertItem(1, panel)
+        except Exception:
+            log.exception("could not reorder Generate colour sets to the top")
+
+    _OrigNewChart = _editor_mod._NewChartDialog
+    _OrigAddPatches = _editor_mod._AddPatchesDialog
+
+    class _StandaloneNewChartDialog(_OrigNewChart):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            _generate_sets_first(self)
+
+    class _StandaloneAddPatchesDialog(_OrigAddPatches):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            _generate_sets_first(self)
+
+    _editor_mod._NewChartDialog = _StandaloneNewChartDialog
+    _editor_mod._AddPatchesDialog = _StandaloneAddPatchesDialog
+
     dlg = Ti2RelayoutDialog(runner, settings)
     apply_appearance(app, dlg, settings.get("appearance", "auto"))
 
@@ -224,6 +259,19 @@ def main() -> int:
         return (chosen.name, str(chosen.parent))
 
     dlg._prompt_save_as_name = _basic_save_prompt
+
+    # The saved-confirmation popup's randomised-tag note ("Left untagged — …"/
+    # "Tagged as randomised — …") is ChromIQ-measure-flow guidance that doesn't
+    # apply here — layout and randomisation happen later, elsewhere. Keep the
+    # method's side effect (the .ti2 still gets tagged when safe, so the saved
+    # chart behaves identically downstream) but drop the note from the popup.
+    _orig_tag_note = dlg._maybe_tag_randomised
+
+    def _quiet_tag_randomised(ti2):
+        _orig_tag_note(ti2)
+        return ""
+
+    dlg._maybe_tag_randomised = _quiet_tag_randomised
 
     # Standalone-only bottom bar: version + attribution + settings gear,
     # appended below the editor's own footer. The vendored dialog stays
