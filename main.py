@@ -433,6 +433,40 @@ def main() -> int:
                 " font-family: 'Instrument Serif'; font-size: 34px;")
             break
 
+    # The masthead ⓘ tooltip is ChromIQ's welcome text — it talks about the
+    # Create Chart tab, Apply/Save and the (here hidden) force-tag option.
+    # Replace it with the standalone story. Not tr()-wrapped upstream, so the
+    # wording override can't catch it; swap the button's stored texts instead.
+    from ui.tooltip_button import TooltipButton
+    for _tip in dlg.findChildren(TooltipButton):
+        if getattr(_tip, "_title", "") == "Chart patch set editor":
+            _tip._title = "ChromIQ Patches — chart patch set editor"
+            _tip._body = (
+                "Welcome to ChromIQ Patches! This is where you build the PATCH "
+                "SET for your chart — the collection of little colour squares "
+                "(we call each one a \"patch\") that will be measured. You "
+                "choose which colours are in the set, what order they're in, "
+                "and you can recolour, add or remove them.\n\n"
+                "The page layout is handled for you: when you save, ChromIQ "
+                "Patches lays the set out with its built-in chart engine — no "
+                "other software is needed.\n\n"
+                "Don't worry — you can't break anything here. Nothing is "
+                "printed or measured until you choose to.\n\n"
+                "Two areas to know about:\n\n"
+                "• The patch grid fills most of the window: every colour is a "
+                "small square. This is your workbench — drag squares around to "
+                "reorder them, click to select, and recolour or add and remove "
+                "patches. Use the controls above the grid to show or hide the "
+                "patch numbers and the gaps between swatches.\n\n"
+                "• The controls on the right let you add or remove patches, "
+                "generate whole colour sets, recolour a selection, and save.\n\n"
+                "A typical session goes: start a new patch set (or load one), "
+                "arrange and recolour the patches, then Save / Export… — you "
+                "get print-ready TIFF pages, the .ti1 patch set, a colour "
+                "list, and files you can import straight into i1Profiler.")
+            _tip.setToolTip(_tip._title + "\n\n" + _tr("Click for details"))
+            break
+
     version_lbl = QLabel(f"v{APP_VERSION}", dlg)
 
     def _style_credit() -> None:
