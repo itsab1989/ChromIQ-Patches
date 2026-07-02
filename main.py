@@ -303,7 +303,8 @@ def main() -> int:
         msg = _orig_write_chart(target, name)
         target = Path(target)
         _shutil.rmtree(target / "_spacer_twin", ignore_errors=True)
-        for leftover in (target / f"{name}.ti2", target / "meta.json"):
+        for leftover in (target / f"{name}.ti2", target / "meta.json",
+                         target / f"{name}.channels.json"):
             try:
                 leftover.unlink()
             except FileNotFoundError:
@@ -317,6 +318,58 @@ def main() -> int:
         return "\n".join([head] + rest)
 
     dlg._write_chart_into = _standalone_write_chart
+
+    # --- Engine-only rendering -------------------------------------------
+    # In this ChromIQ build the editor's engine branch (_engine_active) is
+    # gated on the engine layout panel being visible, but the panel is
+    # permanently hidden (#93: the editor is a pure patch-set tool) — so
+    # preview AND save silently fell back to printtarg: printtarg strip-label
+    # font, chart text on the right, and a hard Argyll dependency. The
+    # standalone renders with the engine, full stop.
+    def _engine_always_active() -> bool:
+        return dlg._spec is not None and dlg._engine_panel is not None
+
+    dlg._engine_active = _engine_always_active
+
+    # Preview: skip the printtarg regen pass entirely — it only existed to
+    # seed the printtarg preview; the engine preview derives everything from
+    # the grid. (Callers that pass save_to use the old printtarg save path,
+    # which the standalone never does — kept intact just in case.)
+    _orig_regenerate = dlg._regenerate
+
+    def _engine_regenerate(save_to=None) -> None:
+        if save_to is None and _engine_always_active():
+            dlg._do_engine_preview()
+            dlg._status.setText(dlg._status.text() or "")
+            return
+        _orig_regenerate(save_to)
+
+    dlg._regenerate = _engine_regenerate
+
+    # A loaded .ti2 is patch data, not a layout to preserve — ChromIQ keeps
+    # printtarg charts printtarg for geometry fidelity, the standalone lays
+    # the same patches out with the engine. Seed the engine panel from the
+    # chart's instrument/paper (same defaults the New-chart path uses).
+    _orig_load_chart = dlg._load_chart_from
+
+    def _load_as_patch_data(path) -> bool:
+        ok = _orig_load_chart(path)
+        if ok and dlg._loaded_printtarg_chart:
+            dlg._loaded_printtarg_chart = False
+            try:
+                from workflow.layout_engine.presets import default_recipe
+                spec = dlg._spec
+                inst = ("i1" if spec.instrument_flag in ("i1", "3p")
+                        else spec.instrument_flag)
+                rec = default_recipe(inst, spec.paper_flag)
+                rec.randomize = False
+                dlg._engine_panel.set_recipe(rec)
+            except Exception:
+                log.exception("engine-panel seed for loaded .ti2 failed")
+            dlg._do_engine_preview()
+        return ok
+
+    dlg._load_chart_from = _load_as_patch_data
 
     # Standalone-only bottom bar: version + attribution + settings gear,
     # appended below the editor's own footer. The vendored dialog stays
