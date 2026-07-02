@@ -1,0 +1,7 @@
+PyQt6>=6.11.0
+PyQt6-WebEngine>=6.11.0
+Pillow>=10.0.0
+PyYAML>=6.0
+tifffile>=2024.0.0
+numpy>=1.24.0
+imagecodecs>=2024.0.0

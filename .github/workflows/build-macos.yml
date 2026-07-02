@@ -1,0 +1,387 @@
+name: Build macOS App Bundle
+
+# Ported from ChromIQ's build-release.yml — same universal2 strategy
+# (python.org universal2 Python + per-package x86_64-wheel lipo merge),
+# minus the pycups build (not a dependency here).
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build (e.g. v1.0.0-beta.1)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.arch }})
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            artifact: ChromIQPatches-macOS-arm64.dmg
+            target_arch_env: ''
+
+          - arch: universal2
+            artifact: ChromIQPatches-macOS-universal.dmg
+            target_arch_env: 'universal2'
+
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0  # need full history + tags for the release-notes fallback
+
+      - name: Set up Python (arm64)
+        if: matrix.arch == 'arm64'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      # universal2 job: python.org official universal2 installer so that pip
+      # fetches universal2 wheels where they exist.
+      - name: Set up Python (universal2 via python.org installer)
+        if: matrix.arch == 'universal2'
+        run: |
+          curl -fsSL -o /tmp/python.pkg \
+            "https://www.python.org/ftp/python/3.13.3/python-3.13.3-macos11.pkg"
+          sudo installer -pkg /tmp/python.pkg -target /
+          echo "/Library/Frameworks/Python.framework/Versions/3.13/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller
+          # numpy ≥2.4 needs the externally-vendored scipy-openblas64 at
+          # runtime but doesn't declare it — install explicitly so the spec's
+          # collect_dynamic_libs can bundle the dylib (ChromIQ issue #11).
+          pip3 install scipy-openblas64
+
+      # imagecodecs dropped x86_64 wheels in 2026; pin to last version that still has one.
+      - name: Pin imagecodecs to last x86_64-compatible version (universal2 only)
+        if: matrix.arch == 'universal2'
+        run: pip3 install --quiet 'imagecodecs==2025.11.11'
+
+      # numpy, Pillow, PyYAML, imagecodecs, PyQt6-Qt6 and PyQt6-WebEngine-Qt6
+      # ship only arch-specific wheels. Download each package's x86_64 wheel
+      # and lipo-merge every Mach-O with the arm64 install (see ChromIQ's
+      # build-release.yml for the full rationale).
+      - name: Make C extensions universal2 via lipo (universal2 only)
+        if: matrix.arch == 'universal2'
+        run: |
+          SITELIB=$(python3 -c "import site; print(site.getsitepackages()[0])")
+          lipo_pkg() {
+            local pypi_name="$1" pkg_dir="$2" ver_filter="$3"
+            local VER X86_URL TMPDIR safe x86_root arm_root rel arm_file merged=0
+            VER=$(python3 -c "import importlib.metadata; print(importlib.metadata.version('${pypi_name}'))")
+            X86_URL=$(curl -fsSL "https://pypi.org/pypi/${pypi_name}/${VER}/json" | \
+              python3 -c "import json,sys; vf='${ver_filter}'; d=json.load(sys.stdin); w=[f['url'] for f in d['urls'] if 'macosx' in f['filename'] and 'x86_64' in f['filename'] and vf in f['filename'] and f['filename'].endswith('.whl')]; print(w[0] if w else '')")
+            if [ -z "$X86_URL" ]; then
+              echo "No x86_64 wheel for ${pypi_name} ${VER} — skipping lipo"
+              return 0
+            fi
+            echo "Downloading x86_64 wheel for ${pypi_name} ${VER}: $X86_URL"
+            safe="${pkg_dir//\//_}"
+            TMPDIR="/tmp/${safe}_x86"
+            rm -rf "$TMPDIR"
+            mkdir -p "$TMPDIR"
+            curl -fsSL -o "/tmp/${safe}.whl" "$X86_URL"
+            unzip -q "/tmp/${safe}.whl" -d "$TMPDIR"
+            x86_root="$TMPDIR/${pkg_dir}"
+            arm_root="${SITELIB}/${pkg_dir}"
+            if [ ! -d "$x86_root" ]; then
+              echo "ERROR: ${pkg_dir} not found in x86_64 wheel for ${pypi_name}"
+              return 1
+            fi
+            while IFS= read -r x86_file; do
+              [ -f "$x86_file" ] || continue
+              case "$(file -b "$x86_file" 2>/dev/null)" in
+                Mach-O*) ;;
+                *) continue ;;
+              esac
+              rel="${x86_file#$x86_root/}"
+              arm_file="$arm_root/$rel"
+              if [ -f "$arm_file" ] && lipo -create "$arm_file" "$x86_file" -output "$arm_file" 2>/dev/null; then
+                merged=$((merged + 1))
+              fi
+            done < <(find "$x86_root" -type f)
+            echo "Merged $merged Mach-O binaries for ${pypi_name}"
+          }
+          lipo_pkg numpy                numpy             cp313
+          lipo_pkg Pillow               PIL               cp313
+          lipo_pkg PyYAML               yaml              cp313
+          lipo_pkg imagecodecs          imagecodecs       abi3
+          lipo_pkg PyQt6-Qt6            PyQt6/Qt6         py3-none
+          lipo_pkg PyQt6-WebEngine-Qt6  PyQt6/Qt6         py3-none
+          lipo_pkg scipy-openblas64     scipy_openblas64  py3-none
+
+      - name: Build app bundle
+        env:
+          PYINSTALLER_TARGET_ARCH: ${{ matrix.target_arch_env }}
+        run: python3 -m PyInstaller ChromIQPatches.spec
+
+      # Assert every Mach-O in the bundle is fat — catches any new dependency
+      # that ships arch-specific wheels without us noticing.
+      - name: Verify universal2 bundle (every Mach-O must be fat)
+        if: matrix.arch == 'universal2'
+        run: |
+          set -euo pipefail
+          fail=0
+          checked=0
+          while IFS= read -r b; do
+            [ -f "$b" ] || continue
+            case "$(file -b "$b" 2>/dev/null)" in
+              Mach-O*) ;;
+              *) continue ;;
+            esac
+            checked=$((checked + 1))
+            archs=$(lipo -archs "$b" 2>/dev/null || echo "")
+            if [[ "$archs" != *"x86_64"* || "$archs" != *"arm64"* ]]; then
+              echo "::error file=$b::Not universal2: archs=[$archs]"
+              fail=1
+            fi
+          done < <(find dist/ChromIQPatches.app -type f)
+          echo "Checked $checked Mach-O binaries"
+          if [ "$fail" -ne 0 ]; then
+            echo "Universal2 verification FAILED — bundle would be broken on Intel Macs"
+            exit 1
+          fi
+          echo "All $checked Mach-O binaries are universal2"
+
+      # numpy ≥2.4 references libscipy_openblas64_.dylib via @rpath — assert
+      # it was bundled so the app can't crash at import numpy (ChromIQ #11).
+      - name: Verify numpy OpenBLAS is bundled
+        run: |
+          set -euo pipefail
+          found=$(find dist/ChromIQPatches.app/Contents/Frameworks \
+            \( -name 'libscipy_openblas*.dylib' -o -name 'libopenblas*.dylib' \) \
+            2>/dev/null | head -1)
+          if [ -z "$found" ]; then
+            echo "::error::numpy OpenBLAS dylib missing from Contents/Frameworks/ — app would crash on numpy import"
+            find dist/ChromIQPatches.app -name '*.dylib' | head -40
+            exit 1
+          fi
+          echo "Found numpy OpenBLAS: $found"
+
+      - name: Codesign app (ad-hoc)
+        run: |
+          # Sign bottom-up: leaf binaries first, then frameworks, then the app.
+          # Avoid --deep: it can corrupt the code directory on Apple Silicon.
+          find dist/ChromIQPatches.app -type f \( -name "*.so" -o -name "*.dylib" \) \
+            -exec codesign --force --sign - {} \;
+          find dist/ChromIQPatches.app -name "*.framework" -type d \
+            -exec codesign --force --sign - {} \;
+          find dist/ChromIQPatches.app -name "*.bundle" -type d \
+            -exec codesign --force --sign - {} \;
+          codesign --force --sign - dist/ChromIQPatches.app
+
+      - name: Verify app signature
+        run: codesign --verify --verbose dist/ChromIQPatches.app
+
+      - name: Create DMG
+        run: |
+          # Two-step approach — avoids hdiutil create -srcfolder hanging on
+          # GitHub Actions runners with large app bundles.
+          APP_MB=$(du -sm dist/ChromIQPatches.app | awk '{print $1}')
+          IMG_MB=$((APP_MB + 200))
+
+          hdiutil create -megabytes "$IMG_MB" \
+            -volname "ChromIQ Patches" -fs HFS+ /tmp/rw.dmg
+
+          MOUNT=$(hdiutil attach /tmp/rw.dmg -nobrowse -noautoopen \
+            | awk '/Apple_HFS/{print $NF}')
+
+          ditto dist/ChromIQPatches.app "$MOUNT/ChromIQPatches.app"
+          ln -sf /Applications "$MOUNT/Applications"
+          sync
+
+          # Force-detach can eject yet return "Resource busy" — treat an
+          # already-unmounted volume as success (see ChromIQ workflow).
+          for i in 1 2 3 4 5 6; do
+            if hdiutil detach "$MOUNT" -force 2>/dev/null; then
+              break
+            fi
+            if ! hdiutil info | grep -q "$MOUNT"; then
+              echo "volume already detached"
+              break
+            fi
+            echo "detach attempt $i failed (volume busy); retrying in 3s…"
+            sleep 3
+          done
+
+          sleep 2   # let the device fully release before converting
+
+          for i in 1 2 3; do
+            rm -f "${{ matrix.artifact }}"
+            if hdiutil convert /tmp/rw.dmg \
+                 -format UDZO -imagekey zlib-level=9 \
+                 -o "${{ matrix.artifact }}"; then
+              break
+            fi
+            echo "convert attempt $i failed; retrying in 5s…"
+            sleep 5
+          done
+          [ -f "${{ matrix.artifact }}" ] || { echo "DMG convert failed"; exit 1; }
+
+          rm -f /tmp/rw.dmg
+
+      - name: Codesign DMG (ad-hoc)
+        run: codesign --sign - "${{ matrix.artifact }}"
+
+      # Derive an Intel-only DMG from the universal2 build by stripping arm64
+      # slices — ~half the download for users who know they're on Intel.
+      - name: Derive x86_64-only app from universal2 bundle
+        if: matrix.arch == 'universal2'
+        run: |
+          set -euo pipefail
+          THIN_APP=dist/ChromIQPatches-x86_64.app
+          rm -rf "$THIN_APP"
+          ditto dist/ChromIQPatches.app "$THIN_APP"
+          thinned=0
+          skipped_bootloader=0
+          while IFS= read -r b; do
+            [ -f "$b" ] || continue
+            case "$(file -b "$b" 2>/dev/null)" in
+              Mach-O*) ;;
+              *) continue ;;
+            esac
+            # The PyInstaller bootloader has its PKG archive appended after the
+            # Mach-O slices; lipo -thin would discard it and brick the binary.
+            # Leave it universal2 — macOS picks the right slice at exec time.
+            if [[ "$b" == */Contents/MacOS/ChromIQPatches ]]; then
+              echo "Skipping PyInstaller bootloader (preserves appended PKG archive): $b"
+              skipped_bootloader=$((skipped_bootloader + 1))
+              continue
+            fi
+            archs=$(lipo -archs "$b" 2>/dev/null || echo "")
+            if [[ "$archs" != *"x86_64"* ]]; then
+              echo "::error file=$b::No x86_64 slice in universal app: archs=[$archs]"
+              exit 1
+            fi
+            if [[ "$archs" == *"arm64"* ]]; then
+              tmp=$(mktemp)
+              lipo -thin x86_64 "$b" -output "$tmp"
+              mv "$tmp" "$b"
+              thinned=$((thinned + 1))
+            fi
+          done < <(find "$THIN_APP" -type f)
+          echo "Stripped arm64 from $thinned binaries; skipped $skipped_bootloader bootloader(s)"
+
+      - name: Codesign x86_64 app (ad-hoc)
+        if: matrix.arch == 'universal2'
+        run: |
+          THIN_APP=dist/ChromIQPatches-x86_64.app
+          find "$THIN_APP" -type f \( -name "*.so" -o -name "*.dylib" \) \
+            -exec codesign --force --sign - {} \;
+          find "$THIN_APP" -name "*.framework" -type d \
+            -exec codesign --force --sign - {} \;
+          find "$THIN_APP" -name "*.bundle" -type d \
+            -exec codesign --force --sign - {} \;
+          codesign --force --sign - "$THIN_APP"
+          codesign --verify --verbose "$THIN_APP"
+
+      - name: Create x86_64 DMG
+        if: matrix.arch == 'universal2'
+        run: |
+          THIN_APP=dist/ChromIQPatches-x86_64.app
+          X86_DMG=ChromIQPatches-macOS-x86_64.dmg
+          APP_MB=$(du -sm "$THIN_APP" | awk '{print $1}')
+          IMG_MB=$((APP_MB + 40))
+          hdiutil create -megabytes "$IMG_MB" \
+            -volname "ChromIQ Patches" -fs HFS+ /tmp/rw_x86.dmg
+          MOUNT=$(hdiutil attach /tmp/rw_x86.dmg -nobrowse -noautoopen \
+            | awk '/Apple_HFS/{print $NF}')
+          ditto "$THIN_APP" "$MOUNT/ChromIQPatches.app"
+          ln -sf /Applications "$MOUNT/Applications"
+          sync
+          for i in 1 2 3 4 5 6; do
+            hdiutil detach "$MOUNT" -force 2>/dev/null && break
+            hdiutil info | grep -q "$MOUNT" || { echo "already detached"; break; }
+            echo "detach attempt $i failed; retrying in 3s…"; sleep 3
+          done
+          sleep 2
+          for i in 1 2 3; do
+            rm -f "$X86_DMG"
+            if hdiutil convert /tmp/rw_x86.dmg \
+                 -format UDZO -imagekey zlib-level=9 \
+                 -o "$X86_DMG"; then
+              break
+            fi
+            echo "x86_64 convert attempt $i failed; retrying in 5s…"
+            sleep 5
+          done
+          [ -f "$X86_DMG" ] || { echo "x86_64 DMG convert failed"; exit 1; }
+          rm -f /tmp/rw_x86.dmg
+          codesign --sign - "$X86_DMG"
+
+      - name: Create GitHub Release (if not exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="$RELEASE_TAG"
+          PRERELEASE_FLAG=""
+          case "$TAG" in
+            *-alpha*|*-beta*|*-rc*|*-pre*) PRERELEASE_FLAG="--prerelease" ;;
+          esac
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            body=$(awk "/^## ${TAG}$/{found=1; next} found && /^## /{exit} found{print}" CHANGELOG.md 2>/dev/null | sed '/^[[:space:]]*$/d' || true)
+            if [ -z "$body" ]; then
+              PREV_TAG=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)
+              if [ -n "$PREV_TAG" ]; then
+                COMMITS=$(git log --pretty=format:'- %s' "${PREV_TAG}..${TAG}")
+                body=$(printf '### Changes since %s\n%s' "$PREV_TAG" "$COMMITS")
+              else
+                COMMITS=$(git log --pretty=format:'- %s' "$TAG")
+                body=$(printf '### Changes\n%s' "$COMMITS")
+              fi
+            fi
+            {
+              printf '%s\n\n---\n' "$body"
+              printf '**Installation:** Open the DMG, drag ChromIQ Patches to Applications, eject, then launch.\n\n'
+              printf 'ChromIQ Patches is ad-hoc signed (not notarized). On macOS Sonoma+ the right-click → Open trick often fails with *"Apple cannot check it for malicious software."* If that happens, remove the quarantine flag in Terminal:\n\n'
+              printf '```\nxattr -dr com.apple.quarantine /Applications/ChromIQPatches.app\n```\n\n'
+              printf 'Then double-click as normal.\n\n'
+              printf 'Requires macOS 12+. ArgyllCMS is NOT required.'
+            } > /tmp/release_notes.txt
+            # The matrix legs race to create the release — treat "already
+            # exists" from the loser as success so its upload still runs.
+            if ! gh release create "$TAG" \
+                   --title "ChromIQ Patches $TAG" \
+                   --notes-file /tmp/release_notes.txt \
+                   $PRERELEASE_FLAG 2>/tmp/create_err; then
+              if gh release view "$TAG" > /dev/null 2>&1; then
+                echo "Release was created concurrently by the parallel build — continuing."
+                cat /tmp/create_err || true
+              else
+                cat /tmp/create_err >&2
+                exit 1
+              fi
+            fi
+          fi
+
+      - name: Upload DMG(s) to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Version-stamp the asset filename so downloads don't collide and the
+          # download-stats dashboard can classify by platform/arch tokens.
+          ART="${{ matrix.artifact }}"
+          VERSIONED="${ART%.dmg}_${RELEASE_TAG}.dmg"
+          mv "$ART" "$VERSIONED"
+          gh release upload "$RELEASE_TAG" "$VERSIONED" --clobber
+          if [ "${{ matrix.arch }}" = "universal2" ] && [ -f "ChromIQPatches-macOS-x86_64.dmg" ]; then
+            X86_VERSIONED="ChromIQPatches-macOS-x86_64_${RELEASE_TAG}.dmg"
+            mv "ChromIQPatches-macOS-x86_64.dmg" "$X86_VERSIONED"
+            gh release upload "$RELEASE_TAG" "$X86_VERSIONED" --clobber
+          fi

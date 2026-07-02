@@ -1,0 +1,23 @@
+{
+ "OK": "OK",
+ "Save": "Lagre",
+ "Save All": "Lagre alle",
+ "Open": "Åpne",
+ "&Yes": "&Ja",
+ "Yes to &All": "Ja til &alle",
+ "&No": "&Nei",
+ "N&o to All": "N&ei til alle",
+ "Abort": "Avbryt",
+ "Retry": "Prøv igjen",
+ "Ignore": "Ignorer",
+ "Close": "Lukk",
+ "Cancel": "Avbryt",
+ "Discard": "Forkast",
+ "Help": "Hjelp",
+ "Apply": "Bruk",
+ "Reset": "Tilbakestill",
+ "Restore Defaults": "Gjenopprett standarder",
+ "Don't Save": "Ikke lagre",
+ "Show Details...": "Vis detaljer …",
+ "Hide Details...": "Skjul detaljer …"
+}

@@ -1,0 +1,129 @@
+name: Build Windows App
+
+# Ported from ChromIQ's build-windows.yml, minus the libwdi/Zadig USB-driver
+# tooling (no measuring instruments to talk to in the chart designer).
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build (e.g. v1.0.0-beta.1)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (Windows ${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            artifact: ChromIQPatches-Windows-x64.zip
+            runner: windows-latest
+            python_arch: x64
+
+          - arch: arm64
+            artifact: ChromIQPatches-Windows-arm64.zip
+            runner: windows-11-arm
+            python_arch: arm64
+
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0  # need full history + tags for the release-notes fallback
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          architecture: ${{ matrix.python_arch }}
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      # Generate a .ico from the existing app_icon.png using Pillow.
+      - name: Generate Windows icon
+        shell: python
+        run: |
+          from PIL import Image
+          img = Image.open('assets/app_icon.png').convert('RGBA')
+          img.save(
+              'assets/app_icon.ico',
+              format='ICO',
+              sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)],
+          )
+          print('Generated assets/app_icon.ico')
+
+      - name: Build Windows executable
+        run: python -m PyInstaller ChromIQPatches.spec
+
+      - name: Package as ZIP
+        shell: powershell
+        run: |
+          Compress-Archive -Path dist\ChromIQPatches -DestinationPath '${{ matrix.artifact }}'
+          $size = (Get-Item '${{ matrix.artifact }}').Length / 1MB
+          Write-Host ("ZIP size: {0:N1} MB" -f $size)
+
+      - name: Create GitHub Release (if not exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TAG="$RELEASE_TAG"
+          PRERELEASE_FLAG=""
+          case "$TAG" in
+            *-alpha*|*-beta*|*-rc*|*-pre*) PRERELEASE_FLAG="--prerelease" ;;
+          esac
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            body=$(awk "/^## ${TAG}$/{found=1; next} found && /^## /{exit} found{print}" CHANGELOG.md 2>/dev/null | sed '/^[[:space:]]*$/d' || true)
+            if [ -z "$body" ]; then
+              PREV_TAG=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)
+              if [ -n "$PREV_TAG" ]; then
+                COMMITS=$(git log --pretty=format:'- %s' "${PREV_TAG}..${TAG}")
+                body=$(printf '### Changes since %s\n%s' "$PREV_TAG" "$COMMITS")
+              else
+                COMMITS=$(git log --pretty=format:'- %s' "$TAG")
+                body=$(printf '### Changes\n%s' "$COMMITS")
+              fi
+            fi
+            {
+              printf '%s\n\n---\n' "$body"
+              printf '**Installation (Windows):** Download the ZIP for your architecture '
+              printf '(x64 for most PCs, arm64 for ARM laptops). '
+              printf 'Extract it, open the ChromIQPatches folder, and run ChromIQPatches.exe. '
+              printf 'Windows SmartScreen may warn on first launch — '
+              printf 'click "More info" → "Run anyway". '
+              printf 'ArgyllCMS is NOT required.'
+            } > /tmp/release_notes.txt
+            gh release create "$TAG" \
+              --title "ChromIQ Patches $TAG" \
+              --notes-file /tmp/release_notes.txt \
+              $PRERELEASE_FLAG 2>/dev/null || true
+          fi
+
+      - name: Upload ZIP to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          # Version-stamp the asset filename so downloads don't collide and the
+          # download-stats dashboard can classify by platform/arch tokens.
+          ART="${{ matrix.artifact }}"
+          VERSIONED="${ART%.zip}_${RELEASE_TAG}.zip"
+          mv "$ART" "$VERSIONED"
+          gh release upload "$RELEASE_TAG" "$VERSIONED" --clobber

@@ -1,0 +1,1145 @@
+# Dutch overlay for data/parameters.yaml — merged in translate_parameters()
+parameters:
+  targen:
+    "-d":
+      name: "Apparaattype"
+      tooltip_title: "Apparaattype (-d)"
+      tooltip_body: |-
+        Bepaalt de kleurmiddelcombinatie van je uitvoerapparaat.
+
+        Drukruimtes zijn subtractief: apparaatwaarde 0 = wit (geen inkt),
+        maximum = zwart (volle inkt).  Video-/beeldschermruimtes zijn
+        additief: apparaatwaarde 0 = zwart, maximum = wit.
+
+        Gangbare keuzes:
+          • Druk grijs (-d 0)  — éénkanaals grijswaardenprinter
+          • Video grijs (-d 1) — éénkanaals beeldscherm/monitor
+          • Druk RGB (-d 2)    — standaard RGB-inkjet (standaard, aanbevolen)
+          • Video RGB (-d 3)   — RGB-beeldscherm/monitor
+          • CMYK (-d 4)        — vierkleuren-inkjet of offsetpers
+          • CMY (-d 5)         — driekleuren, geen apart zwartkanaal
+
+        Opties 6–15 zijn voor speciale meerkanaals-inkjetprinters met
+        extra inkten (lichtcyaan/-magenta, oranje, groen, violet, enz.).
+        Gebruik -D (expert) om de kleurmiddelset zo nodig bij te stellen.
+      labels:
+        - "Druk grijs"
+        - "Video grijs"
+        - "Druk RGB (aanbevolen)"
+        - "Video RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + licht CM"
+        - "CMYK + licht CMK"
+        - "CMYK + rood + blauw"
+        - "CMYK + oranje + groen"
+        - "CMYK + rood + groen + blauw"
+        - "CMYK + oranje + groen + violet"
+        - "CMYK + oranje + groen + blauw"
+        - "CMYK + licht CMK + licht licht K"
+        - "CMYK + oranje + groen + licht CM"
+        - "CMYK + licht CM + middel CM"
+    "-D":
+      name: "Kleurmiddel wijzigen"
+      tooltip_title: "Kleurmiddel wijzigen (-D)"
+      tooltip_body: |-
+        Wijzigt de kleurmiddelset van het apparaattype (-d) door één
+        afzonderlijk kleurmiddel toe te voegen of te verwijderen.  Zit het
+        gekozen kleurmiddel al in de set, dan wordt het verwijderd; ontbreekt
+        het, dan wordt het toegevoegd.
+
+        Typische toepassingen:
+          • Oranje (-D 5) aan standaard-CMYK toevoegen voor een ruimer gamut
+          • Lichtcyaan (-D 11) / lichtmagenta (-D 12) aan CMYK toevoegen
+            voor vloeiendere verlopen in de lichten
+
+        Schakel meerdere posities in om extra kleurmiddelen te stapelen (elke
+        ingeschakelde positie onthult de volgende, tot 11 wijzigingen in totaal).
+
+        Laat dit uitgeschakeld voor de standaard-apparaattypen 0–5.
+      labels:
+        - "Additief"
+        - "Cyaan"
+        - "Magenta"
+        - "Geel"
+        - "Zwart"
+        - "Oranje"
+        - "Rood"
+        - "Groen"
+        - "Blauw"
+        - "Violet"
+        - "Wit"
+        - "Lichtcyaan"
+        - "Lichtmagenta"
+        - "Lichtgeel"
+        - "Lichtzwart"
+        - "Middelcyaan"
+        - "Middelmagenta"
+        - "Middelgeel"
+        - "Middelzwart"
+        - "Licht-lichtzwart"
+    "-f":
+      name: "Totaal aantal meetvelden"
+      tooltip_title: "Totaal aantal meetvelden (-f)"
+      tooltip_body: |-
+        Bepaalt het totale aantal kleurmeetvelden.  Meer meetvelden = nauwkeuriger
+        profiel, maar langere afdruk- en meettijd.
+        Typische bereiken voor RGB-inkjet:
+          • Snelle test: 400–600
+          • Standaard:   800–1200
+          • Hoge kwaliteit: 1500–2000
+          • Zeer hoog:  2500–3000
+
+        Auto (naast het draaiveld): aangevinkt wordt het meetveldaantal live
+        berekend uit het gekozen papier, instrument, double-density,
+        linkerrand, meetveldgrootte, marge en het paginadraaiveld in de
+        printtarg-sectie — de grootste waarde die precies dat aantal vellen
+        zonder lege ruimte vult.  Het draaiveld is grijs zolang Auto aanstaat
+        en toont de huidige schatting.  Bij eigen indelingen (afwijkende
+        meetveldgrootte of marge) draait Auto een korte binaire zoektocht tegen
+        targen — het bijwerken kan dan een seconde duren.
+
+        In de begeleide modus wordt dit automatisch berekend uit de
+        meetvelden-per-pagina-database × het gekozen aantal pagina's.
+        Zet in de begeleide modus op 0 voor automatische berekening.
+    "-e":
+      name: "Witte meetvelden"
+      tooltip_title: "Witte meetvelden (-e)"
+      tooltip_body: |-
+        Hoeveel zuiver papierwitte meetvelden aan de kaart worden toegevoegd. Het
+        instrument meet deze om precies te leren hoe wit je papier is — dat
+        verankert de lichte kant van het profiel. 4 is een goede standaard;
+        zeer glanzend papier kan van een paar extra profiteren.
+
+        Auto (vinkje):
+        Zet "Auto" aan en ChromIQ kiest dit aantal voor je, op basis van
+        hoeveel meetvelden de hele kaart bevat — een kleine éénpaginakaart krijgt
+        een paar witte meetvelden en een grote meerpaginakaart meer, zonder dat je
+        erover hoeft na te denken.
+
+        Zo wordt het Auto-aantal bepaald:
+          • Een kaart van ongeveer 560 meetvelden krijgt 4 witte meetvelden.
+          • Elke keer dat de kaart ruwweg verdubbelt, groeit het aantal
+            met 50 % (4 → 6 → 8 …).
+          • Het gaat nooit boven 8 (meer verspilt alleen ruimte)
+            en nooit onder 2.
+
+        Met Auto aan is dit veld grijs en toont het "Auto". Zet het op elk
+        moment uit om zelf een getal in te vullen.
+    "-B":
+      name: "Zwarte meetvelden"
+      tooltip_title: "Zwarte meetvelden (-B)"
+      tooltip_body: |-
+        Hoeveel meetvelden met maximale inkt (apparaatzwart) aan de kaart worden
+        toegevoegd. Het instrument meet deze om de donkerste toon te leren
+        die je printer kan maken — dat verankert de schaduwkant van het
+        profiel. 4 is een goede standaard voor RGB-printers.
+
+        Auto (vinkje):
+        Zet "Auto" aan en ChromIQ kiest dit aantal voor je, op basis van
+        hoeveel meetvelden de hele kaart bevat — een kleine kaart krijgt een paar
+        zwarte meetvelden, een grote kaart meer.
+
+        Zo wordt het Auto-aantal bepaald:
+          • Een kaart van ongeveer 560 meetvelden krijgt 4 zwarte meetvelden.
+          • Elke keer dat de kaart ruwweg verdubbelt, groeit het aantal
+            met 50 % (4 → 6 → 8 …).
+          • Het gaat nooit boven 8 en nooit onder 2.
+
+        Met Auto aan is dit veld grijs en toont het "Auto". Zet het op elk
+        moment uit om zelf een getal in te vullen.
+    "-g":
+      name: "Grijsas-stappen"
+      tooltip_title: "Grijsas-stappen (-g)"
+      tooltip_body: |-
+        Extra neutrale grijze meetvelden, gelijkmatig verdeeld van wit tot zwart.
+        Ze helpen het profiel grijstinten schoon weer te geven, zonder
+        kleurzwemen — belangrijk voor zwart-witfoto's en neutrale tonen.
+        Vuistregel bij handmatig instellen: 0 voor een snel profiel,
+        50–100 voor een standaard, 128+ voor hoge kwaliteit.
+
+        Auto (vinkje):
+        Zet "Auto" aan en ChromIQ kiest dit aantal voor je, geschaald naar
+        hoeveel meetvelden de hele kaart bevat — een grotere kaart krijgt een
+        langere, fijnere grijstrap.
+
+        Zo wordt het Auto-aantal bepaald:
+          • Een kaart van ongeveer 560 meetvelden krijgt 32 grijsstappen.
+          • Elke keer dat de kaart ruwweg verdubbelt, verdubbelen de
+            stappen mee (32 → 64 → 128).
+          • Het gaat nooit boven 128 en nooit onder 8.
+
+        Met Auto aan is dit veld grijs en toont het "Auto". Zet het op elk
+        moment uit om zelf een getal in te vullen.
+
+        (De begeleide modus stelt dit altijd automatisch in volgens
+        hetzelfde idee.)
+    "-G":
+      name: "Grondige optimalisatie (traag)"
+      tooltip_title: "Grondige optimalisatie (-G)"
+      tooltip_body: |-
+        Laat targen extra tijd besteden aan het zo gelijkmatig mogelijk
+        plaatsen van de meetvelden over het kleurgamut van je printer. De
+        meetveldset is in beide gevallen van dezelfde soort (OFPS — Optimised
+        Farthest Point Sampling, de standaardverdeling); dit schakelt alleen
+        van "snel" naar "goed".
+
+        Aanbevolen AAN voor elke kaart die je werkelijk gaat afdrukken en
+        meten: een paar seconden extra rekentijd bij het genereren levert
+        een meetbaar beter profiel op.
+
+        Alleen UIT zetten als je snel kaartinstellingen aan het uitproberen
+        bent en de absolute meetveldkwaliteit je niet uitmaakt (bijv. om
+        afdrukindelingen te testen vóór de definitieve kaart).
+
+        Heeft geen effect wanneer "Meetveldverdeling" op iets anders dan OFPS
+        staat — de alternatieve verdelingen (willekeurig, quasi-willekeurig,
+        kubisch ruimtelijk gecentreerd, …) negeren deze optie.
+    "-s":
+      name: "Enkelkanaal-stappen"
+      tooltip_title: "Enkelkanaal-stappen (-s)"
+      tooltip_body: |-
+        Voegt extra enkelkanaals-reeksmeetvelden toe (R, G, B afzonderlijk).
+        Nuttig om het gedrag van afzonderlijke inkten te karakteriseren.
+        Typisch: 0 voor snel, 20–50 voor standaard, 50–100 voor hoog.
+    "-c":
+      name: "Voorconditioneringsprofiel"
+      tooltip_title: "Voorconditioneringsprofiel (-c)"
+      tooltip_body: |-
+        Een bestaand ICC-profiel van deze printer-papiercombinatie, gebruikt
+        om de meetveldverdeling in de perceptuele ruimte voor te conditioneren.
+        Een eerder profiel hier levert meetvelden op die gelijkmatiger over het
+        uitvoergamut zijn verdeeld — en dus betere nauwkeurigheid in een
+        tweede profileerronde.  Laat leeg voor een eerste profiel.
+    "-C":
+      name: "Kalibratie-override"
+      tooltip_title: "Kalibratie-override (-C)"
+      tooltip_body: |-
+        Optioneel .cal-bestand waarvan de kalibratiecurves worden toegepast
+        bij het schatten van de inktlimiet voor het genereren van meetvelden.
+        Overschrijft een eventueel ingesloten .cal in de ICC-doel-.ti3 van
+        een eerdere profileerronde.
+
+        Gebruik dit wanneer je een gevalideerde apparaatkalibratie hebt
+        (bijv. uit printcal/applycal) en targen daar rekening mee moet
+        houden bij het berekenen van het aantal meetvelden in de schaduwzone.
+
+        Typ "none" in het veld (zonder aanhalingstekens) om uitdrukkelijk
+        elke .cal te weren, zelfs als er één in de .ti3 zit ingesloten.
+
+        Laat voor de meeste werkstromen leeg — alleen nodig wanneer je een
+        aparte kalibratiecurve los van het profiel beheert.
+    "-n":
+      name: "Neutrale-as-stappen"
+      tooltip_title: "Neutrale-as-stappen (-n)"
+      tooltip_body: |-
+        Voegt extra wigmeetvelden toe langs de perceptueel échte neutrale as van
+        je printer + papier, zoals gedefinieerd door het via -c geladen
+        voorconditioneringsprofiel.
+
+        Het verschil met -g (grijsas-stappen):
+          • -g loopt RGB-apparaatwaarden af (R = G = B): 0/0/0, 32/32/32,
+            64/64/64 … Dat veronderstelt dat gelijke apparaatwaarden als
+            neutraal grijs drukken — wat alleen klopt op een perfect
+            gelineariseerde printer.  Op een echte printer heeft de
+            "apparaat-grijstrap" meestal een kleurzweem.
+          • -n vraagt het meegegeven profiel: "welke RGB-waarden heeft DEZE
+            printer werkelijk nodig om bij elke lichtheidsstap een neutraal
+            L*a*b*-meetveld (a* = b* = 0) te maken?"  Die (doorgaans ongelijke)
+            RGB-waarden worden als meetvelden toegevoegd.
+
+        Het verschil met -N (neutrale-as-nadruk):
+          • -N is een regelaar van 0–1 die de bestaande OFPS-meetveldverdeling
+            richting de neutrale zone buigt.  Hij voegt geen benoemde
+            stappen toe.
+          • -n voegt expliciete, uit het profiel afgeleide neutrale meetvelden
+            toe bovenop wat de rest van de verdeling oplevert.
+
+        Wanneer te gebruiken:
+          • Je hebt al een ICC-profiel uit een eerste ronde voor dit papier
+            en bouwt een verfijningskaart.  Laad dat profiel onder
+            ‘Voorconditioneringsprofiel’ (-c) en zet -n op 32–64 om de
+            gecorrigeerde neutrale as dicht te bemonsteren.
+          • Voor een eerste kaart zonder -c laat je dit op 0 — zonder
+            voorconditioneringsprofiel is er geen "echte" neutrale as om
+            uit te bemonsteren, en -g dekt de apparaat-grijstrap al.
+
+        Typische verfijningswaarden: 32 voor gewoon werk, 64 voor
+        fine-art / proefdrukken waar neutraliteit kritiek is.
+
+        Vereist dat -c is ingesteld; heeft anders geen effect.
+    "-N":
+      name: "Nadruk neutrale as"
+      tooltip_title: "Nadruk neutrale as (-N)"
+      tooltip_body: |-
+        Bepaalt hoe sterk meetvelden zich rond de neutrale as groeperen.
+        0.0 = geen nadruk, 1.0 = maximale groepering rond grijs.
+        De standaard 0.5 past bij de meeste printers.
+    "-V":
+      name: "Nadruk schaduwgebied"
+      tooltip_title: "Nadruk schaduwgebied (-V)"
+      tooltip_body: |-
+        Voegt extra meetvelden toe in donkere (schaduw)gebieden van het gamut.
+        1.0 = geen nadruk (standaard).  Verhoog naar 2.0–3.0 voor printers
+        met complex schaduwgedrag (bijv. mat fine-art-papier).
+    "-l":
+      name: "Totale inktlimiet (%)"
+      tooltip_title: "Totale inktlimiet (-l)"
+      tooltip_body: |-
+        De maximale totale hoeveelheid inkt die de printer op het papier mag
+        leggen, als percentage. 100 % = één volle inktlaag, 200 % = twee
+        volle lagen (bijv. 100C + 100K), enzovoort.
+
+        Waarom het uitmaakt (vooral bij CMYK / CMYK+N):
+        Zonder limiet genereert targen vrolijk meetvelden als 100C + 100M +
+        100Y + 100K = 400 %. Zoveel natte inkt kan plassen vormen, traag
+        drogen, vlekken of zelfs het papier scheuren — en het profiel uit
+        zulke meetvelden voorspelt kleuren die je printer in werkelijkheid niet
+        kan maken.
+
+        Zo kies je een waarde:
+          • De meeste CMYK-inkjets:    260 – 320 %
+          • Gestreken / glanzend papier: 320 – 360 %
+          • Krantenpapier, lage kwaliteit: 220 – 260 %
+          • Uitgebreid gamut (CMYKOGV): 400 – 500 %  (meer inkten delen
+                                                     het totale budget)
+
+        Bij twijfel: raadpleeg de documentatie van je printer of de
+        papierprofiel-richtlijnen, of meet het: druk een kleine
+        inktlimiet-testwig af en kies de hoogste waarde die schoon droogt
+        zonder uitlopen.
+
+        Voor RGB-werkstromen: meestal uitgeschakeld laten — RGB-inkjets
+        regelen hun inktbegrenzing intern, dus targen hoeft niet over
+        kanalen te budgetteren.
+
+        Vink het vakje aan om in te schakelen.
+    "__targen_distribution__":
+      name: "Meetveldverdeling"
+      tooltip_title: "Meetveldverdeling (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |-
+        Hoe targen beslist waar elk kleurmeetveld in het gamut van de printer
+        wordt geplaatst. Verschillende algoritmen geven andere afwegingen
+        tussen dekking, gelijkmatigheid en snelheid.
+
+        Kies ER ÉÉN. Ze sluiten elkaar uit — elk van deze keuzes vervangt
+        de standaard-OFPS-plaatsing volledig.
+
+        OFPS (standaard, aanbevolen):
+        Optimised Farthest Point Sampling. Plaatst elk nieuw meetveld iteratief
+        zo ver mogelijk van elk bestaand meetveld — de gelijkmatigste dekking
+        van alle algoritmen hier. Trager dan de alternatieven, maar de
+        gouden standaard voor profielkwaliteit. Combineer met "Grondige
+        optimalisatie (-G)" voor het beste resultaat.
+
+        Incremental Far Point (-t):
+        Een eenvoudiger verstepunt-methode. Sneller dan OFPS, iets minder
+        gelijkmatig. Gebruik wanneer OFPS te traag is bij zeer grote
+        meetveldaantallen en je een klein kwaliteitsverlies accepteert.
+
+        Willekeurig — apparaatruimte (-r):
+        Uniform willekeurige meetvelden in rauwe apparaatwaarden (bijv. RGB).
+        Het snelst, maar de dekking in *waargenomen* kleur is ongelijk —
+        verspilt meetvelden in gebieden die ons oog nauwelijks onderscheidt.
+
+        Willekeurig — perceptuele ruimte (-R):
+        Uniform willekeurig in waargenomen kleur (Lab). Beter dan -r als
+        het per se willekeurig moet, omdat de meetvelden gelijkmatig naar wat
+        het oog ziet worden gespreid. Bij gelijk aantal nog steeds minder
+        optimaal dan OFPS.
+
+        Quasi-willekeurig ruimtevullend (-q / -Q):
+        Lage-discrepantie-reeksen (Sobol-achtig) die de ruimte gelijkmatiger
+        vullen dan echt willekeurig, zonder de iteratieve kosten van OFPS.
+        -q in apparaatruimte, -Q in perceptuele ruimte. Een goede middenweg
+        wanneer OFPS te traag is.
+
+        Kubisch ruimtelijk gecentreerd rooster (-i / -I):
+        Een vast regelmatig rooster (elk meetveld omringd door 8 buren in een
+        kubuspatroon). Deterministisch en zeer gelijkmatig, maar star —
+        alleen bepaalde meetveldaantallen passen in het rooster. -i in
+        apparaatruimte, -I in perceptuele ruimte.
+
+        De meeste gebruikers laten dit op OFPS staan.
+      labels:
+        - "OFPS — geoptimaliseerd (aanbevolen)"
+        - "Incremental Far Point (-t)"
+        - "Willekeurig — apparaat (-r)"
+        - "Egaal willekeurig — perceptueel (-R)"
+        - "Quasi-willekeurig — apparaat (-q)"
+        - "Quasi-willekeurig — percept. (-Q)"
+        - "BCC-rooster — apparaatruimte (-i)"
+        - "BCC-rooster — perceptueel (-I)"
+    "-A":
+      name: "OFPS-adaptatie"
+      tooltip_title: "OFPS-adaptatie (-A)"
+      tooltip_body: |-
+        Hoe sterk OFPS zijn regel van gelijkmatige dekking buigt om de vorm
+        van een voorconditioneringsprofiel (-c) te volgen. Alleen zinvol
+        wanneer OFPS de gekozen meetveldverdeling is ÉN een -c-profiel is
+        ingesteld.
+
+        0.0 = het profiel volledig negeren — zuiver gelijkmatige dekking in
+              apparaatruimte, alsof er geen -c was.
+        1.0 = het profiel volledig volgen — meetvelden concentreren waar het
+              profiel zegt dat het printergamut interessant is (d.w.z. de
+              vorm van de werkelijke kleurruimte).
+
+        De targen-standaard is 0.10 (mild) voor een eerste ronde en 1.0
+        wanneer -c is ingesteld; ChromIQ laat dit op 0.10 staan tenzij je
+        het uitdrukkelijk wijzigt — zo krijg je geen verrassende
+        gedragsomslag.
+
+        Verhoog richting 1.0 voor verfijningsrondes waarin je het eerste
+        profiel vertrouwt en de tweede kaart het echte gamut van de printer
+        dicht moet bemonsteren in plaats van lege hoeken van de
+        apparaatruimte.
+
+        Vink het vakje aan om in te schakelen.
+    "-m":
+      name: "Kubus-binnenstappen"
+      tooltip_title: "Kubus-binnenstappen (-m)"
+      tooltip_body: |-
+        Voegt een regelmatig raster van meetvelden toe *binnenin* de kleurkubus
+        van de printer — N stappen langs elke as (N×N×N voor RGB, enz.). Ze
+        komen *bovenop* de meetvelden die je met -f, -g, -s en de andere tellers
+        hebt gekozen.
+
+        Zet op 0 (standaard) om over te slaan — vrijwel altijd de juiste
+        keuze. OFPS dekt het kubusbinnenste al efficiënter.
+
+        Wanneer te gebruiken:
+          • Herhaalbaarheid tussen machines: een vast raster is elke keer
+            hetzelfde, ongeacht welke OFPS-plaatsingen targen koos — dat
+            helpt profielen tussen runs te vergelijken.
+          • Diagnosekaarten met voorspelbare, benoemde kubusposities.
+
+        Typische waarden bij gebruik: 3 – 6 (stappen per as). De aantallen
+        groeien snel — 6 stappen in RGB is 216 meetvelden, 8 is er 512.
+
+        Vink het vakje aan om in te schakelen.
+    "-M":
+      name: "Kubus-oppervlakstappen"
+      tooltip_title: "Kubus-oppervlakstappen (-M)"
+      tooltip_body: |-
+        Voegt een regelmatig raster van meetvelden toe op het *oppervlak* van
+        de kleurkubus van de printer — N stappen per vlak. De meetvelden komen
+        op de buitenkant (primaire en secundaire kleuren, gamutrand), niet
+        in het binnenste.
+
+        Zet op 0 (standaard) om over te slaan.
+
+        Wanneer te gebruiken:
+          • Je wilt gericht de gamutgrens en de primaire/secundaire hoeken
+            vastleggen, zonder de binnenste overhead van -m.
+          • Vergelijken hoe verschillende inkten/papieren de gamutomhulling
+            verschuiven — oppervlaktemeetvelden worden het meest beïnvloed.
+
+        Typische waarden bij gebruik: 4 – 8 stappen per vlak.
+
+        Vink het vakje aan om in te schakelen.
+    "-b":
+      name: "BCC-roosterstappen"
+      tooltip_title: "BCC-roosterstappen (-b)"
+      tooltip_body: |-
+        Voegt meetvelden toe op een kubisch ruimtelijk gecentreerd (BCC-)rooster
+        — dichter dan een gewoon kubusraster, omdat punten zowel op de
+        kubushoeken als in de kubuscentra liggen. N is het aantal
+        onderverdelingen per as.
+
+        Zet op 0 (standaard) om over te slaan — dit is een nicheknop.
+
+        Wanneer te gebruiken:
+          • Je wilt regelmatige, roosteruitgelijnde meetveldposities, maar met
+            betere pakking dan -m geeft, zonder helemaal naar OFPS te gaan.
+          • Onderzoeks- / herhaalbaarheidsscenario's waarin de BCC-structuur
+            zelf het doel is.
+
+        Let op: dit is de *stappenteller*-vorm (voegt toe aan je meetveldlijst);
+        voor een kaart waarvan de *hele* verdeling BCC is, gebruik je de
+        keuzelijst "Meetveldverdeling" hierboven en kies je daar de optie
+        kubisch ruimtelijk gecentreerd.
+
+        Vink het vakje aan om in te schakelen.
+  printtarg:
+    "-i":
+      name: "Meetinstrument"
+      tooltip_title: "Meetinstrument (-i)"
+      tooltip_body: |-
+        Vertelt de kaartgenerator met welke spectrofotometer je de afgedrukte
+        kaart gaat inlezen. Het meetveldraster wordt gebouwd rond de
+        strookbreedte, meetveldgrootte en tussenruimte van dat instrument — dit
+        goed instellen is dus essentieel.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — handmatige strooklezer, de meest
+             gangbare keuze. Leest een kolom meetvelden in één haal.
+
+          •  i1Pro 3 Plus — versie van de i1Pro 3 met grotere meetopening.
+             Leest grotere meetvelden, dus passen er veel minder per vel (~5×
+             minder dan de gewone i1Pro).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — instapapparaat.
+             Leest los één meetveld per keer; met de optionele meetrail twee
+             tegelijk (zie Double density).
+
+          •  SpectroScan — XY-vlakbedscanner. Een gemotoriseerde arm leest
+             elk meetveld afzonderlijk en pakt zo veel meer kleuren per vel dan
+             welke strooklezer ook.
+
+          •  i1iSis (via i1Profiler) — automatische kaartlezer met
+             velinvoer. ChromIQ kan dit apparaat niet rechtstreeks
+             aansturen: het bewaart de meetveldlijst in i1Profilers eigen
+             formaat naast de kaart, en je rondt de werkstroom daar af
+             (afdrukken, scannen, profiel bouwen). De tabbladen ‘Afdrukken’
+             en ‘Meten’ van ChromIQ worden voor dit apparaat niet gebruikt.
+
+        Het verkeerde instrument kiezen levert een kaart op waar je apparaat
+        zich niet op kan uitlijnen of die het niet betrouwbaar kan lezen —
+        bij het meten zie je dan "patches not found" of uitlijnfouten. In de
+        begeleide modus past de indeling zich automatisch aan deze keuze aan.
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (vlakbed)"
+        - "i1iSis (via i1Profiler)"
+    "-h":
+      name: "Double density"
+      tooltip_title: "Double density (-h)"
+      tooltip_body: |-
+        Wijzigt de meetvelddichtheid per strook van de printtarg-indeling.
+        De precieze betekenis hangt af van het actieve instrument:
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — verdubbelt het
+             aantal meetvelden dat in elke meetstrook past.
+             VEREIST het fysieke meetrail-accessoire; zonder kan het
+             apparaat zich niet op de strakkere afstand uitlijnen en leest
+             het verkeerd.
+
+          •  SpectroScan — schakelt de kaartindeling van rechthoekige naar
+             zeshoekige meetvelden. Zeshoeken passen strakker in elkaar, dus
+             ~14% meer meetvelden per vel. Geen extra hardware nodig.
+
+        Heeft geen effect op i1Pro of i1Pro 3 Plus en is normaal verborgen
+        wanneer één van die twee is gekozen.
+    "-p":
+      name: "Papierformaat"
+      tooltip_title: "Papierformaat (-p)"
+      tooltip_body: |-
+        Bepaalt de afmetingen van elk vel van de afgedrukte kaart. De kaart
+        vult de pagina altijd van rand tot rand — groter papier biedt plaats
+        aan meer meetvelden, dus een gedetailleerder profiel uit minder vellen.
+
+        Kies het formaat waarop je werkelijk gaat afdrukken, inclusief de
+        oriëntatie. Strooklezers (i1Pro-familie) lezen van boven naar
+        beneden, dus:
+
+          •  Staand — langere stroken, minder in aantal. De standaardkeuze.
+
+          •  Liggend (A4R, LetterR, 420×297…) — kortere stroken, meer in
+             aantal. Gebruik dit wanneer je printer liggend betrouwbaarder
+             invoert, of wanneer een staand vel de laatste strook te dicht
+             bij de papierrand zou brengen.
+
+        Kies "Aangepast" om exacte breedte en hoogte in millimeters in te
+        vullen wanneer geen van de benoemde formaten bij je papier past.
+
+        Wijzig je het papierformaat, dan worden het meetveldaantal en het
+        aantal pagina's in het commandovoorbeeld automatisch bijgewerkt.
+      labels:
+        - "A2 staand (420 × 594 mm)"
+        - "A2 liggend (594 × 420 mm)"
+        - "A3+ staand (329 × 483 mm)"
+        - "A3+ liggend (483 × 329 mm)"
+        - "A3 staand (297 × 420 mm)"
+        - "A3 liggend (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 staand (210 × 297 mm)"
+        - "A4 liggend (297 × 210 mm)"
+        - "Letter staand (8,5 × 11\")"
+        - "Letter liggend (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Aangepast (afmetingen invullen)"
+    "-t":
+      name: "TIFF-uitvoer-DPI"
+      tooltip_title: "TIFF-resolutie (-t)"
+      tooltip_body: |-
+        Uitvoerresolutie van de TIFF-rasterkaartbestanden.
+        300 DPI wordt aanbevolen voor strooklezende instrumenten en geeft
+        een goede balans tussen bestandsgrootte en meetveldscherpte.
+        Gebruik 200 DPI bij zeer grote kaarten om het bestand te verkleinen.
+        Hogere waarden (600+) zijn zelden nodig en leveren grote bestanden op.
+    "-L":
+      name: "Linkercliprand onderdrukken"
+      tooltip_title: "Linkercliprand onderdrukken (-L)"
+      tooltip_body: |-
+        Verwijdert de klemrandstrook aan de linkerkant en wint zo ~15 mm
+        paginabreedte voor extra meetveldkolommen.
+        Inschakelen, tenzij je een fysieke papierklem gebruikt.
+        Alle waarden in de meetvelddatabase gaan ervan uit dat dit AAN staat.
+    "-a":
+      name: "Meetveldschaal"
+      tooltip_title: "Meetveldschaal (-a)"
+      tooltip_body: |-
+        Schaalt de afmetingen van meetvelden en scheidingslijnen gelijkmatig.
+        1.0 is de standaard (op het instrument geoptimaliseerde grootte).
+        Verhoog naar 1.5–2.0 op ruw / gestructureerd papier waar het
+        instrument een groter meetoppervlak nodig heeft.
+        Onder 1.0 passen meer meetvelden per pagina, maar dat kan op sommige
+        instrumenten leesfouten veroorzaken.
+        Let op: een andere waarde dan de standaard activeert een live
+        binaire-zoekherberekening in plaats van de snelle opzoektabel.
+    "-m":
+      name: "Marge (mm)"
+      tooltip_title: "Marge (-m / -M)"
+      tooltip_body: |-
+        Bepaalt de marge in millimeters voor zowel het afdrukgebied (-m)
+        als de TIFF-bestandsafmetingen (-M).  Beide blijven synchroon.
+        6 mm past bij de minimummarges van de meeste printers.  Alleen
+        verlagen als je printer randloos kan afdrukken.
+
+        Het kiezen van een i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus zet dit
+        automatisch op 10 mm, zodat de strooklezer-optiek niet op de kale
+        papierrand afdwaalt (fouten als "not enough patches read").
+        Terugschakelen naar ColorMunki / SpectroScan zet het terug op 6 mm.
+        Een eigen waarde (anders dan 6 of 10) blijft bij instrumentwissels
+        behouden.
+
+        Meetvelden-per-pagina-opzoektabellen bestaan alleen voor 6 en 10 mm —
+        andere waarden activeren een live binaire-zoekherberekening.
+    "-r":
+      name: "Meetveldvolgorde behouden (niet randomiseren)"
+      tooltip_title: "Geen randomisatie (-r)"
+      tooltip_body: |-
+        Standaard randomiseert printtarg de meetveldposities om drift-artefacten
+        van het instrument te verminderen.  Schakel deze optie alleen in
+        als je een specifieke meetveldvolgorde test of je instrument geordende
+        meetvelden vereist.
+    "-b":
+      name: "Z/W-scheidingslijnen forceren"
+      tooltip_title: "Z/W-scheidingslijnen forceren (-b)"
+      tooltip_body: |-
+        Dwingt zwart-witte scheidingslijnen tussen de stroken af in plaats van
+        gekleurde.  Heeft geen invloed op het meetveldaantal of de
+        indelingsgeometrie.
+
+        Heeft geen effect wanneer "Geen scheidingslijnen" (-n) is ingeschakeld —
+        deze optie is dan grijs en wordt uit het printtarg-commando
+        weggelaten.
+    "-P":
+      name: "Strooklengte niet begrenzen"
+      tooltip_title: "Strooklengte niet begrenzen (-P)"
+      tooltip_body: |-
+        Standaard begrenst printtarg de strooklengte zodat elke strook
+        binnen het papier past zonder overloop.  Deze optie heft die grens
+        op en staat zeer lange stroken toe.
+        Nuttig voor smal rolpapier of wanneer je voor een gegeven
+        meetveldaantal zo min mogelijk stroken wilt.
+        Waarschuwing: bij een hoog meetveldaantal kunnen stroken voorbij de
+        papierrand reiken — controleer de gegenereerde TIFF vóór het
+        afdrukken.
+    "-N":
+      name: "N-kanaals TIFF (>4 inkten)"
+      tooltip_title: "N-kanaals TIFF (-N)"
+      tooltip_body: |-
+        Voor printers met meer dan 4 inktkanalen (bijv. CMYK plus extra
+        steunkleuren): standaard-TIFF ondersteunt maar 4 kanalen.  Deze
+        optie laat printtarg de extra kanalen coderen in de
+        alfakanaal-posities van TIFF, zodat alle inktwaarden in één bestand
+        behouden blijven.
+
+        Alleen inschakelen als je printerdriver of RIP een meerkanaals-TIFF
+        verwacht.  Voor gewone RGB- of CMYK-profilering heb je deze optie
+        niet nodig.
+    "-K":
+      name: "Kalibratie toepassen"
+      tooltip_title: "Kalibratie op meetvelden toepassen (-K)"
+      tooltip_body: |-
+        Gebruik dit wanneer je printer geen ingebouwd kalibratiesysteem
+        heeft — d.w.z. de printerdriver of RIP kan zelf geen
+        kalibratiecurve toepassen.
+
+        Je draait eerst Argylls printcal om een .cal-bestand te maken dat
+        beschrijft hoe de printer wordt gelineariseerd.  Dat .cal geef je
+        hier op: printtarg rekent elke meetveldkleurwaarde door de
+        kalibratiecurves heen vóór het genereren van de kaart, zodat de
+        afgedrukte kaart het gekalibreerde apparaatgedrag al weerspiegelt.
+        De .cal wordt ook in het .ti2-bestand ingesloten, zodat colprof er
+        bij het bouwen van het ICC-profiel naar kan verwijzen.
+
+        Typisch gebruik: desktop-inkjetprinters zonder ingebouwde
+        linearisatie, rechtstreeks vanuit een TIFF aangestuurd zonder
+        tussenliggende RIP.
+
+        Sluit elkaar uit met "Kalibratie insluiten" (-I) — er kan maar één
+        kalibratie-optie tegelijk actief zijn.
+    "-I":
+      name: "Kalibratie alleen insluiten"
+      tooltip_title: "Kalibratie insluiten zonder toepassen (-I)"
+      tooltip_body: |-
+        Gebruik dit wanneer je printer of RIP al zelf een kalibratiecurve
+        toepast — bijvoorbeeld een productie-inkjet-RIP met eigen
+        linearisatie-LUT, of een printer met ingebouwde
+        dichtheidskalibratie.
+
+        In dat geval wil je niet dat printtarg de meetveldwaarden herrekent (dat
+        doet de printer zelf), maar wel dat colprof van de kalibratie weet.
+        -I sluit het .cal-bestand alleen als metadata in de .ti2-uitvoer in
+        en laat alle meetveldwaarden onaangeroerd.
+
+        Typisch gebruik: professionele inkjet-RIP's (bijv. EFI Fiery,
+        Wasatch, ColorBurst) of printers met ingebouwde linearisatie die
+        tijdens de profileer-afdrukrun actief is.
+
+        Sluit elkaar uit met "Kalibratie toepassen" (-K) — er kan maar één
+        kalibratie-optie tegelijk actief zijn.
+    "-C":
+      name: "TIFF-compressie uitschakelen"
+      tooltip_title: "TIFF-compressie uitschakelen (-C)"
+      tooltip_body: |-
+        Schrijft ongecomprimeerde TIFF-bestanden in plaats van de standaard
+        LZW-compressie.  Ongecomprimeerde bestanden zijn groter, maar
+        universeel compatibel met alle RIP's en printerdrivers.
+        Inschakelen als je afdruk-werkstroom gecomprimeerde TIFF's weigert
+        of verhaspelt.
+    "-D":
+      name: "8-bit dithering vanuit 16-bit"
+      tooltip_title: "8-bit-uitvoer ditheren (-D)"
+      tooltip_body: |-
+        Gebruikt bij het genereren van een 8-bit-TIFF foutdiffusie-dithering
+        om vanaf de interne 16-bit-precisie terug te schalen.  Dat
+        vermindert strepen (banding) in vloeiende verlopen die anders door
+        kwantisatie zouden ontstaan.
+        Heeft alleen effect wanneer 8-bit-TIFF-uitvoer is gekozen.
+    "-U":
+      name: "CUPS-kleurbeheerheader onderdrukken"
+      tooltip_title: "CUPS-CMM-header onderdrukken (-U)"
+      tooltip_body: |-
+        Verwijdert de regel 'cupsJobTicket: cups-disable-cmm' uit
+        PostScript- en EPS-uitvoerbestanden.  Sommige CUPS-versies reageren
+        verschillend op deze regel.
+        Deze optie geldt alleen voor PS-/EPS-uitvoer en heeft geen effect op
+        TIFF-bestanden.  Alleen inschakelen als er tijdens het afdrukken
+        onverwacht kleurbeheer wordt toegepast.
+    "-R":
+      name: "Randomisatie-seed"
+      tooltip_title: "Randomisatie-seed (-R)"
+      tooltip_body: |-
+        Bepaalt de startwaarde (seed) van het meetveld-randomisatie-algoritme.
+        Dezelfde seed met hetzelfde meetveldaantal levert altijd dezelfde
+        kaartindeling op — kaarten worden zo volledig reproduceerbaar.
+        Nuttig voor onderzoek of wanneer je later een identieke kaart
+        opnieuw moet genereren.
+        Heeft geen effect wanneer "Meetveldvolgorde behouden" (-r) is
+        ingeschakeld.
+    "-Q":
+      name: "Kwantiseer-bits"
+      tooltip_title: "Meetveldwaarden kwantiseren (-Q)"
+      tooltip_body: |-
+        Rondt alle meetveldkleurwaarden af op de opgegeven bitdiepte vóór het
+        genereren van de kaart.  Zo rondt -Q 8 alle waarden af op 8-bit-
+        precisie (256 niveaus).
+        Gebruik dit wanneer je printerpijplijn op een bepaalde bitdiepte
+        banding introduceert en je op precies dat precisieniveau wilt
+        testen.
+    "-A":
+      name: "Scheidingslijnschaal"
+      tooltip_title: "Alleen-scheidingslijnschaal (-A)"
+      tooltip_body: |-
+        Past een extra schaalfactor toe op alleen de scheidingslijnen, zonder
+        de met -a ingestelde meetveldafmetingen te wijzigen.
+        Waarden boven 1.0 maken scheidingslijnen breder; onder 1.0 smaller.
+        Nuttig voor instrumenten die extra scheiding tussen stroken nodig
+        hebben, of om ruimte te winnen door scheidingslijnen te versmallen
+        terwijl de meetveldgrootte gelijk blijft.
+
+        Heeft geen effect wanneer "Geen scheidingslijnen" (-n) is ingeschakeld —
+        deze optie is dan grijs en wordt uit het printtarg-commando
+        weggelaten.
+    "-n":
+      name: "Geen scheidingslijnen"
+      tooltip_title: "Geen scheidingslijnen (-n)"
+      tooltip_body: |-
+        Verwijdert alle scheidingslijnen tussen meetvelden en stroken.
+        Scheidingslijnen helpen het instrument normaal strookgrenzen en
+        -richting te herkennen.
+        Schakel ze alleen uit als je meetwerkstroom er uitdrukkelijk niet
+        op steunt (bijv. sommige vlakbedscanner-opstellingen).
+
+        Indien ingeschakeld worden "Z/W-scheidingslijnen forceren" (-b) en
+        "Scheidingslijnschaal" (-A) automatisch uitgeschakeld — beide gelden
+        immers alleen voor scheidingslijnen.
+    "-c":
+      name: "Gekleurde scheidingslijnen forceren"
+      tooltip_title: "Gekleurde scheidingslijnen forceren (-c)"
+      tooltip_body: |-
+        Dwingt af dat de scheidingslijngebieden tussen de meetvelden in kleur worden
+        weergegeven in plaats van de standaard (die afhankelijk van het
+        instrumentprofiel zwart-wit kan zijn).  Kan de strookherkenning
+        verbeteren op sommige kleureninkjets waar zwarte scheidingslijnen
+        weinig contrast hebben met donkere meetvelden.
+  chartread:
+    "-B":
+      name: "Bidirectioneel lezen uit"
+      tooltip_title: "Bidirectioneel lezen uitschakelen (-B)"
+      tooltip_body: |-
+        Verhindert dat chartread automatisch detecteert of je een strook
+        vooruit of achteruit hebt gescand. ChromIQ laat dit standaard uit,
+        zodat het instrument stroken in beide richtingen kan lezen.
+
+        Alleen aanzetten als je instrument tijdens het meten valse
+        strookrichting-fouten meldt.
+    "-b":
+      name: "Bidirectioneel lezen forceren"
+      tooltip_title: "Bidirectioneel lezen forceren (-b)"
+      tooltip_body: |-
+        Dwingt chartread een strook te accepteren die in willekeurige
+        richting is gescand.
+
+        Normaal detecteert chartread de strookrichting alleen automatisch op
+        gerandomiseerde kaarten; op een kaart met vaste volgorde leest het
+        maar één richting en verwerpt het achteruit gescande stroken. Zet
+        dit aan om de detectie hoe dan ook af te dwingen — nuttig voor de
+        i1 Pro-familie, die beide kanten op leest. Dit is het omgekeerde
+        van -B; er kan er maar één gelden.
+    "-S":
+      name: "Waarschuwingen onderdrukken"
+      tooltip_title: "Waarschuwingen onderdrukken (-S)"
+      tooltip_body: |-
+        Onderdrukt niet-fatale meetwaarschuwingsdialogen van chartread.
+        Aanbevolen voor onbeheerde of batch-meetsessies.
+        Fouten die het genereren van een profiel zouden verhinderen,
+        worden nog steeds gemeld.
+    "-N":
+      name: "Startkalibratie uitschakelen"
+      tooltip_title: "Startkalibratie uitschakelen (-N)"
+      tooltip_body: |-
+        Slaat de automatische wittegelkalibratie van het instrument bij het
+        starten over.  Alleen gebruiken als je het instrument in deze sessie
+        al hebt gekalibreerd en extra kaarten wilt meten zonder opnieuw te
+        kalibreren.
+    "-p":
+      name: "Meetveld-voor-meetveld-modus"
+      tooltip_title: "Meetveld-voor-meetveld-modus (-p)"
+      tooltip_body: |-
+        Schakelt van strooklezen over op het meten van losse meetvelden.
+        Nuttig voor losse handmetingen of wanneer strooklezen op een
+        bepaald papier mislukt.  Aanzienlijk trager bij grote kaarten.
+    "-H":
+      name: "Hoge-resolutie spectrale modus"
+      tooltip_title: "Hoge-resolutie spectrum (-H)"
+      tooltip_body: |-
+        Schakelt hoge-resolutie spectrale bemonstering in op instrumenten
+        die dat ondersteunen (bijv. i1Pro 2/3).  Levert nauwkeurigere
+        Lab-waarden op, maar verlengt de meettijd iets.
+    "-T":
+      name: "Consistentietolerantie"
+      tooltip_title: "Consistentietolerantie (-T)"
+      tooltip_body: |-
+        Een vermenigvuldiger op chartreads ingebouwde
+        meetveld-consistentiedrempel — geen delta-E-waarde. chartread leest elk
+        meetveld opnieuw en verwerpt stroken waarvan de metingen meer dan de
+        drempel × dit getal van elkaar afwijken.
+
+        Lager = strenger. Een strenge instelling vangt echte problemen
+        vroeg: verstopte inkjet-spuitmonden, weinig inkt, vuile drumrollen,
+        verlopende lasertoner. Op een gezonde printer-spectrofotometer-
+        combinatie laat de standaard van 0.7 ruime marge; ervaren gebruikers
+        op printerknowledge.com draaien 0.4 met een i1 Pro 2 / 3.
+
+        Verhoog naar 0.8–1.5 bij valse "inconsistent patch"-fouten op
+        gestructureerd, mat of fine-art-papier — het oppervlak zelf draagt
+        daar echte variatie bij. Waarden boven 2 maskeren vooral echte
+        problemen; heb je ze nodig, repareer dan eerst de printer.
+    "-l":
+      name: "D50-L*a*b*-waarden opslaan"
+      tooltip_title: "L*a*b* in plaats van XYZ opslaan (-l)"
+      tooltip_body: |-
+        Bewaart meetgegevens als D50-L*a*b*-waarden in plaats van XYZ.
+        De meeste werkstromen gebruiken XYZ (standaard).  Alleen inschakelen
+        als vervolgtools uitdrukkelijk L*a*b*-invoer vereisen.
+    "-X":
+      name: "Colorimeter-correctie"
+      tooltip_title: "Colorimeter-correctiematrix (-X)"
+      tooltip_body: |-
+        Past een colorimeter-correctiematrix (.ccmx) of spectrale
+        kalibratieset (.ccss) toe om de nauwkeurigheid van een colorimeter
+        te verbeteren.
+        Alleen relevant voor colorimeters (niet voor spectrofotometers).
+        Vraag het juiste bestand op bij de instrumentfabrikant of maak het
+        met de ccss-/ccmx-tools van ArgyllCMS.
+  colprof:
+    "-D":
+      name: "Profielbeschrijving"
+      tooltip_title: "Profielbeschrijving (-D)"
+      tooltip_body: |-
+        De naam die in het ICC-profiel wordt ingesloten — zichtbaar in de
+        kleurbeheermenu's van apps als Photoshop, Lightroom en Voorvertoning.
+
+        Gebruik een consequent formaat dat printer, papier, inkttype en
+        datum benoemt, zodat het juiste profiel later makkelijk te vinden is:
+
+          Printer · Papier · Inkttype · Datum
+          bijv. "Epson P900 · Canson Baryta · Chromatic · 2026-04"
+
+        Het uitvoerbestand wordt vernoemd naar je .ti3-bestand — houd die
+        naam consistent met de beschrijving, met underscores in plaats van
+        spaties:
+          bijv. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+    "-a":
+      name: "Profielalgoritme"
+      tooltip_title: "Profielalgoritme (-a)"
+      tooltip_body: |-
+        Kiest het kleurtransformatie-algoritme:
+        • Lab-cLUT (-al): beste nauwkeurigheid voor printerprofielen.
+          Gebruikt een volledige 3D-opzoektabel in de L*a*b*-ruimte.  Aanbevolen.
+        • XYZ-cLUT (-ax): vergelijkbaar met Lab, maar in de XYZ-ruimte.
+          Levert soms vloeiendere neutrale verlopen op.
+        • Matrix/gamma (-ag, -as): eenvoudiger model — minder nauwkeurig
+          voor complex printergedrag, maar sneller te berekenen.
+        Gebruik voor een eerste RGB-printerprofiel altijd Lab-cLUT (-al).
+      labels:
+        - "l — Lab-cLUT (aanbevolen voor RGB-printers)"
+        - "x — XYZ-cLUT"
+        - "X — XYZ-cLUT (absoluut)"
+        - "g — gamma + matrix (snel, minder nauwkeurig)"
+        - "G — gamma + matrix (geforceerd)"
+        - "s — enkele gamma + matrix"
+        - "S — enkele gamma + matrix (geforceerd)"
+        - "m — alleen matrix"
+        - "M — alleen matrix (geforceerd)"
+    "-q":
+      name: "Profielkwaliteit"
+      tooltip_title: "Profielkwaliteit (-q)"
+      tooltip_body: |-
+        Bepaalt de cLUT-rasterresolutie en het aantal gladmakings-iteraties:
+        • Laag: 17³-raster — snelle test, niet voor productie
+        • Middel: 33³-raster — goede balans, aanbevolen standaard
+        • Hoog: 45³-raster — productiekwaliteit
+        • Ultra: 65³-raster — maximale nauwkeurigheid, erg traag
+        Middel volstaat voor het meeste inkjetwerk.
+        Gebruik Hoog voor fine-art- of contractproef-toepassingen.
+      labels:
+        - "l — laag (snel, ~30 s)"
+        - "m — middel (aanbevolen, ~2 min)"
+        - "h — hoog (~10 min)"
+        - "u — ultra (~30+ min)"
+    "-b":
+      name: "B2A-tabelkwaliteit"
+      tooltip_title: "B2A-tabelkwaliteit (-b)"
+      tooltip_body: |-
+        Regelt onafhankelijk de kwaliteit van de B2A-tabellen
+        (apparaat→PCS) voor invoertransformaties (bijv. soft-proofing).
+        Leeg laten om de hoofdinstelling -q te volgen.
+        Gebruik "n" om B2A-tabellen weg te laten en het profielbestand te
+        verkleinen (alleen-uitvoerprofielen hebben geen B2A nodig).
+      labels:
+        - "Zelfde als profielkwaliteit (standaard)"
+        - "l — laag"
+        - "m — middel"
+        - "h — hoog"
+        - "u — ultra"
+        - "n — geen (B2A-tabellen weglaten)"
+    "-r":
+      name: "Gladmaking/ruis (% ΔE)"
+      tooltip_title: "Gemiddelde apparaatruis (-r)"
+      tooltip_body: |-
+        Geschatte gemiddelde meet- of apparaatruis als percentage ΔE.
+        Hogere waarden verhogen de profielgladmaking en verminderen het
+        effect van uitschietermeetvelden.
+        • 0,5%: schone metingen, goed onderhouden printer
+        • 1,0–2,0%: ruisige metingen of gestructureerd papier
+        • 3,0–5,0%: zeer ruisig; verhoogt de gladmaking aanzienlijk
+    "-s":
+      name: "Gamut-bron (perceptueel)"
+      tooltip_title: "Perceptuele gamut-mapping-bron (-s)"
+      tooltip_body: |-
+        Bron-ICC-profiel waarmee de gamut-mapping-tabellen van de
+        perceptuele weergave-intentie worden berekend (A2B / B2A
+        perceptueel).
+        Zonder dit gebruikt de perceptuele intentie de colorimetrische
+        gegevens rechtstreeks (geen gamutcompressie).
+        Doorgaans een standaard RGB-werkruimte zoals AdobeRGB of
+        ProPhoto RGB.
+        Zowel .icc- als .icm-bestanden worden geaccepteerd — ICM is
+        simpelweg Microsofts naam voor het ICC-profielformaat; ze zijn
+        identiek.
+    "-S":
+      name: "Gamut-bron (P+S)"
+      tooltip_title: "Bron perceptueel + verzadiging (-S)"
+      tooltip_body: |-
+        Als -s, maar past de gamut-mapping toe op zowel de perceptuele als
+        de verzadigings-weergave-intentie.
+    "-A":
+      name: "Fabrikant"
+      tooltip_title: "Fabrikanttekst (-A)"
+      tooltip_body: |-
+        Fabrikanttekst die in de ICC-profielheader wordt ingesloten.
+        Optioneel — voor identificatie in profielkeuzemenu's.
+    "-M":
+      name: "Model"
+      tooltip_title: "Modeltekst (-M)"
+      tooltip_body: |-
+        Modeltekst die in de ICC-profielheader wordt ingesloten.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyrighttekst (-C)"
+      tooltip_body: |-
+        Copyrightvermelding die in het ICC-profiel wordt ingesloten.
+    "-ni":
+      name: "Geen invoer-shapercurves"
+      tooltip_title: "Geen invoer-shapercurves (-ni)"
+      tooltip_body: |-
+        Schakelt de 1D-invoer-tooncurves uit die apparaatwaarden vóór de
+        3D-cLUT voorbewerken.  Deze curves verbeteren de profielnauw-
+        keurigheid normaal gesproken.  Alleen uitschakelen voor diagnose.
+    "-no":
+      name: "Geen uitvoer-shapercurves"
+      tooltip_title: "Geen uitvoer-shapercurves (-no)"
+      tooltip_body: |-
+        Schakelt de 1D-uitvoer-shapercurves uit die na de 3D-cLUT worden
+        toegepast.  Alleen uitschakelen voor diagnose.
+    "-V":
+      name: "Schaduw-rasternadruk"
+      tooltip_title: "Rasternadruk donkere gebieden (-V)"
+      tooltip_body: |-
+        Voegt extra cLUT-rasterpunten toe in donkere (schaduw)gebieden.
+        1.0 = uniform raster (standaard).  Verhoog naar 1.5–2.0 voor
+        printers met complex schaduwgedrag of dichtlopende zwarten.
+  profcheck:
+    "-v":
+      name: "Detailniveau"
+      tooltip_title: "Detailniveau (-v)"
+      tooltip_body: |-
+        De per-meetveld-modus geeft de individuele ΔE-waarde van elk meetveld —
+        vereist voor strookanalyse en begeleide verfijning.  De
+        samenvattingsmodus toont alleen gemiddelde en piekfouten.
+      labels:
+        - "2 — per meetveld (vereist voor strookanalyse)"
+        - "1 — alleen samenvatting"
+    "-I":
+      name: "Weergave-intentie"
+      tooltip_title: "Weergave-intentie (-I)"
+      tooltip_body: |-
+        Absoluut colorimetrisch controleert de absolute kleurnauwkeurigheid
+        inclusief het witpunt — standaard voor printerprofilering.
+        Relatief colorimetrisch normaliseert naar het witpunt van het
+        medium.
+      labels:
+        - "a — absoluut colorimetrisch (standaard)"
+        - "r — relatief colorimetrisch"
+    "-s":
+      name: "Slechtste ΔE eerst tonen"
+      tooltip_title: "Sorteren op ΔE (-s)"
+      tooltip_body: |-
+        Sorteert de profcheck-uitvoer zodat de slechtst presterende meetvelden
+        vooraan staan.  Handig om probleemzones snel te herkennen.
+        Werkt alleen wanneer het detailniveau op per-meetveld staat.
+    "-i":
+      name: "Lichtsoort"
+      tooltip_title: "Lichtsoort (-i)"
+      tooltip_body: |-
+        Bepaalt de lichtbron waarmee spectrale metingen naar kleurwaarden
+        worden omgerekend.  Alleen relevant als je .ti3 spectrale gegevens
+        bevat.  D50 is de standaard voor drukprofilering.
+      labels:
+        - "D50 (standaard)"
+        - "D50M2 (D50 + UV-filter)"
+        - "D65 (daglicht 6500 K)"
+        - "A (gloeilamp)"
+        - "C (daglichtsimulatie, ouder)"
+        - "F5 (fluorescent CWF)"
+        - "F8 (fluorescente D50-simulatie)"
+        - "F10 (fluorescent Ultralume)"
+    "-o":
+      name: "CIE-waarnemer"
+      tooltip_title: "CIE-waarnemer (-o)"
+      tooltip_body: |-
+        Bepaalt het standaardwaarnemermodel voor colorimetrische
+        berekeningen.  De 1931 2°-waarnemer is de ICC-standaard voor
+        drukprofilering.  Laat op de standaard staan, tenzij uitdrukkelijk
+        anders vereist.
+      labels:
+        - "1931 2° (standaard)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+    "-P":
+      name: "Snoeien op ΔE ≤"
+      tooltip_title: ".ti3 beperken tot ΔE ≤ (-P)"
+      tooltip_body: |-
+        Maakt een uitgedunde kopie van je .ti3-bestand met alleen meetvelden
+        waarvan de kleurfout op of onder de ingestelde drempel ligt.
+        Nuttig wanneer slecht gemeten meetvelden het profiel omlaag trekken.
+        Schakel de optie in en stel de maximaal aanvaardbare ΔE-waarde in.
+    "-w":
+      name: "X3DOM-3D-visualisatie maken"
+      tooltip_title: "X3DOM-visualisatie (-w)"
+      tooltip_body: |-
+        Genereert een interactieve 3D-HTML-visualisatie van de kleurfouten
+        van je profiel.  Open het resulterende .x3d.html-bestand in een
+        moderne browser om te verkennen welke delen van het kleurgamut de
+        grootste fouten hebben.
+  printcal:
+    "-v":
+      name: "Detailniveau"
+      tooltip_title: "Detailniveau (-v)"
+      tooltip_body: |-
+        Bepaalt hoeveel uitvoer printcal tijdens het kalibreren schrijft.
+          0 = stil
+          1 = basisvoortgang (standaard)
+          2 = gedetailleerde per-kanaal-info
+          3 = debuguitvoer
+    "-s":
+      name: "Curve-gladmaking"
+      tooltip_title: "Curve-gladmaking (-s)"
+      tooltip_body: |-
+        Bepaalt hoeveel extra gladmaking op de kalibratiecurves wordt
+        toegepast.  Hogere waarden geven gladdere maar minder precieze
+        curves.
+
+        Standaard: 1.0 — goed voor de meeste printers.
+        Verhoog (bijv. 2.0–5.0) als de printer een ruisige toonrespons
+        heeft of de kalibratiecurves er hoekig uitzien.
+    "-z":
+      name: "Curve-resolutie"
+      tooltip_title: "Curve-resolutie (-z)"
+      tooltip_body: |-
+        Aantal stappen in de uitvoer-kalibratiecurvetabellen.
+        Hogere waarden geven fijnere resolutie maar grotere .cal-bestanden.
+        De standaard (256) past bij vrijwel alle printers.
+    "-A":
+      name: "Fabrikant"
+      tooltip_title: "Fabrikant (-A)"
+      tooltip_body: |-
+        Bepaalt de fabrikantbeschrijving die in het .cal-bestand wordt
+        ingesloten.  Puur informatief — beïnvloedt de kalibratiecurves niet.
+    "-M":
+      name: "Model"
+      tooltip_title: "Model (-M)"
+      tooltip_body: |-
+        Bepaalt de printermodelbeschrijving die in het .cal-bestand wordt
+        ingesloten.  Puur informatief — beïnvloedt de kalibratiecurves niet.
+    "-D":
+      name: "Beschrijving"
+      tooltip_title: "Beschrijving (-D)"
+      tooltip_body: |-
+        Bepaalt een leesbare beschrijving die in het .cal-bestand wordt
+        ingesloten.  Puur informatief — beïnvloedt de kalibratiecurves niet.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyright (-C)"
+      tooltip_body: |-
+        Bepaalt de copyrighttekst die in het .cal-bestand wordt ingesloten.
+        Puur informatief — beïnvloedt de kalibratiecurves niet.
+  applycal:
+    "-v":
+      name: "Uitgebreid"
+      tooltip_title: "Uitgebreid (-v)"
+      tooltip_body: |-
+        Toont gedetailleerde informatie over de toegepaste kalibratie,
+        inclusief curve-statistieken per kanaal.

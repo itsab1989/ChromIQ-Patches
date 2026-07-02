@@ -1,0 +1,1190 @@
+# Spanish overlay for data/parameters.yaml — merged in translate_parameters()
+parameters:
+  targen:
+    "-d":
+      name: "Tipo de dispositivo"
+      tooltip_title: "Tipo de dispositivo (-d)"
+      tooltip_body: |-
+        Define la combinación de colorantes de tu dispositivo de salida.
+
+        Los espacios de impresión son sustractivos: valor de dispositivo
+        0 = blanco (sin tinta), máximo = negro (tinta plena).  Los espacios
+        de vídeo/pantalla son aditivos: valor 0 = negro, máximo = blanco.
+
+        Elecciones comunes:
+          • Impresión gris (-d 0) — impresora monocanal en escala de grises
+          • Vídeo gris (-d 1)     — pantalla/monitor monocanal
+          • Impresión RGB (-d 2)  — inyección RGB estándar (predeterminado,
+                                    recomendado)
+          • Vídeo RGB (-d 3)      — pantalla/monitor RGB
+          • CMYK (-d 4)           — inyección de cuatricromía o prensa offset
+          • CMY (-d 5)            — tres colores, sin canal negro separado
+
+        Las opciones 6–15 son para inyecciones multicanal especiales con
+        tintas adicionales (cian/magenta claro, naranja, verde, violeta,
+        etc.).  Usa -D (expertos) para afinar el conjunto de colorantes si
+        hace falta.
+      labels:
+        - "Impresión gris"
+        - "Vídeo gris"
+        - "Impresión RGB (recomendado)"
+        - "Vídeo RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + CM claro"
+        - "CMYK + CMK claro"
+        - "CMYK + rojo + azul"
+        - "CMYK + naranja + verde"
+        - "CMYK + rojo + verde + azul"
+        - "CMYK + naranja + verde + violeta"
+        - "CMYK + naranja + verde + azul"
+        - "CMYK + CMK claro + K clarísimo"
+        - "CMYK + naranja + verde + CM claro"
+        - "CMYK + CM claro + CM medio"
+    "-D":
+      name: "Colorante +/−"
+      tooltip_title: "Añadir/quitar colorante (-D)"
+      tooltip_body: |-
+        Modifica el conjunto de colorantes fijado por el Tipo de dispositivo
+        (-d) añadiendo o quitando un colorante concreto.  Si el colorante
+        elegido ya está en el conjunto se quita; si falta, se añade.
+
+        Usos típicos:
+          • Añadir naranja (-D 5) al CMYK estándar para gama extendida
+          • Añadir cian claro (-D 11) / magenta claro (-D 12) al CMYK
+            para degradados más suaves en las luces
+
+        Activa varias posiciones para apilar colorantes adicionales (cada
+        posición activada revela la siguiente, hasta 11 cambios en total).
+
+        Déjalo desactivado para los tipos de dispositivo estándar 0–5.
+      labels:
+        - "Aditivo"
+        - "Cian"
+        - "Magenta"
+        - "Amarillo"
+        - "Negro"
+        - "Naranja"
+        - "Rojo"
+        - "Verde"
+        - "Azul"
+        - "Violeta"
+        - "Blanco"
+        - "Cian claro"
+        - "Magenta claro"
+        - "Amarillo claro"
+        - "Negro claro"
+        - "Cian medio"
+        - "Magenta medio"
+        - "Amarillo medio"
+        - "Negro medio"
+        - "Negro clarísimo"
+    "-f":
+      name: "Número total de parches"
+      tooltip_title: "Número total de parches (-f)"
+      tooltip_body: |-
+        Fija el número total de parches de color.  Más parches = perfil más
+        preciso, pero más tiempo de impresión y medición.
+        Rangos típicos para inyección RGB:
+          • Prueba rápida: 400–600
+          • Estándar:      800–1200
+          • Alta calidad:  1500–2000
+          • Altísima:      2500–3000
+
+        Auto (junto al campo numérico): si está marcado, el número de
+        parches se calcula en tiempo real a partir del papel, instrumento,
+        double density, borde izquierdo, escala de parche, margen y el
+        campo Páginas de la sección printtarg — eligiendo el valor más
+        grande que llena exactamente ese número de hojas sin huecos.  El
+        campo queda desactivado mientras Auto está activo y muestra la
+        estimación actual.  Para maquetaciones personalizadas (escala de
+        parche o margen no predeterminados) Auto hace una breve búsqueda
+        binaria con targen — el valor puede tardar un segundo en
+        actualizarse.
+
+        En modo guiado se calcula automáticamente con la base de datos de
+        parches-por-página × el número de páginas elegido.
+        En modo guiado pon 0 para el cálculo automático.
+    "-e":
+      name: "Parches blancos"
+      tooltip_title: "Parches blancos (-e)"
+      tooltip_body: |-
+        Cuántos parches de blanco puro de papel añadir a la carta. El
+        instrumento los mide para aprender exactamente cuán blanco es tu
+        papel — anclando el extremo claro del perfil. 4 es un buen valor
+        predeterminado; los papeles muy brillantes pueden beneficiarse de
+        algún parche más.
+
+        Auto (casilla):
+        Activa "Auto" y ChromIQ elige el número por ti, según cuántos
+        parches contiene toda la carta — una carta pequeña de una página
+        recibe pocos parches blancos y una grande de varias páginas más,
+        sin que tengas que pensarlo.
+
+        Cómo se calcula el número Auto:
+          • Una carta de unos 560 parches recibe 4 parches blancos.
+          • Cada vez que la carta aproximadamente se duplica, el número
+            crece un 50 % (4 → 6 → 8 …).
+          • Nunca supera 8 (más solo desperdicia espacio) y nunca baja
+            de 2.
+
+        Con Auto activo el campo queda desactivado y muestra "Auto".
+        Desactívalo en cualquier momento para escribir tu propio número.
+    "-B":
+      name: "Parches negros"
+      tooltip_title: "Parches negros (-B)"
+      tooltip_body: |-
+        Cuántos parches a tinta máxima (negro del dispositivo) añadir a la
+        carta. El instrumento los mide para aprender el tono más oscuro que
+        la impresora puede producir — anclando el extremo oscuro del
+        perfil. 4 es un buen predeterminado para impresoras RGB.
+
+        Auto (casilla):
+        Activa "Auto" y ChromIQ elige el número por ti, según cuántos
+        parches contiene toda la carta — una carta pequeña recibe pocos
+        parches negros, una grande más.
+
+        Cómo se calcula el número Auto:
+          • Una carta de unos 560 parches recibe 4 parches negros.
+          • Cada vez que la carta aproximadamente se duplica, el número
+            crece un 50 % (4 → 6 → 8 …).
+          • Nunca supera 8 y nunca baja de 2.
+
+        Con Auto activo el campo queda desactivado y muestra "Auto".
+        Desactívalo en cualquier momento para escribir tu propio número.
+    "-g":
+      name: "Pasos del eje gris"
+      tooltip_title: "Pasos del eje gris (-g)"
+      tooltip_body: |-
+        Parches grises neutros extra repartidos uniformemente del blanco al
+        negro. Ayudan al perfil a reproducir los grises de forma limpia,
+        sin dominantes de color — importante para fotos en blanco y negro
+        y tonos neutros. Guía aproximada si lo fijas a mano: 0 para un
+        perfil rápido, 50–100 para uno estándar, 128+ para alta calidad.
+
+        Auto (casilla):
+        Activa "Auto" y ChromIQ elige el número por ti, en proporción a
+        cuántos parches contiene toda la carta — una carta más grande
+        recibe una rampa de grises más larga y fina.
+
+        Cómo se calcula el número Auto:
+          • Una carta de unos 560 parches recibe 32 pasos de gris.
+          • Cada vez que la carta aproximadamente se duplica, los pasos
+            también se duplican (32 → 64 → 128).
+          • Nunca supera 128 y nunca baja de 8.
+
+        Con Auto activo el campo queda desactivado y muestra "Auto".
+        Desactívalo en cualquier momento para escribir tu propio número.
+
+        (El modo guiado lo fija siempre automáticamente con la misma
+        lógica.)
+    "-G":
+      name: "Optimización precisa (lenta)"
+      tooltip_title: "Optimización precisa (-G)"
+      tooltip_body: |-
+        Hace que targen dedique tiempo extra a colocar los parches de la
+        forma más uniforme posible sobre la gama de tu impresora. El
+        conjunto de parches es del mismo tipo (OFPS — Optimised Farthest
+        Point Sampling, la distribución predeterminada) en ambos casos;
+        esto solo cambia del modo "rápido" al "preciso".
+
+        Recomendado ACTIVADO para toda carta que vayas a imprimir y medir
+        de verdad: unos segundos extra de cálculo al generar dan un perfil
+        mediblemente mejor.
+
+        Desactívalo solo si estás iterando rápido sobre los ajustes de la
+        carta y la calidad absoluta de los parches no te importa (p. ej.
+        pruebas de maquetación antes de la carta definitiva).
+
+        No tiene efecto cuando "Distribución de parches" está en algo
+        distinto de OFPS — las distribuciones alternativas (aleatoria,
+        cuasialeatoria, retícula BCC, …) ignoran esta opción.
+    "-s":
+      name: "Pasos de canal único"
+      tooltip_title: "Pasos de canal único (-s)"
+      tooltip_body: |-
+        Añade parches extra en rampa por canal individual (R, G, B por
+        separado). Útil para caracterizar el comportamiento de cada tinta.
+        Típico: 0 para rápido, 20–50 para estándar, 50–100 para alto.
+    "-c":
+      name: "Perfil precondicion."
+      tooltip_title: "Perfil de preacondicionamiento (-c)"
+      tooltip_body: |-
+        Un perfil ICC existente para esta combinación de impresora/papel,
+        usado para preacondicionar la distribución de parches en el espacio
+        perceptual.  Usar aquí un perfil anterior produce parches
+        repartidos más uniformemente por la gama de salida, con mayor
+        precisión en una segunda pasada de perfilado.
+        Déjalo vacío para un primer perfil.
+    "-C":
+      name: "Anulación de calibración"
+      tooltip_title: "Anulación de calibración (-C)"
+      tooltip_body: |-
+        Archivo .cal opcional cuyas curvas de calibración se aplican en la
+        estimación del límite de tinta para la generación de parches.
+        Sustituye a cualquier .cal incrustado en el .ti3 del perfil ICC de
+        una pasada de perfilado anterior.
+
+        Úsalo cuando tienes una calibración del dispositivo validada
+        (p. ej. de printcal/applycal) y quieres que targen la tenga en
+        cuenta al calcular cuántos parches hacen falta en la zona de
+        sombras.
+
+        Escribe "none" en el campo (sin comillas) para impedir
+        explícitamente el uso de cualquier .cal, aunque esté incrustado en
+        el .ti3.
+
+        Déjalo vacío en la mayoría de los flujos — solo hace falta cuando
+        gestionas una curva de calibración separada, independiente del
+        perfil.
+    "-n":
+      name: "Pasos del eje neutro"
+      tooltip_title: "Pasos del eje neutro (-n)"
+      tooltip_body: |-
+        Añade parches en cuña extra a lo largo del eje neutro
+        perceptualmente verdadero de tu impresora + papel, tal como lo
+        define el perfil de preacondicionamiento cargado mediante -c.
+
+        Diferencia con -g (pasos del eje gris):
+          • -g recorre valores RGB del dispositivo (R = G = B): 0/0/0,
+            32/32/32, 64/64/64 … Asume que valores iguales imprimen un
+            gris neutro — cierto solo en una impresora perfectamente
+            linealizada.  En una impresora real la "rampa de grises del
+            dispositivo" suele tener una dominante.
+          • -n le pregunta al perfil indicado: "¿qué valores RGB necesita
+            de verdad ESTA impresora para reproducir un parche L*a*b*
+            neutro (a* = b* = 0) en cada paso de luminosidad?"  Esos
+            valores RGB (típicamente no iguales) se añaden como parches.
+
+        Diferencia con -N (énfasis del eje neutro):
+          • -N es una perilla 0–1 que inclina la distribución OFPS
+            existente hacia la zona neutra.  No añade pasos con nombre.
+          • -n añade parches neutros explícitos, derivados del perfil,
+            además de lo que el resto de la distribución produce.
+
+        Cuándo usarlo:
+          • Ya tienes un perfil ICC de primera pasada para este papel y
+            estás creando una carta de refinado.  Carga ese perfil en
+            Perfil de preacondicionamiento (-c) y pon -n en 32–64 para
+            caracterizar densamente el eje neutro correcto.
+          • Para una primera carta sin -c, déjalo a 0 — sin perfil de
+            preacondicionamiento no existe un eje neutro "verdadero" que
+            muestrear, y -g ya cubre la rampa en el espacio del
+            dispositivo.
+
+        Valores de refinado típicos: 32 para trabajo normal, 64 para
+        bellas artes / pruebas de color donde la neutralidad es crítica.
+
+        Requiere que -c esté definido; si no, no tiene efecto.
+    "-N":
+      name: "Énfasis del eje neutro"
+      tooltip_title: "Énfasis del eje neutro (-N)"
+      tooltip_body: |-
+        Controla cuánto se agrupan los parches cerca del eje neutro.
+        0.0 = sin énfasis, 1.0 = máxima agrupación sobre el gris.
+        El predeterminado 0.5 va bien para la mayoría de impresoras.
+    "-V":
+      name: "Énfasis zonas oscuras"
+      tooltip_title: "Énfasis en zonas oscuras (-V)"
+      tooltip_body: |-
+        Añade parches extra en las zonas oscuras (sombras) de la gama.
+        1.0 = sin énfasis (predeterminado).  Súbelo a 2.0–3.0 para
+        impresoras con comportamiento complejo en sombras (p. ej. papeles
+        mates de bellas artes).
+    "-l":
+      name: "Límite total de tinta (%)"
+      tooltip_title: "Límite total de tinta (-l)"
+      tooltip_body: |-
+        La cantidad máxima total de tinta que la impresora puede depositar
+        en el papel, en porcentaje. 100 % = una capa completa, 200 % = dos
+        capas completas (p. ej. 100C + 100K), y así sucesivamente.
+
+        Por qué importa (sobre todo para CMYK / CMYK+N):
+        Sin límite, targen genera alegremente parches como 100C + 100M +
+        100Y + 100K = 400 %. Tanta tinta húmeda puede encharcarse, secar
+        lento, manchar o incluso deformar el papel — y el perfil creado
+        con esos parches predice colores que la impresora en realidad no
+        puede producir.
+
+        Cómo elegir un valor:
+          • Mayoría de inyecciones CMYK:        260 – 320 %
+          • Papeles estucados / brillantes:     320 – 360 %
+          • Papel prensa, baja calidad:         220 – 260 %
+          • Gama extendida (CMYKOGV):           400 – 500 %  (más tintas
+                                                comparten el presupuesto)
+
+        En caso de duda: consulta la documentación de la impresora o las
+        guías del perfil del papel, o mídelo: imprime una pequeña cuña de
+        prueba del límite de tinta y elige el valor más alto que seca
+        limpio sin emborronar.
+
+        Para flujos RGB: normalmente déjalo desactivado — las inyecciones
+        RGB gestionan el límite de tinta internamente, así que targen no
+        necesita repartir presupuesto entre canales.
+
+        Marca la casilla para activarlo.
+    "__targen_distribution__":
+      name: "Distribución de parches"
+      tooltip_title: "Distribución de parches (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |-
+        Cómo decide targen dónde colocar cada parche de color dentro de la
+        gama de la impresora. Los distintos algoritmos ofrecen compromisos
+        diferentes entre cobertura, uniformidad y velocidad.
+
+        Elige UNO. Se excluyen mutuamente — seleccionar uno sustituye por
+        completo la colocación OFPS predeterminada.
+
+        OFPS (predeterminado, recomendado):
+        Optimised Farthest Point Sampling. Coloca iterativamente cada
+        nuevo parche lo más lejos posible de todos los existentes — la
+        cobertura más uniforme de todos los algoritmos listados aquí. Más
+        lento que las alternativas, pero la referencia en calidad de
+        perfil. Combínalo con "Optimización precisa (-G)" para el mejor
+        resultado.
+
+        Incremental Far Point (-t):
+        Un método de punto más lejano más simple. Más rápido que OFPS,
+        algo menos uniforme. Úsalo cuando OFPS sea demasiado lento con
+        números de parches muy altos y aceptes una pequeña pérdida de
+        calidad.
+
+        Aleatoria — espacio del dispositivo (-r):
+        Parches uniformemente aleatorios en los valores brutos del
+        dispositivo (p. ej. RGB). Lo más rápido posible, pero la cobertura
+        en color *percibido* es desigual — desperdicia parches en zonas
+        que el ojo apenas distingue.
+
+        Aleatoria — espacio perceptual (-R):
+        Uniformemente aleatoria en color percibido (Lab). Mejor que -r si
+        tiene que ser aleatoria, porque los parches se reparten
+        uniformemente según lo que el ojo ve. Aun así menos óptima que
+        OFPS a igual número.
+
+        Cuasialeatoria de relleno (-q / -Q):
+        Secuencias de baja discrepancia (tipo Sobol) que llenan el espacio
+        más uniformemente que el azar puro, sin el coste iterativo de
+        OFPS. -q en espacio del dispositivo, -Q en espacio perceptual. Un
+        buen compromiso cuando OFPS es demasiado lento.
+
+        Retícula cúbica centrada en el cuerpo (-i / -I):
+        Una retícula regular fija (cada parche rodeado de 8 vecinos en un
+        patrón cúbico). Determinista y muy uniforme, pero rígida — solo
+        ciertos números de parches encajan en la retícula. -i en espacio
+        del dispositivo, -I en espacio perceptual.
+
+        La mayoría de los usuarios deberían dejarlo en OFPS.
+      labels:
+        - "OFPS — optimizado (recomendado)"
+        - "Incremental Far Point (-t)"
+        - "Aleatoria — dispositivo (-r)"
+        - "Aleatoria — perceptual (-R)"
+        - "Cuasialeatoria — dispositivo (-q)"
+        - "Cuasialeatoria — perceptual (-Q)"
+        - "Retícula BCC — dispositivo (-i)"
+        - "Retícula BCC — perceptual (-I)"
+    "-A":
+      name: "Adaptación OFPS"
+      tooltip_title: "Adaptación OFPS (-A)"
+      tooltip_body: |-
+        Cuánto dobla OFPS su regla de cobertura uniforme para seguir la
+        forma de un perfil de preacondicionamiento (-c). Solo es relevante
+        cuando OFPS es la distribución elegida Y hay un perfil -c
+        definido.
+
+        0.0 = ignora el perfil por completo — pura cobertura uniforme en
+              el espacio del dispositivo, como si -c no existiera.
+        1.0 = sigue el perfil por completo — concentra los parches donde
+              el perfil dice que la gama de la impresora es interesante
+              (es decir, la forma del espacio de color real).
+
+        El predeterminado de targen es 0.10 (suave) para una primera
+        pasada y 1.0 cuando -c está definido; ChromIQ lo deja en 0.10
+        salvo que lo cambies explícitamente — así no hay cambios de
+        comportamiento por sorpresa.
+
+        Súbelo hacia 1.0 en pasadas de refinado donde confías en el primer
+        perfil y quieres que la segunda carta muestree densamente la gama
+        real de la impresora en vez de rincones vacíos del espacio del
+        dispositivo.
+
+        Marca la casilla para activarlo.
+    "-m":
+      name: "Pasos internos del cubo"
+      tooltip_title: "Pasos internos del cubo (-m)"
+      tooltip_body: |-
+        Añade una rejilla regular de parches *dentro* del cubo de color de
+        la impresora — N pasos por eje (N×N×N para RGB, etc.).  Se añaden
+        *encima* de los parches elegidos con -f, -g, -s y los demás
+        contadores.
+
+        Ponlo a 0 (predeterminado) para omitirlo — casi siempre la
+        elección correcta. OFPS ya cubre el interior del cubo de forma más
+        eficiente.
+
+        Cuándo usarlo:
+          • Repetibilidad entre máquinas: una rejilla fija es igual cada
+            vez, independientemente de las colocaciones OFPS que elija
+            targen — útil para comparar perfiles entre ejecuciones.
+          • Cartas de diagnóstico con posiciones del cubo predecibles y
+            con nombre.
+
+        Valores típicos cuando se usa: 3 – 6 (pasos por eje). Los números
+        crecen rápido — 6 pasos en RGB son 216 parches, 8 son 512.
+
+        Marca la casilla para activarlo.
+    "-M":
+      name: "Pasos superficie cubo"
+      tooltip_title: "Pasos de superficie del cubo (-M)"
+      tooltip_body: |-
+        Añade una rejilla regular de parches sobre la *superficie* del
+        cubo de color de la impresora — N pasos por cara. Los parches van
+        al exterior (primarios, secundarios, borde de la gama), no al
+        interior.
+
+        Ponlo a 0 (predeterminado) para omitirlo.
+
+        Cuándo usarlo:
+          • Quieres clavar específicamente el límite de la gama y las
+            esquinas primarias/secundarias sin el sobrecoste interior
+            de -m.
+          • Comparar cómo distintas tintas/papeles desplazan la envolvente
+            de la gama — los parches de superficie son los más afectados.
+
+        Valores típicos cuando se usa: 4 – 8 pasos por cara.
+
+        Marca la casilla para activarlo.
+    "-b":
+      name: "Pasos retícula BCC"
+      tooltip_title: "Pasos de retícula BCC (-b)"
+      tooltip_body: |-
+        Añade parches sobre una retícula cúbica centrada en el cuerpo
+        (BCC) — más densa que una simple rejilla cúbica porque los puntos
+        están tanto en las esquinas como en los centros de los cubos. N es
+        el número de subdivisiones por eje.
+
+        Ponlo a 0 (predeterminado) para omitirlo — es una perilla de
+        nicho.
+
+        Cuándo usarlo:
+          • Quieres posiciones de parches regulares, alineadas a la
+            retícula, pero con mejor empaquetado que -m, sin llegar a
+            OFPS.
+          • Escenarios de investigación / repetibilidad donde la propia
+            estructura BCC es el objetivo.
+
+        Nota: esta es la forma de *contador de pasos* (añade a tu lista de
+        parches); para una carta cuya distribución *entera* sea BCC, usa
+        el selector "Distribución de parches" de arriba y elige allí la
+        opción cúbica centrada en el cuerpo.
+
+        Marca la casilla para activarlo.
+  printtarg:
+    "-i":
+      name: "Instrumento de medición"
+      tooltip_title: "Instrumento de medición (-i)"
+      tooltip_body: |-
+        Le dice al generador de cartas con qué espectrofotómetro leerás la
+        carta impresa. La rejilla de parches se construye en torno al
+        ancho de tira, tamaño de parche y espaciado de ese instrumento —
+        acertar aquí es esencial.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — lector de tiras de mano, la
+             elección más común. Lee una columna de parches de un
+             barrido.
+
+          •  i1Pro 3 Plus — versión del i1Pro 3 con mayor apertura. Lee
+             parches más grandes, así que caben muchos menos por hoja
+             (~5× menos que el i1Pro normal).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — dispositivo de
+             iniciación. Por sí solo lee un parche cada vez; con la guía
+             de medición opcional, dos a la vez (mira Double density).
+
+          •  SpectroScan — escáner plano XY. Un brazo motorizado lee cada
+             parche individualmente, metiendo muchos más colores por hoja
+             que cualquier lector de tiras.
+
+          •  i1iSis (vía i1Profiler) — lector automático de hojas.
+             ChromIQ no puede controlar directamente este dispositivo: en
+             su lugar guarda la lista de parches en el formato propio de
+             i1Profiler junto a la carta, y tú completas el flujo allí
+             (imprimir, escanear, crear el perfil). Las pestañas Imprimir
+             y Medir de ChromIQ no se usan con este dispositivo.
+
+        Elegir el instrumento equivocado produce una carta que tu
+        dispositivo no puede alinear ni leer con fiabilidad — al medir
+        verás "patches not found" o errores de alineación. En modo guiado
+        la maquetación se adapta automáticamente a esta elección.
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (plano)"
+        - "i1iSis (vía i1Profiler)"
+    "-h":
+      name: "Double density"
+      tooltip_title: "Double density (-h)"
+      tooltip_body: |-
+        Cambia la densidad de parches por tira de la maquetación de
+        printtarg. El significado exacto depende del instrumento activo:
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — duplica el
+             número de parches que caben en cada tira de medición.
+             REQUIERE el accesorio físico de guía de medición; sin él, el
+             dispositivo no puede alinearse al espaciado más apretado y
+             lee mal.
+
+          •  SpectroScan — cambia la maquetación de la carta de parches
+             rectangulares a hexagonales. Los hexágonos encajan más
+             apretados, así que ~14 % más parches por hoja. No requiere
+             hardware extra.
+
+        No tiene efecto en i1Pro ni i1Pro 3 Plus y normalmente se oculta
+        cuando uno de ellos está seleccionado.
+    "-p":
+      name: "Tamaño de papel"
+      tooltip_title: "Tamaño de papel (-p)"
+      tooltip_body: |-
+        Define las dimensiones de cada hoja de la carta impresa. La carta
+        siempre llena la página de borde a borde — un papel mayor
+        significa más parches y, por tanto, un perfil más detallado con
+        menos hojas.
+
+        Elige el mismo tamaño en el que vas a imprimir de verdad,
+        orientación incluida. Los lectores de tiras (familia i1Pro) leen
+        de arriba abajo, así que:
+
+          •  Vertical — tiras más largas, menos de ellas. La elección
+             estándar.
+
+          •  Horizontal (A4R, LetterR, 420×297…) — tiras más cortas, más
+             de ellas. Úsalo cuando tu impresora alimenta el papel
+             apaisado con más fiabilidad, o cuando una hoja vertical
+             dejaría la última tira demasiado cerca del borde del papel.
+
+        Elige "Personalizado" para introducir ancho y alto exactos en
+        milímetros cuando ningún tamaño con nombre coincide con tu papel.
+
+        Si cambias el tamaño de papel, el número de parches y de páginas
+        de la vista previa de comandos se actualiza automáticamente.
+      labels:
+        - "A2 vertical (420 × 594 mm)"
+        - "A2 horizontal (594 × 420 mm)"
+        - "A3+ vertical (329 × 483 mm)"
+        - "A3+ horizontal (483 × 329 mm)"
+        - "A3 vertical (297 × 420 mm)"
+        - "A3 horizontal (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 vertical (210 × 297 mm)"
+        - "A4 horizontal (297 × 210 mm)"
+        - "Carta vertical (8,5 × 11\")"
+        - "Carta horizontal (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Personalizado (introducir medidas)"
+    "-t":
+      name: "PPP de salida del TIFF"
+      tooltip_title: "Resolución del TIFF (-t)"
+      tooltip_body: |-
+        Resolución de salida de los archivos ráster TIFF de la carta.
+        300 PPP es lo recomendado para instrumentos de lectura de tiras y
+        da un buen equilibrio entre tamaño de archivo y nitidez de los
+        parches.
+        Usa 200 PPP en cartas muy grandes para reducir el tamaño.
+        Valores más altos (600+) rara vez hacen falta y producen archivos
+        grandes.
+    "-L":
+      name: "Suprimir borde de pinza izq."
+      tooltip_title: "Suprimir borde de pinza izquierdo (-L)"
+      tooltip_body: |-
+        Quita la franja para pinza del lado izquierdo, recuperando ~15 mm
+        de ancho de página para columnas de parches extra.
+        Actívalo salvo que uses una guía física de sujeción de página.
+        Todos los valores de la base de datos de parches asumen esta
+        opción ACTIVADA.
+    "-a":
+      name: "Escala de tamaño de parche"
+      tooltip_title: "Escala de tamaño de parche (-a)"
+      tooltip_body: |-
+        Escala uniformemente el tamaño de parches y separadores.
+        1.0 es el predeterminado (tamaño optimizado para el instrumento).
+        Súbelo a 1.5–2.0 en papeles rugosos / texturizados donde el
+        instrumento necesita un área de medición mayor.
+        Por debajo de 1.0 caben más parches por página, pero pueden darse
+        errores de lectura en algunos instrumentos.
+        Nota: un valor distinto del predeterminado activa un recálculo
+        con búsqueda binaria en tiempo real en vez de la consulta rápida
+        en tabla.
+    "-m":
+      name: "Margen (mm)"
+      tooltip_title: "Margen (-m / -M)"
+      tooltip_body: |-
+        Fija el margen en milímetros tanto para el área imprimible (-m)
+        como para las dimensiones del archivo TIFF (-M).  Ambos se
+        mantienen sincronizados.
+        6 mm coincide con los márgenes mínimos de la mayoría de
+        impresoras.  Redúcelo solo si la impresora soporta impresión sin
+        bordes.
+
+        Seleccionar un i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus sube el
+        valor automáticamente a 10 mm, para que la óptica del lector de
+        tiras no derive sobre el borde desnudo del papel (errores "not
+        enough patches read").  Volver a ColorMunki / SpectroScan lo
+        devuelve a 6 mm.  Un valor personalizado (distinto de 6 o 10) se
+        conserva en los cambios de instrumento.
+
+        Las tablas de parches-por-página solo existen para 6 y 10 mm —
+        otros valores activan un recálculo con búsqueda binaria en tiempo
+        real.
+    "-r":
+      name: "Mantener orden (sin aleatorizar)"
+      tooltip_title: "Sin aleatorización (-r)"
+      tooltip_body: |-
+        Por defecto printtarg aleatoriza las posiciones de los parches
+        para reducir los artefactos de deriva del instrumento.
+        Activa esta opción solo si pruebas una secuencia de parches
+        concreta o si tu instrumento exige parches ordenados.
+    "-b":
+      name: "Forzar separadores B/N"
+      tooltip_title: "Forzar separadores B/N (-b)"
+      tooltip_body: |-
+        Fuerza que los separadores entre tiras sean en blanco y negro en
+        vez de en color.  No afecta al número de parches ni a la
+        geometría de la maquetación.
+
+        No tiene efecto cuando "Sin separadores" (-n) está activado — en
+        ese caso la opción se desactiva y se excluye del comando printtarg.
+    "-P":
+      name: "No limitar longitud de tiras"
+      tooltip_title: "No limitar longitud de tiras (-P)"
+      tooltip_body: |-
+        Por defecto printtarg limita la longitud de las tiras para que
+        cada una quepa en el papel sin desbordarse.
+        Esta opción quita el límite, permitiendo tiras muy largas.
+        Útil para papel en rollo estrecho o cuando quieres el menor
+        número posible de tiras para un número dado de parches.
+        Atención: con muchos parches las tiras pueden extenderse más allá
+        del borde del papel — revisa el TIFF generado antes de imprimir.
+    "-N":
+      name: "TIFF N-canal (>4 tintas)"
+      tooltip_title: "TIFF N-canal (-N)"
+      tooltip_body: |-
+        Para impresoras con más de 4 canales de tinta (p. ej. CMYK más
+        tintas planas adicionales): el TIFF estándar soporta como máximo
+        4 canales.  Esta opción hace que printtarg codifique los canales
+        extra en las ranuras del canal alfa del TIFF, conservando todos
+        los valores de tinta en un único archivo.
+
+        Actívala solo si el controlador de la impresora o el RIP espera
+        un TIFF multicanal.  Para el perfilado RGB o CMYK normal no la
+        necesitas.
+    "-K":
+      name: "Aplicar archivo .cal"
+      tooltip_title: "Aplicar calibración a los parches (-K)"
+      tooltip_body: |-
+        Úsalo cuando la impresora no tiene ningún sistema de calibración
+        integrado — es decir, el controlador o el RIP no puede aplicar
+        por sí mismo una curva de calibración.
+
+        Primero ejecuta printcal de Argyll para producir un archivo .cal
+        que describe cómo linealizar la impresora.  Luego lo pasas aquí:
+        printtarg recalcula cada valor de color de los parches a través
+        de las curvas de calibración antes de generar la carta, de modo
+        que el objetivo impreso ya refleja el comportamiento calibrado
+        del dispositivo.  El .cal también se incrusta en el archivo .ti2
+        para que colprof pueda consultarlo al crear el perfil ICC.
+
+        Uso típico: inyecciones de escritorio sin linealización
+        integrada, controladas directamente con un TIFF sin RIP
+        intermedio.
+
+        Se excluye mutuamente con "Incrustar calibración" (-I) — solo una
+        opción de calibración puede estar activa a la vez.
+    "-I":
+      name: "Solo incrustar calibración"
+      tooltip_title: "Incrustar calibración sin aplicarla (-I)"
+      tooltip_body: |-
+        Úsalo cuando la impresora o el RIP ya aplica una curva de
+        calibración de forma nativa — por ejemplo un RIP de inyección de
+        producción con su propia LUT de linealización, o una impresora
+        con calibración de densidad integrada.
+
+        En ese caso no quieres que printtarg recalcule los valores de los
+        parches (lo hace la impresora), pero sí que colprof sepa de la
+        calibración.  -I incrusta el archivo .cal en el .ti2 de salida
+        solo como metadatos, dejando todos los valores intactos.
+
+        Uso típico: RIP de inyección profesionales (p. ej. EFI Fiery,
+        Wasatch, ColorBurst) o impresoras con linealización integrada
+        activa durante la impresión de perfilado.
+
+        Se excluye mutuamente con "Aplicar calibración" (-K) — solo una
+        opción de calibración puede estar activa a la vez.
+    "-C":
+      name: "Desactivar compresión TIFF"
+      tooltip_title: "Desactivar compresión TIFF (-C)"
+      tooltip_body: |-
+        Produce archivos TIFF sin comprimir en vez de la compresión LZW
+        predeterminada.  Los archivos sin comprimir son más grandes pero
+        universalmente compatibles con todos los RIP y controladores.
+        Actívalo si tu flujo de impresión rechaza o daña los TIFF
+        comprimidos.
+    "-D":
+      name: "Tramado de 16 a 8 bits"
+      tooltip_title: "Tramado de salida a 8 bits (-D)"
+      tooltip_body: |-
+        Al generar un TIFF de 8 bits, usa tramado por difusión de error
+        para reducir desde la precisión interna de 16 bits.  Esto reduce
+        el banding en degradados suaves que la cuantización causaría de
+        otro modo.
+        Solo tiene efecto cuando la salida TIFF de 8 bits está
+        seleccionada.
+    "-U":
+      name: "Suprimir cabecera de color CUPS"
+      tooltip_title: "Suprimir cabecera CMM de CUPS (-U)"
+      tooltip_body: |-
+        Quita el comentario 'cupsJobTicket: cups-disable-cmm' de los
+        archivos de salida PostScript y EPS.  Algunas versiones de CUPS
+        reaccionan de forma distinta a este comentario.
+        La opción solo afecta a la salida PS/EPS y no tiene efecto en los
+        archivos TIFF.  Actívala solo si durante la impresión se aplica
+        una gestión de color inesperada.
+    "-R":
+      name: "Semilla de aleatorización"
+      tooltip_title: "Semilla de aleatorización (-R)"
+      tooltip_body: |-
+        Fija la semilla inicial del algoritmo de aleatorización de los
+        parches.  La misma semilla con el mismo número de parches produce
+        siempre la misma maquetación — las cartas se vuelven totalmente
+        reproducibles.
+        Útil para investigación o cuando necesitas regenerar una carta
+        idéntica más adelante.
+        No tiene efecto cuando "Mantener orden" (-r) está activado.
+    "-Q":
+      name: "Bits de cuantización"
+      tooltip_title: "Cuantizar valores de parche (-Q)"
+      tooltip_body: |-
+        Redondea todos los valores de color de los parches a la
+        profundidad de bits indicada antes de generar la carta.  Por
+        ejemplo, -Q 8 redondea todos los valores a precisión de 8 bits
+        (256 niveles).
+        Úsalo cuando tu cadena de impresión introduce banding a una
+        profundidad de bits concreta y quieres probar exactamente a ese
+        nivel de precisión.
+    "-A":
+      name: "Escalar solo separadores"
+      tooltip_title: "Escalar solo separadores (-A)"
+      tooltip_body: |-
+        Aplica un factor de escala adicional solo a las barras
+        separadoras, sin cambiar el tamaño de parche fijado con -a.
+        Valores por encima de 1.0 ensanchan los separadores; por debajo
+        de 1.0 los estrechan.  Útil para instrumentos que necesitan más
+        separación entre tiras, o para recuperar espacio estrechando los
+        separadores mientras el tamaño de parche se mantiene constante.
+
+        No tiene efecto cuando "Sin separadores" (-n) está activado — en
+        ese caso la opción se desactiva y se excluye del comando printtarg.
+    "-n":
+      name: "Sin separadores"
+      tooltip_title: "Sin separadores (-n)"
+      tooltip_body: |-
+        Quita todas las barras separadoras entre parches y tiras.  Los
+        separadores normalmente ayudan al instrumento a reconocer los
+        límites y la dirección de las tiras.
+        Desactívalos solo si tu flujo de medición no depende
+        explícitamente de ellos (p. ej. algunas configuraciones con
+        escáner plano).
+
+        Cuando está activado, "Forzar separadores B/N" (-b) y "Escalar
+        solo separadores" (-A) se desactivan automáticamente — ambos solo
+        afectan a los separadores.
+    "-c":
+      name: "Forzar separadores de color"
+      tooltip_title: "Forzar separadores de color (-c)"
+      tooltip_body: |-
+        Fuerza que las zonas separadoras entre parches se dibujen en
+        color en vez de con el predeterminado (que según el perfil del
+        instrumento puede ser blanco y negro).  Puede mejorar el
+        reconocimiento de tiras en algunas inyecciones de color donde los
+        separadores negros tienen poco contraste con los parches oscuros.
+  chartread:
+    "-B":
+      name: "Lectura bidireccional off"
+      tooltip_title: "Desactivar lectura bidireccional (-B)"
+      tooltip_body: |-
+        Impide que chartread detecte automáticamente si escaneaste una
+        tira hacia delante o hacia atrás. ChromIQ lo deja desactivado por
+        defecto, para que el instrumento pueda leer las tiras en ambas
+        direcciones.
+
+        Actívalo solo si el instrumento da falsos errores de dirección de
+        tira durante la medición.
+    "-b":
+      name: "Forzar lectura bidireccional"
+      tooltip_title: "Forzar lectura bidireccional (-b)"
+      tooltip_body: |-
+        Obliga a chartread a aceptar una tira escaneada en cualquier
+        dirección.
+
+        Normalmente chartread solo detecta la dirección automáticamente
+        en cartas aleatorizadas; en una carta de orden fijo lee en una
+        sola dirección y rechaza las tiras escaneadas al revés. Actívalo
+        para forzar la detección de todos modos — útil para la familia
+        i1 Pro, que lee con gusto en ambos sentidos. Es lo contrario de
+        -B; solo uno puede aplicar.
+    "-S":
+      name: "Suprimir advertencias"
+      tooltip_title: "Suprimir advertencias (-S)"
+      tooltip_body: |-
+        Suprime las ventanas de advertencia no fatales de chartread.
+        Recomendado para sesiones de medición desatendidas o en serie.
+        Los errores que impedirían generar el perfil se siguen mostrando.
+    "-N":
+      name: "Sin calibración inicial"
+      tooltip_title: "Desactivar calibración inicial (-N)"
+      tooltip_body: |-
+        Omite la calibración automática sobre la cerámica blanca al
+        arrancar. Úsalo solo si ya calibraste el instrumento en esta
+        sesión y quieres medir más cartas sin recalibrar.
+    "-p":
+      name: "Modo parche a parche"
+      tooltip_title: "Modo parche a parche (-p)"
+      tooltip_body: |-
+        Cambia de la lectura de tiras a la medición de parches
+        individuales. Útil para mediciones puntuales a mano o si la
+        lectura de tiras falla con un papel concreto.  Claramente más
+        lento en cartas grandes.
+    "-H":
+      name: "Modo espectral de alta resol."
+      tooltip_title: "Espectro de alta resolución (-H)"
+      tooltip_body: |-
+        Activa el muestreo espectral de alta resolución en los
+        instrumentos que lo soportan (p. ej. i1Pro 2/3).  Produce valores
+        Lab más precisos pero aumenta ligeramente el tiempo de medición.
+    "-T":
+      name: "Tolerancia de coherencia"
+      tooltip_title: "Multiplicador de tolerancia de parche (-T)"
+      tooltip_body: |-
+        Un multiplicador sobre el umbral de coherencia de parches
+        integrado en chartread — no un valor delta-E. chartread relee
+        cada parche y descarta las tiras cuyas lecturas difieren más que
+        el umbral × este número.
+
+        Más bajo = más estricto. Un ajuste estricto detecta pronto los
+        problemas reales: inyectores obstruidos, tinta escasa, rodillos
+        sucios, tóner inestable. En una combinación sana de impresora +
+        espectrofotómetro el predeterminado 0.7 deja buen margen; los
+        usuarios expertos de printerknowledge.com usan 0.4 con i1 Pro
+        2 / 3.
+
+        Súbelo a 0.8–1.5 si obtienes falsos errores "inconsistent patch"
+        en papeles texturizados, mates o de bellas artes — ahí la propia
+        superficie aporta variación real. Valores por encima de 2
+        enmascaran sobre todo problemas reales; si los necesitas, arregla
+        antes la impresora.
+    "-l":
+      name: "Guardar valores D50 L*a*b*"
+      tooltip_title: "Guardar L*a*b* en vez de XYZ (-l)"
+      tooltip_body: |-
+        Guarda los datos de medición como valores L*a*b* D50 en vez de
+        XYZ. La mayoría de los flujos usa XYZ (predeterminado).  Actívalo
+        solo si las herramientas posteriores requieren específicamente
+        entrada L*a*b*.
+    "-X":
+      name: "Corrección de colorímetro"
+      tooltip_title: "Matriz de corrección de colorímetro (-X)"
+      tooltip_body: |-
+        Aplica una matriz de corrección de colorímetro (.ccmx) o un
+        conjunto espectral de calibración (.ccss) para mejorar la
+        precisión de un colorímetro.
+        Solo es relevante para colorímetros (no espectrofotómetros).
+        Consigue el archivo adecuado del fabricante del instrumento o
+        créalo con las herramientas ccss/ccmx de ArgyllCMS.
+  colprof:
+    "-D":
+      name: "Descripción del perfil"
+      tooltip_title: "Descripción del perfil (-D)"
+      tooltip_body: |-
+        El nombre incrustado en el perfil ICC — se muestra en los menús
+        de gestión de color de aplicaciones como Photoshop, Lightroom y
+        Vista Previa.
+
+        Usa un formato consistente que identifique impresora, papel, tipo
+        de tinta y fecha, para que el perfil correcto sea fácil de
+        encontrar:
+
+          Impresora · Papel · Tipo de tinta · Fecha
+          p. ej. "Epson P900 · Canson Baryta · Chromatic · 2026-04"
+
+        El archivo de salida toma el nombre de tu archivo .ti3 — mantén
+        ese nombre coherente con la descripción usando guiones bajos en
+        vez de espacios:
+          p. ej. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+    "-a":
+      name: "Algoritmo del perfil"
+      tooltip_title: "Algoritmo del perfil (-a)"
+      tooltip_body: |-
+        Selecciona el algoritmo de transformación de color:
+        • Lab cLUT (-al): la mejor precisión para perfiles de impresora.
+          Usa una tabla de consulta 3D completa en el espacio L*a*b*.
+          Recomendado.
+        • XYZ cLUT (-ax): similar a Lab pero en el espacio XYZ.
+          A veces produce degradados neutros más suaves.
+        • Matriz/gamma (-ag, -as): modelo más simple — menos preciso para
+          el comportamiento complejo de las impresoras, pero más rápido
+          de calcular.
+        Para los primeros perfiles de impresoras RGB usa siempre Lab
+        cLUT (-al).
+      labels:
+        - "l — Lab cLUT (recomendado para impresoras RGB)"
+        - "x — XYZ cLUT"
+        - "X — XYZ cLUT (absoluto)"
+        - "g — gamma + matriz (rápido, menos preciso)"
+        - "G — gamma + matriz (forzado)"
+        - "s — gamma única + matriz"
+        - "S — gamma única + matriz (forzado)"
+        - "m — solo matriz"
+        - "M — solo matriz (forzado)"
+    "-q":
+      name: "Calidad del perfil"
+      tooltip_title: "Calidad del perfil (-q)"
+      tooltip_body: |-
+        Controla la resolución de la rejilla cLUT y las iteraciones de
+        suavizado:
+        • Baja: rejilla 17³ — prueba rápida, no para producción
+        • Media: rejilla 33³ — buen equilibrio, predeterminado recomendado
+        • Alta: rejilla 45³ — calidad de producción
+        • Ultra: rejilla 65³ — máxima precisión, muy lenta
+        La calidad media basta para la mayoría del trabajo de inyección.
+        Usa Alta para bellas artes o pruebas de contrato.
+      labels:
+        - "l — baja (rápida, ~30 s)"
+        - "m — media (recomendada, ~2 min)"
+        - "h — alta (~10 min)"
+        - "u — ultra (~30+ min)"
+    "-b":
+      name: "Calidad de tablas B2A"
+      tooltip_title: "Calidad de tablas B2A (-b)"
+      tooltip_body: |-
+        Controla de forma independiente la calidad de las tablas B2A
+        (dispositivo→PCS) usadas para transformaciones de entrada (p. ej.
+        pruebas en pantalla).
+        Déjalo vacío para igualar el ajuste principal -q.
+        Usa "n" para omitir las tablas B2A y reducir el tamaño del perfil
+        (los perfiles de solo salida no necesitan B2A).
+      labels:
+        - "Como la calidad del perfil (predeterminado)"
+        - "l — baja"
+        - "m — media"
+        - "h — alta"
+        - "u — ultra"
+        - "n — ninguna (omitir tablas B2A)"
+    "-r":
+      name: "Suavizado/ruido (% ΔE)"
+      tooltip_title: "Ruido medio del dispositivo (-r)"
+      tooltip_body: |-
+        Ruido medio estimado de la medición o del dispositivo como
+        porcentaje de ΔE.  Valores más altos aumentan el suavizado del
+        perfil, reduciendo el efecto de los parches anómalos.
+        • 0,5 %: mediciones limpias, impresora bien mantenida
+        • 1,0–2,0 %: mediciones ruidosas o papeles texturizados
+        • 3,0–5,0 %: muy ruidoso; aumenta notablemente el suavizado
+    "-s":
+      name: "Origen de gama (percept.)"
+      tooltip_title: "Origen de mapeo de gama perceptual (-s)"
+      tooltip_body: |-
+        Perfil ICC de origen usado para calcular las tablas de mapeo de
+        gama del propósito de render perceptual (A2B / B2A perceptual).
+        Sin él, el propósito perceptual usa directamente los datos
+        colorimétricos (sin compresión de gama).
+        Normalmente se fija a un espacio de trabajo RGB estándar como
+        AdobeRGB o ProPhoto RGB.
+        Se aceptan tanto archivos .icc como .icm — ICM es simplemente el
+        nombre de Microsoft para el formato de perfil ICC; son idénticos.
+    "-S":
+      name: "Origen de gama (P+S)"
+      tooltip_title: "Origen perceptual + saturación (-S)"
+      tooltip_body: |-
+        Como -s, pero aplica el mapeo de gama tanto al propósito de
+        render perceptual como al de saturación.
+    "-A":
+      name: "Fabricante"
+      tooltip_title: "Texto de fabricante (-A)"
+      tooltip_body: |-
+        Texto de fabricante incrustado en la cabecera del perfil ICC.
+        Opcional — se usa para identificación en los selectores de
+        perfiles.
+    "-M":
+      name: "Modelo"
+      tooltip_title: "Texto de modelo (-M)"
+      tooltip_body: |-
+        Texto de modelo incrustado en la cabecera del perfil ICC.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Texto de copyright (-C)"
+      tooltip_body: |-
+        Aviso de copyright incrustado en el perfil ICC.
+    "-ni":
+      name: "Sin curvas de entrada"
+      tooltip_title: "Sin curvas de entrada (-ni)"
+      tooltip_body: |-
+        Desactiva las curvas tonales 1D de entrada que preacondicionan
+        los valores del dispositivo antes de la cLUT 3D.  Estas curvas
+        normalmente mejoran la precisión del perfil.  Desactívalas solo
+        con fines de diagnóstico.
+    "-no":
+      name: "Sin curvas de salida"
+      tooltip_title: "Sin curvas de salida (-no)"
+      tooltip_body: |-
+        Desactiva las curvas de salida 1D aplicadas después de la cLUT
+        3D.  Desactívalas solo con fines de diagnóstico.
+    "-V":
+      name: "Énfasis rejilla sombras"
+      tooltip_title: "Énfasis de rejilla en zonas oscuras (-V)"
+      tooltip_body: |-
+        Añade puntos extra a la rejilla cLUT en las zonas oscuras
+        (sombras). 1.0 = rejilla uniforme (predeterminado).  Súbelo a
+        1.5–2.0 para impresoras con comportamiento complejo en sombras o
+        negros empastados.
+  profcheck:
+    "-v":
+      name: "Nivel de detalle"
+      tooltip_title: "Nivel de detalle (-v)"
+      tooltip_body: |-
+        El modo por parche devuelve el valor ΔE individual de cada
+        parche — necesario para el análisis a nivel de tira y el refinado
+        guiado.  El modo resumen muestra solo los errores medio y máximo.
+      labels:
+        - "2 — por parche (necesario para análisis de tiras)"
+        - "1 — solo resumen"
+    "-I":
+      name: "Propósito de render"
+      tooltip_title: "Propósito de render (-I)"
+      tooltip_body: |-
+        El colorimétrico absoluto verifica la precisión cromática
+        absoluta del perfil, punto blanco incluido — el estándar para el
+        perfilado de impresoras.
+        El colorimétrico relativo normaliza al punto blanco del soporte.
+      labels:
+        - "a — colorimétrico absoluto (predeterminado)"
+        - "r — colorimétrico relativo"
+    "-s":
+      name: "ΔE peores primero"
+      tooltip_title: "Ordenar por ΔE (-s)"
+      tooltip_body: |-
+        Ordena la salida de profcheck para que los parches con peores
+        resultados aparezcan primero.  Útil para localizar rápido las
+        zonas problemáticas.
+        Solo efectivo cuando el nivel de detalle es por parche.
+    "-i":
+      name: "Iluminante"
+      tooltip_title: "Iluminante (-i)"
+      tooltip_body: |-
+        Selecciona la fuente de luz usada al convertir las mediciones
+        espectrales en valores de color.  Solo relevante si tu .ti3
+        contiene datos espectrales.  D50 es el estándar para el perfilado
+        de impresión.
+      labels:
+        - "D50 (predeterminado)"
+        - "D50M2 (D50 + filtro UV)"
+        - "D65 (luz diurna 6500 K)"
+        - "A (tungsteno / incandescencia)"
+        - "C (simulación de luz diurna, anticuado)"
+        - "F5 (fluorescente CWF)"
+        - "F8 (fluorescente simulación D50)"
+        - "F10 (fluorescente Ultralume)"
+    "-o":
+      name: "Observador CIE"
+      tooltip_title: "Observador CIE (-o)"
+      tooltip_body: |-
+        Define el modelo de observador estándar para los cálculos
+        colorimétricos.  El observador 1931 2° es el estándar ICC para el
+        perfilado de impresión.  Deja el predeterminado salvo que se pida
+        expresamente otro.
+      labels:
+        - "1931 2° (predeterminado)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+    "-P":
+      name: "Podar a ΔE ≤"
+      tooltip_title: "Limitar .ti3 a ΔE ≤ (-P)"
+      tooltip_body: |-
+        Crea una copia reducida de tu archivo .ti3 que contiene solo los
+        parches cuyo error de color está en o por debajo del umbral
+        fijado.
+        Útil si parches mal medidos lastran el perfil.
+        Activa la opción y fija el valor máximo aceptable de ΔE.
+    "-w":
+      name: "Crear visualización 3D X3DOM"
+      tooltip_title: "Visualización X3DOM (-w)"
+      tooltip_body: |-
+        Genera una visualización 3D HTML interactiva de los errores de
+        color de tu perfil.  Abre el archivo .x3d.html resultante en un
+        navegador moderno para explorar qué partes de la gama tienen los
+        errores mayores.
+  printcal:
+    "-v":
+      name: "Nivel de detalle"
+      tooltip_title: "Nivel de detalle (-v)"
+      tooltip_body: |-
+        Controla cuánta salida escribe printcal durante la calibración.
+          0 = silencioso
+          1 = progreso básico (predeterminado)
+          2 = información detallada por canal
+          3 = salida de depuración
+    "-s":
+      name: "Suavizado de curvas"
+      tooltip_title: "Suavizado de curvas (-s)"
+      tooltip_body: |-
+        Controla cuánto suavizado extra se aplica a las curvas de
+        calibración.  Valores más altos producen curvas más suaves pero
+        menos precisas.
+
+        Predeterminado: 1.0 — adecuado para la mayoría de impresoras.
+        Súbelo (p. ej. 2.0–5.0) si la respuesta tonal de la impresora
+        parece irregular o las curvas se ven dentadas.
+    "-z":
+      name: "Resolución de curvas"
+      tooltip_title: "Resolución de curvas (-z)"
+      tooltip_body: |-
+        Número de pasos en las tablas de curvas de calibración de salida.
+        Valores más altos dan una resolución más fina pero archivos .cal
+        más grandes.
+        El predeterminado (256) va bien para prácticamente todas las
+        impresoras.
+    "-A":
+      name: "Fabricante"
+      tooltip_title: "Fabricante (-A)"
+      tooltip_body: |-
+        Fija la descripción de fabricante incrustada en el archivo .cal.
+        Puramente informativa — no afecta a las curvas de calibración.
+    "-M":
+      name: "Modelo"
+      tooltip_title: "Modelo (-M)"
+      tooltip_body: |-
+        Fija la descripción del modelo de impresora incrustada en el
+        archivo .cal.
+        Puramente informativa — no afecta a las curvas de calibración.
+    "-D":
+      name: "Descripción"
+      tooltip_title: "Descripción (-D)"
+      tooltip_body: |-
+        Fija una descripción legible incrustada en el archivo .cal.
+        Puramente informativa — no afecta a las curvas de calibración.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyright (-C)"
+      tooltip_body: |-
+        Fija el texto de copyright incrustado en el archivo .cal.
+        Puramente informativo — no afecta a las curvas de calibración.
+  applycal:
+    "-v":
+      name: "Detallado"
+      tooltip_title: "Detallado (-v)"
+      tooltip_body: |-
+        Muestra información detallada sobre la calibración aplicada,
+        incluidas estadísticas de las curvas por canal.

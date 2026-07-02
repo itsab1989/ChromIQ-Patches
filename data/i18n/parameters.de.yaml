@@ -1,0 +1,1233 @@
+parameters:
+
+  targen:
+
+    "-d":
+      name: "Gerätetyp"
+      labels:
+        - "Druck Grau"
+        - "Video Grau"
+        - "Druck RGB (empfohlen)"
+        - "Video RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + Light CM"
+        - "CMYK + Light CMK"
+        - "CMYK + Rot + Blau"
+        - "CMYK + Orange + Grün"
+        - "CMYK + Rot + Grün + Blau"
+        - "CMYK + Orange + Grün + Violett"
+        - "CMYK + Orange + Grün + Blau"
+        - "CMYK + Light CMK + Light Light K"
+        - "CMYK + Orange + Grün + Light CM"
+        - "CMYK + Light CM + Medium CM"
+      tooltip_title: "Gerätetyp (-d)"
+      tooltip_body: |
+        Legt die Farbmittel-Kombination deines Ausgabegeräts fest.
+
+        Druck-Farbräume sind subtraktiv: Gerätewert 0 = Weiß (keine Tinte),
+        Maximum = Schwarz (volle Tinte).  Video-/Display-Farbräume sind
+        additiv: Gerätewert 0 = Schwarz, Maximum = Weiß.
+
+        Übliche Auswahl:
+          • Druck Grau (-d 0)  — einkanaliger Graustufen-Drucker
+          • Video Grau (-d 1)  — einkanaliges Display/Monitor
+          • Druck RGB (-d 2)   — üblicher RGB-Tintenstrahler (Standard, empfohlen)
+          • Video RGB (-d 3)   — RGB-Display/Monitor
+          • CMYK (-d 4)        — Vierfarb-Tintenstrahler oder Offsetdruck
+          • CMY (-d 5)         — dreifarbig, ohne separaten Schwarzkanal
+
+        Die Optionen 6–15 sind für Spezial-Mehrkanal-Tintenstrahler mit
+        zusätzlichen Tinten (Light Cyan/Magenta, Orange, Grün, Violett usw.).
+        Mit -D (Experte) lässt sich der Farbmittelsatz bei Bedarf feinjustieren.
+
+    "-D":
+      name: "Farbmittel ändern"
+      labels:
+        - "Additiv"
+        - "Cyan"
+        - "Magenta"
+        - "Gelb"
+        - "Schwarz"
+        - "Orange"
+        - "Rot"
+        - "Grün"
+        - "Blau"
+        - "Violett"
+        - "Weiß"
+        - "Light Cyan"
+        - "Light Magenta"
+        - "Light Gelb"
+        - "Light Schwarz"
+        - "Medium Cyan"
+        - "Medium Magenta"
+        - "Medium Gelb"
+        - "Medium Schwarz"
+        - "Light Light Schwarz"
+      tooltip_title: "Farbmittel hinzufügen/entfernen (-D)"
+      tooltip_body: |
+        Verändert den durch den Gerätetyp (-d) festgelegten Farbmittelsatz,
+        indem ein einzelnes Farbmittel hinzugefügt oder entfernt wird.  Ist
+        das gewählte Farbmittel bereits im Satz, wird es entfernt; fehlt es,
+        wird es hinzugefügt.
+
+        Typische Verwendungen:
+          • Orange (-D 5) zu Standard-CMYK für erweiterten Farbumfang
+          • Light Cyan (-D 11) / Light Magenta (-D 12) zu CMYK
+            für weichere Verläufe in den Lichtern
+
+        Aktiviere mehrere Plätze, um weitere Farbmittel zu stapeln
+        (jeder aktivierte Platz blendet den nächsten ein, bis zu 11
+        Änderungen insgesamt).
+
+        Für die Standard-Gerätetypen 0–5 deaktiviert lassen.
+
+    "-f":
+      name: "Gesamtanzahl Messfelder"
+      tooltip_title: "Gesamtanzahl Messfelder (-f)"
+      tooltip_body: |
+        Legt die Gesamtzahl der Farb-Messfelder fest.  Mehr Felder = höhere
+        Profilgenauigkeit, aber längere Druck- und Messzeit.
+        Typische Bereiche für RGB-Tintenstrahler:
+          • Schnelltest: 400–600
+          • Standard:    800–1200
+          • Hohe Qualität: 1500–2000
+          • Sehr hoch:   2500–3000
+
+        Auto (neben dem Zahlenfeld): Wenn angekreuzt, wird die Feldanzahl
+        live aus Papier, Messgerät, Double-Density, linkem Rand, Feldgröße,
+        Rand und dem Seiten-Feld im printtarg-Bereich berechnet — als der
+        größte Wert, der genau diese Blattzahl ohne Leerraum füllt.  Das
+        Zahlenfeld ist ausgegraut, solange Auto an ist, und zeigt die
+        aktuelle Schätzung.  Bei eigenen Layouts (abweichende Feldgröße
+        oder Rand) führt Auto eine kurze binäre Suche gegen targen aus —
+        der Wert kann daher eine Sekunde brauchen.
+
+        Im geführten Modus wird dieser Wert automatisch aus der
+        Felder-pro-Seite-Datenbank × gewählter Seitenzahl berechnet.
+        Im geführten Modus 0 setzen, um die automatische Berechnung zu nutzen.
+
+    "-e":
+      name: "Weiß-Messfelder"
+      tooltip_title: "Weiß-Messfelder (-e)"
+      tooltip_body: |
+        Wie viele reine Papierweiß-Felder dem Chart hinzugefügt werden. Das
+        Messgerät misst sie, um genau zu lernen, wie weiß dein Papier ist —
+        das verankert das helle Ende des Profils. 4 ist ein guter Standard;
+        sehr glänzende Papiere profitieren von ein paar mehr.
+
+        Auto (Kästchen):
+        Schalte „Auto“ ein und ChromIQ wählt die Zahl für dich — anhand
+        der Gesamtgröße des Charts. Ein kleines einseitiges Chart bekommt
+        wenige Weißfelder, ein großes mehrseitiges mehr, ohne dass du
+        darüber nachdenken musst.
+
+        So wird die Auto-Zahl bestimmt:
+          • Ein Chart mit etwa 560 Feldern bekommt 4 Weißfelder.
+          • Verdoppelt sich das Chart ungefähr, wächst die Zahl um 50 %
+            (4 → 6 → 8 …).
+          • Sie steigt nie über 8 (mehr verschwendet nur Platz)
+            und fällt nie unter 2.
+
+        Solange Auto an ist, ist das Feld ausgegraut und zeigt „Auto“.
+        Schalte es jederzeit aus, um selbst eine Zahl einzutragen.
+
+    "-B":
+      name: "Schwarz-Messfelder"
+      tooltip_title: "Schwarz-Messfelder (-B)"
+      tooltip_body: |
+        Wie viele Felder mit maximalem Tintenauftrag (Geräteschwarz) dem
+        Chart hinzugefügt werden. Das Messgerät misst sie, um den dunkelsten
+        Ton zu lernen, den dein Drucker erzeugen kann — das verankert das
+        Schattenende des Profils. 4 ist für RGB-Drucker ein guter Standard.
+
+        Auto (Kästchen):
+        Schalte „Auto“ ein und ChromIQ wählt die Zahl für dich — anhand
+        der Gesamtgröße des Charts. Ein kleines Chart bekommt wenige
+        Schwarzfelder, ein großes mehr.
+
+        So wird die Auto-Zahl bestimmt:
+          • Ein Chart mit etwa 560 Feldern bekommt 4 Schwarzfelder.
+          • Verdoppelt sich das Chart ungefähr, wächst die Zahl um 50 %
+            (4 → 6 → 8 …).
+          • Sie steigt nie über 8 und fällt nie unter 2.
+
+        Solange Auto an ist, ist das Feld ausgegraut und zeigt „Auto“.
+        Schalte es jederzeit aus, um selbst eine Zahl einzutragen.
+
+    "-g":
+      name: "Graustufen-Schritte"
+      tooltip_title: "Graustufen-Schritte (-g)"
+      tooltip_body: |
+        Zusätzliche neutrale Graufelder, gleichmäßig von Weiß bis Schwarz
+        verteilt. Sie helfen dem Profil, Grautöne sauber und ohne Farbstich
+        wiederzugeben — wichtig für Schwarzweiß-Fotos und neutrale Töne.
+        Faustregel bei Handeingabe: 0 für ein schnelles Profil,
+        50–100 für ein normales, 128+ für hohe Qualität.
+
+        Auto (Kästchen):
+        Schalte „Auto“ ein und ChromIQ wählt die Zahl für dich —
+        skaliert mit der Gesamtgröße des Charts. Ein größeres Chart bekommt
+        eine längere, feinere Graureihe.
+
+        So wird die Auto-Zahl bestimmt:
+          • Ein Chart mit etwa 560 Feldern bekommt 32 Graustufen.
+          • Verdoppelt sich das Chart ungefähr, verdoppeln sich auch die
+            Stufen (32 → 64 → 128).
+          • Sie steigen nie über 128 und fallen nie unter 8.
+
+        Solange Auto an ist, ist das Feld ausgegraut und zeigt „Auto“.
+        Schalte es jederzeit aus, um selbst eine Zahl einzutragen.
+
+        (Der geführte Modus setzt diesen Wert immer automatisch — nach
+        derselben Idee.)
+
+    "-G":
+      name: "Gründliche Optimierung"
+      tooltip_title: "Gründliche Optimierung (-G)"
+      tooltip_body: |
+        Lässt targen zusätzliche Zeit darauf verwenden, die Messfelder so
+        gleichmäßig wie möglich über den Farbumfang deines Druckers zu
+        verteilen. Die Art des Feldsatzes bleibt gleich (OFPS — Optimised
+        Farthest Point Sampling, die Standardverteilung); dieser Schalter
+        wechselt nur von „schnell“ auf „gut“.
+
+        Empfohlen EIN für jedes Chart, das du wirklich druckst und misst:
+        Ein paar Sekunden mehr Rechenzeit bei der Chart-Erzeugung bringen
+        ein messbar besseres Profil.
+
+        Nur AUS schalten, wenn du schnell an Chart-Einstellungen feilst
+        und die absolute Feldqualität gerade egal ist (z. B. Drucklayouts
+        testen, bevor das finale Chart entsteht).
+
+        Hat keine Wirkung, wenn die „Messfeld-Verteilung“ auf etwas anderem
+        als OFPS steht — die Alternativen (zufällig, quasi-zufällig,
+        kubisch-raumzentriert, …) ignorieren diesen Schalter.
+
+    "-s":
+      name: "Einzelkanal-Stufen"
+      tooltip_title: "Einzelkanal-Stufen (-s)"
+      tooltip_body: |
+        Fügt zusätzliche Einzelkanal-Rampenfelder hinzu (R, G, B getrennt).
+        Nützlich, um das Verhalten einzelner Tinten zu charakterisieren.
+        Typisch: 0 für schnell, 20–50 für Standard, 50–100 für hoch.
+
+    "-c":
+      name: "Vorkonditionierungs-Profil"
+      tooltip_title: "Vorkonditionierungs-Profil (-c)"
+      tooltip_body: |
+        Ein vorhandenes ICC-Profil für diese Drucker-Papier-Kombination,
+        mit dem die Messfeld-Verteilung im perzeptiven Raum vorkonditioniert
+        wird.  Ein früheres Profil erzeugt hier Felder, die gleichmäßiger
+        im Ausgabe-Gamut verteilt sind — für höhere Genauigkeit in einem
+        zweiten Profilierungsdurchlauf.  Beim allerersten Profil leer lassen.
+
+    "-C":
+      name: "Kalibrier-Override"
+      tooltip_title: "Kalibrierungs-Übersteuerung (-C)"
+      tooltip_body: |
+        Optionale .cal-Datei, deren Kalibrierungskurven beim Schätzen des
+        Tintenlimits für die Feldgenerierung angewendet werden.  Übersteuert
+        eine im ICC-Ziel (.ti3 eines früheren Durchlaufs) eingebettete .cal.
+
+        Verwende dies, wenn du eine validierte Geräte-Kalibrierung
+        hast (z. B. aus printcal/applycal) und targen sie beim Berechnen
+        der nötigen Feldanzahl im Schattenbereich berücksichtigen soll.
+
+        Tippe „none“ in das Feld (ohne Anführungszeichen), um die
+        Nutzung jeder .cal ausdrücklich zu verhindern — auch einer in der
+        .ti3 eingebetteten.
+
+        Für die meisten Workflows leer lassen — nur nötig, wenn du eine
+        separate Kalibrierungskurve unabhängig vom Profil verwaltest.
+    "-n":
+      name: "Neutralachsen-Stufen"
+      tooltip_title: "Neutralachsen-Stufen (-n)"
+      tooltip_body: |
+        Fügt zusätzliche Keilfelder entlang der wahrnehmungsbezogen echten
+        Neutralachse deines Druckers + Papiers hinzu — wie sie das über -c
+        geladene Vorkonditionierungs-Profil definiert.
+
+        Unterschied zu -g (Graustufen-Schritte):
+          • -g läuft RGB-Gerätewerte ab (R = G = B): 0/0/0, 32/32/32,
+            64/64/64 … Das setzt voraus, dass gleiche Gerätewerte als
+            neutrales Grau drucken — was nur auf einem perfekt
+            linearisierten Drucker stimmt.  Auf einem echten Drucker
+            hat die „Geräte-Graureihe“ meist einen Farbstich.
+          • -n fragt das angegebene Profil: „Welche RGB-Werte braucht
+            DIESER Drucker tatsächlich, um auf jeder Helligkeitsstufe
+            ein neutrales L*a*b*-Feld (a* = b* = 0) zu erzeugen?“  Diese
+            (meist ungleichen) RGB-Werte werden als Felder ergänzt.
+
+        Unterschied zu -N (Neutralachsen-Gewichtung):
+          • -N ist ein 0–1-Regler, der die vorhandene OFPS-Verteilung
+            zur Neutralregion hin verschiebt.  Er fügt keine eigenen
+            Stufen hinzu.
+          • -n ergänzt explizite, vom Profil abgeleitete Neutralfelder —
+            zusätzlich zu dem, was der Rest der Verteilung erzeugt.
+
+        Wann verwenden:
+          • Du hast bereits ein Erstprofil für dieses Papier und baust
+            ein Verfeinerungs-Chart.  Lade das Profil unter
+            Vorkonditionierungs-Profil (-c) und setze -n auf 32–64,
+            um die korrigierte Neutralachse dicht zu charakterisieren.
+          • Bei einem Erst-Chart ohne -c bei 0 lassen — ohne
+            Vorkonditionierungs-Profil gibt es keine „echte“ Neutralachse
+            zum Abtasten, und -g deckt die Geräteraum-Rampe bereits ab.
+
+        Typische Verfeinerungswerte: 32 für Routinearbeit, 64 für
+        Fine-Art / Proofing, wo Neutralität kritisch ist.
+
+        Erfordert ein gesetztes -c; sonst ohne Wirkung.
+
+    "-N":
+      name: "Neutral-Gewichtung"
+      tooltip_title: "Neutralachsen-Gewichtung (-N)"
+      tooltip_body: |
+        Steuert, wie stark sich Messfelder nahe der Neutralachse häufen.
+        0.0 = keine Gewichtung, 1.0 = maximale Häufung um Grau.
+        Der Standard 0.5 passt für die meisten Drucker.
+
+    "-V":
+      name: "Schatten-Gewichtung"
+      tooltip_title: "Schattenbereich-Gewichtung (-V)"
+      tooltip_body: |
+        Fügt zusätzliche Messfelder in dunklen (Schatten-)Bereichen des
+        Gamuts hinzu.  1.0 = keine Gewichtung (Standard).  Auf 2.0–3.0
+        erhöhen bei Druckern mit komplexem Schattenverhalten
+        (z. B. matte Fine-Art-Papiere).
+
+    "-l":
+      name: "Gesamt-Tintenlimit (%)"
+      tooltip_title: "Gesamt-Tintenlimit (-l)"
+      tooltip_body: |
+        Die maximale Gesamtmenge an Tinte, die der Drucker aufs Papier
+        bringen darf, in Prozent. 100 % = eine volle Tintenschicht,
+        200 % = zwei volle Schichten (z. B. 100C + 100K) und so weiter.
+
+        Warum das wichtig ist (besonders für CMYK / CMYK+N):
+        Ohne Limit erzeugt targen munter Felder wie 100C + 100M + 100Y +
+        100K = 400 %. So viel nasse Tinte kann Pfützen bilden, langsam
+        trocknen, fleckig werden oder sogar das Papier aufreißen — und
+        das daraus gebaute Profil sagt Farben voraus, die dein Drucker
+        gar nicht erzeugen kann.
+
+        So wähle einen Wert:
+          • Die meisten CMYK-Tintenstrahler: 260 – 320 %
+          • Gestrichene / glänzende Papiere: 320 – 360 %
+          • Zeitungspapier, geringe Qualität: 220 – 260 %
+          • Erweiterter Gamut (CMYKOGV):     400 – 500 %  (mehr Tinten
+                                             teilen sich das Gesamtbudget)
+
+        Im Zweifel: Drucker-Dokumentation oder Papierprofil-Hinweise
+        prüfen — oder messen: einen kleinen Tintenlimit-Testkeil drucken
+        und den höchsten Wert wählen, der sauber und ohne Verlaufen trocknet.
+
+        Für RGB-Workflows: in der Regel deaktiviert lassen — RGB-
+        Tintenstrahler regeln ihr Tintenlimit intern, targen muss hier
+        nicht über Kanäle hinweg haushalten.
+
+        Zum Aktivieren das Kästchen ankreuzen.
+
+    "__targen_distribution__":
+      name: "Messfeld-Verteilung"
+      labels:
+        - "OFPS — optimierte Fernpunkt-Verteilung (empfohlen)"
+        - "Inkrementeller Fernpunkt (-t) — schneller, weniger gleichmäßig"
+        - "Gleichmäßig zufällig — Geräteraum (-r)"
+        - "Gleichmäßig zufällig — perzeptiver Raum (-R)"
+        - "Quasi-zufällig raumfüllend — Geräteraum (-q)"
+        - "Quasi-zufällig raumfüllend — perzeptiver Raum (-Q)"
+        - "Kubisch-raumzentriertes Gitter — Geräteraum (-i)"
+        - "Kubisch-raumzentriertes Gitter — perzeptiver Raum (-I)"
+      tooltip_title: "Messfeld-Verteilung (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |
+        Wie targen entscheidet, wo jedes Farbfeld im Gamut des Druckers
+        platziert wird. Die Algorithmen tauschen Abdeckung, Gleichmäßigkeit
+        und Geschwindigkeit unterschiedlich gegeneinander ab.
+
+        Wähle EINEN. Die Optionen schließen sich gegenseitig aus —
+        jede Auswahl ersetzt die Standard-OFPS-Platzierung vollständig.
+
+        OFPS (Standard, empfohlen):
+        Optimised Farthest Point Sampling. Platziert jedes neue Feld
+        iterativ so weit wie möglich von allen vorhandenen entfernt —
+        die gleichmäßigste Abdeckung aller Algorithmen hier. Langsamer
+        als die Alternativen, aber der Goldstandard für Profilqualität.
+        Für beste Ergebnisse mit „Gründliche Optimierung (-G)“ kombinieren.
+
+        Inkrementeller Fernpunkt (-t):
+        Eine einfachere Fernpunkt-Methode. Schneller als OFPS, etwas
+        weniger gleichmäßig. Verwenden, wenn OFPS bei sehr großen
+        Feldzahlen zu langsam ist und ein kleiner Qualitätsverlust
+        akzeptabel ist.
+
+        Zufällig — Geräteraum (-r):
+        Gleichverteilt zufällige Felder in rohen Gerätewerten (z. B. RGB).
+        Am schnellsten, aber die Abdeckung der *wahrgenommenen* Farben ist
+        ungleichmäßig — Felder werden in Regionen verschwendet, die das
+        Auge kaum unterscheidet.
+
+        Zufällig — perzeptiver Raum (-R):
+        Gleichverteilt zufällig in wahrgenommener Farbe (Lab). Besser als
+        -r, wenn es zufällig sein muss, weil die Felder nach dem verteilt
+        werden, was das Auge sieht. Bei gleicher Anzahl trotzdem schlechter
+        als OFPS.
+
+        Quasi-zufällig raumfüllend (-q / -Q):
+        Sequenzen geringer Diskrepanz (Sobol-artig), die den Raum
+        gleichmäßiger füllen als echter Zufall — ohne die iterativen
+        Kosten von OFPS. -q im Geräteraum, -Q im perzeptiven Raum.
+        Ein guter Mittelweg, wenn OFPS zu langsam ist.
+
+        Kubisch-raumzentriertes Gitter (-i / -I):
+        Ein festes regelmäßiges Gitter (jedes Feld von 8 Nachbarn im
+        Würfelmuster umgeben). Deterministisch und sehr gleichmäßig, aber
+        unflexibel — nur bestimmte Feldzahlen passen ins Gitter. -i im
+        Geräteraum, -I im perzeptiven Raum.
+
+        Die meisten sollten bei OFPS bleiben.
+
+    "-A":
+      name: "OFPS-Anpassung"
+      tooltip_title: "OFPS-Anpassung (-A)"
+      tooltip_body: |
+        Wie stark OFPS seine Gleichverteilungs-Regel beugt, um der Form
+        eines Vorkonditionierungs-Profils (-c) zu folgen. Nur sinnvoll,
+        wenn OFPS die gewählte Messfeld-Verteilung ist UND ein -c-Profil
+        gesetzt ist.
+
+        0.0 = das Profil völlig ignorieren — reine Gleichverteilung im
+              Geräteraum, als gäbe es kein -c.
+        1.0 = dem Profil voll folgen — Felder dort konzentrieren, wo das
+              Profil den Gamut des Druckers für interessant erklärt
+              (also der Form des tatsächlichen Farbraums).
+
+        Der targen-Standard ist 0.10 (mild) für einen ersten Durchlauf
+        und 1.0 bei gesetztem -c; ChromIQ lässt den Wert bei 0.10, sofern
+        du ihn nicht ausdrücklich änderst — damit es keinen überraschenden
+        Verhaltenswechsel gibt.
+
+        Für Verfeinerungsdurchläufe Richtung 1.0 erhöhen, wenn du dem
+        Erstprofil vertraust und das zweite Chart den echten Gamut des
+        Druckers dicht abtasten soll statt leerer Ecken des Geräteraums.
+
+        Zum Aktivieren das Kästchen ankreuzen.
+
+    "-m":
+      name: "Würfel-Innenraster"
+      tooltip_title: "Würfel-Innenraster (-m)"
+      tooltip_body: |
+        Fügt ein regelmäßiges Raster von Feldern *im Inneren* des
+        Farbwürfels des Druckers hinzu — N Stufen je Achse (N×N×N bei
+        RGB usw.). Sie kommen *zusätzlich* zu den mit -f, -g, -s und den
+        anderen Zählern gewählten Feldern.
+
+        Auf 0 lassen (Standard) — fast immer die richtige Wahl.
+        OFPS deckt das Würfelinnere bereits effizienter ab.
+
+        Wann verwenden:
+          • Wiederholbarkeit über Maschinen hinweg: Ein festes Raster ist
+            jedes Mal identisch, unabhängig davon, welche OFPS-Plätze
+            targen gewählt hat — das hilft beim Vergleichen von Profilen
+            über Läufe hinweg.
+          • Diagnose-Charts mit vorhersagbaren, benannten Würfelpositionen.
+
+        Typische Werte, falls genutzt: 3 – 6 (Stufen je Achse). Die Zahlen
+        wachsen schnell — 6 Stufen in RGB sind 216 Felder, 8 sind 512.
+
+        Zum Aktivieren das Kästchen ankreuzen.
+
+    "-M":
+      name: "Würfel-Oberflächenraster"
+      tooltip_title: "Würfel-Oberflächenraster (-M)"
+      tooltip_body: |
+        Fügt ein regelmäßiges Raster von Feldern auf der *Oberfläche* des
+        Farbwürfels des Druckers hinzu — N Stufen je Fläche. Die Felder
+        liegen außen (Primärfarben, Sekundärfarben, Gamut-Kante), nicht
+        im Inneren.
+
+        Auf 0 lassen (Standard), um es zu überspringen.
+
+        Wann verwenden:
+          • Du willst gezielt die Gamut-Grenze und die Primär-/Sekundär-
+            Ecken festnageln, ohne den Innenraum-Aufwand von -m.
+          • Vergleich, wie verschiedene Tinten/Papiere die Gamut-Hülle
+            verschieben — Oberflächenfelder sind davon am stärksten betroffen.
+    "-b":
+      name: "BCC-Gitterstufen"
+      tooltip_title: "Kubisch-raumzentrierte Stufen (-b)"
+      tooltip_body: |
+        Fügt Felder auf einem kubisch-raumzentrierten Gitter (BCC) hinzu —
+        dichter als ein einfaches Würfelraster, weil Punkte sowohl an den
+        Würfelecken als auch in den Würfelzentren liegen. N ist die Zahl
+        der Unterteilungen je Achse.
+
+        Auf 0 lassen (Standard) — ein Nischen-Regler.
+
+        Wann verwenden:
+          • Du willst regelmäßige, gitterausgerichtete Feldpositionen,
+            aber dichter gepackt als mit -m — ohne gleich auf OFPS zu
+            wechseln.
+          • Forschungs-/Wiederholbarkeits-Szenarien, in denen die
+            BCC-Struktur selbst der Zweck ist.
+
+        Hinweis: Dies ist die *Stufenzähler*-Form (sie ergänzt deine
+        Feldliste); soll die *gesamte* Verteilung BCC sein, nutze
+        oben die „Messfeld-Verteilung“ und wählen dort die kubisch-
+        raumzentrierte Option.
+
+        Zum Aktivieren das Kästchen ankreuzen.
+
+  printtarg:
+
+    "-i":
+      name: "Messgerät"
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (Flachbett)"
+        - "i1iSis (über i1Profiler)"
+      tooltip_title: "Messgerät (-i)"
+      tooltip_body: |
+        Teilt dem Chart-Generator mit, mit welchem Spektralfotometer du
+        das gedruckte Chart einlesen wirst. Das Messfeldraster wird um
+        Streifenbreite, Feldgröße und Abstände dieses Geräts herum gebaut
+        — die richtige Wahl ist daher entscheidend.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — handgeführter Streifenleser, die
+             häufigste Wahl. Liest eine Spalte Messfelder in einem Durchzug.
+
+          •  i1Pro 3 Plus — Version des i1Pro 3 mit größerer Blende.
+             Liest größere Felder, daher passen deutlich weniger pro Blatt
+             (~5× weniger als beim normalen i1Pro).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — Einsteigergerät.
+             Liest allein jeweils ein Feld; mit der optionalen Messschiene
+             werden sie gepaart (siehe Double Density).
+
+          •  SpectroScan — XY-Flachbettscanner. Ein motorisierter Arm liest
+             jedes Feld einzeln und packt daher weit mehr Farben pro Blatt
+             als jeder Streifenleser.
+
+          •  i1iSis (über i1Profiler) — automatischer Einzelblatt-Chartleser.
+             ChromIQ kann dieses Gerät nicht direkt ansteuern: Stattdessen
+             wird die Feldliste im i1Profiler-eigenen Format neben dem Chart
+             gespeichert, und du schließt den Workflow dort ab (drucken,
+             scannen, Profil bauen). ChromIQs Druck- und Mess-Tabs werden
+             für dieses Gerät nicht verwendet.
+
+        Die falsche Gerätewahl ergibt ein Chart, an dem sich dein Gerät
+        nicht ausrichten kann oder das es nicht zuverlässig liest — beim
+        Messen erscheinen dann „patches not found“- oder Ausrichtungsfehler.
+        Im geführten Modus passt sich das Layout dieser Wahl automatisch an.
+
+    "-h":
+      name: "Double Density"
+      tooltip_title: "Double Density (-h)"
+      tooltip_body: |
+        Verändert die Felddichte pro Streifen im printtarg-Layout.
+        Die genaue Bedeutung hängt vom aktiven Messgerät ab:
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — verdoppelt die
+             Zahl der Felder, die in jeden Messstreifen passen.
+             ERFORDERT das physische Messschienen-Zubehör; ohne kann sich
+             das Gerät nicht auf den engeren Abstand ausrichten und misst
+             falsch.
+
+          •  SpectroScan — stellt das Chart-Layout von rechteckigen auf
+             sechseckige Felder um. Sechsecke fügen sich enger zusammen,
+             ~14 % mehr Felder passen pro Blatt. Keine Zusatzhardware nötig.
+
+        Hat keine Wirkung bei i1Pro oder i1Pro 3 Plus und ist normalerweise
+        ausgeblendet, wenn eines davon gewählt ist.
+
+    "-p":
+      name: "Papiergröße"
+      labels:
+        - "A2 hoch (420 × 594 mm)"
+        - "A2 quer (594 × 420 mm)"
+        - "A3+ hoch (329 × 483 mm)"
+        - "A3+ quer (483 × 329 mm)"
+        - "A3 hoch (297 × 420 mm)"
+        - "A3 quer (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 hoch (210 × 297 mm)"
+        - "A4 quer (297 × 210 mm)"
+        - "Letter hoch (8,5 × 11\")"
+        - "Letter quer (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Eigene Größe (Maße eingeben)"
+      tooltip_title: "Papiergröße (-p)"
+      tooltip_body: |
+        Legt die Maße jedes Blatts im gedruckten Chart fest. Das Chart
+        füllt die Seite immer von Kante zu Kante — größeres Papier fasst
+        mehr Messfelder, also ein detaillierteres Profil aus weniger
+        Blättern.
+
+        Wähle genau die Größe, auf der du wirklich druckst,
+        einschließlich Ausrichtung. Streifenleser (i1Pro-Familie) lesen
+        von oben nach unten, daher:
+
+          •  Hochformat — längere Streifen, dafür weniger. Die Standardwahl.
+
+          •  Querformat (A4R, LetterR, 420×297…) — kürzere Streifen, dafür
+             mehr. Verwenden, wenn dein Drucker quer zuverlässiger einzieht
+             oder ein Hochformatblatt den letzten Streifen zu nah an die
+             Papierkante legen würde.
+
+        Wähle „Eigene Größe“, um exakte Breite und Höhe in Millimetern
+        einzugeben, wenn keine der benannten Größen zu deinem Papier passt.
+
+        Ändere die Papiergröße, aktualisieren sich Messfeld- und
+        Seitenzahl in der Befehlsvorschau automatisch.
+
+    "-t":
+      name: "TIFF-Ausgabe-DPI"
+      tooltip_title: "TIFF-Auflösung (-t)"
+      tooltip_body: |
+        Ausgabeauflösung für die TIFF-Raster-Chartdateien.
+        300 DPI wird für Streifenlese-Geräte empfohlen und bietet ein
+        gutes Verhältnis von Dateigröße und Feldschärfe.
+        200 DPI bei sehr großen Charts, um die Dateigröße zu senken.
+        Höhere Werte (600+) braucht man selten — sie erzeugen große Dateien.
+
+    "-L":
+      name: "Ohne linken Klemmrand"
+      tooltip_title: "Linken Klemmrand unterdrücken (-L)"
+      tooltip_body: |
+        Entfernt den Klemmrand-Streifen an der linken Kante und gewinnt
+        ~15 mm Seitenbreite für zusätzliche Messfeld-Spalten.
+        Aktivieren, sofern du keine physische Blattklemm-Vorrichtung
+        verwendest. Alle Werte in der Felddatenbank setzen dieses Flag
+        als EIN voraus.
+
+    "-a":
+      name: "Feldgrößen-Skalierung"
+      tooltip_title: "Feldgrößen-Skalierung (-a)"
+      tooltip_body: |
+        Skaliert Feld- und Trennfeld-Maße gleichmäßig.
+        1.0 ist der Standard (geräteoptimierte Größe).
+        Auf 1.5–2.0 erhöhen bei rauen / strukturierten Papieren, wo das
+        Messgerät eine größere Messfläche braucht.
+        Werte unter 1.0 bringen mehr Felder pro Seite, können aber bei
+        manchen Geräten Lesefehler verursachen.
+        Hinweis: Ein vom Standard abweichender Wert löst eine
+        Live-Neuberechnung per binärer Suche aus statt der schnellen
+        Datenbank-Abfrage.
+
+    "-m":
+      name: "Rand (mm)"
+      tooltip_title: "Rand (-m / -M)"
+      tooltip_body: |
+        Setzt den Rand in Millimetern — sowohl für den bedruckbaren
+        Bereich (-m) als auch für die TIFF-Dateimaße (-M).  Beide bleiben
+        synchron.  6 mm entspricht den Mindesträndern der meisten Drucker.
+        Nur verringern, wenn dein Drucker randlos drucken kann.
+
+        Die Wahl eines i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus hebt den
+        Wert automatisch auf 10 mm an, damit die Streifenleser-Optik nicht
+        auf die nackte Papierkante gerät („not enough patches read“-Fehler).
+        Der Wechsel zu ColorMunki / SpectroScan stellt 6 mm wieder her.
+        Ein eigener Wert (alles außer 6 oder 10) bleibt über Gerätewechsel
+        hinweg erhalten.
+
+        Felder-pro-Seite-Tabellen existieren nur für 6 und 10 mm — andere
+        Werte lösen eine Live-Neuberechnung per binärer Suche aus.
+
+    "-r":
+      name: "Reihenfolge beibehalten"
+      tooltip_title: "Keine Randomisierung (-r)"
+      tooltip_body: |
+        Standardmäßig randomisiert printtarg die Feldpositionen, um
+        Drift-Artefakte des Messgeräts zu verringern.  Aktiviere
+        dieses Flag nur, wenn du eine bestimmte Feldsequenz testest oder
+        dein Gerät geordnete Felder verlangt.
+
+    "-b":
+      name: "S&&W-Trennfelder erzwingen"
+      tooltip_title: "S&W-Trennfelder erzwingen (-b)"
+      tooltip_body: |
+        Erzwingt schwarz/weiße statt farbiger Trennfelder zwischen den
+        Streifen.  Feldanzahl und Layout-Geometrie bleiben unverändert.
+
+        Hat keine Wirkung, wenn „Keine Trennfelder“ (-n) aktiv ist — die
+        Option ist dann ausgegraut und wird aus dem printtarg-Befehl
+        ausgeschlossen.
+    "-P":
+      name: "Streifenlänge nicht begrenzen"
+      tooltip_title: "Streifenlänge nicht begrenzen (-P)"
+      tooltip_body: |
+        Standardmäßig begrenzt printtarg die Streifenlänge so, dass jeder
+        Streifen ohne Überlauf aufs Papier passt.  Dieses Flag hebt die
+        Grenze auf und erlaubt sehr lange Streifen.
+        Nützlich für schmales Rollenpapier oder wenn du möglichst wenige
+        Streifen für eine gegebene Feldanzahl möchtest.
+        Achtung: Bei hoher Feldanzahl können Streifen über die Papierkante
+        hinausreichen — prüfe das erzeugte TIFF vor dem Drucken.
+
+    "-N":
+      name: "N-Kanal-TIFF (>4 Tinten)"
+      tooltip_title: "N-Kanal-TIFF (-N)"
+      tooltip_body: |
+        Für Drucker mit mehr als 4 Tintenkanälen (z. B. CMYK plus
+        zusätzliche Sonderfarben): Standard-TIFF unterstützt nur bis zu
+        4 Kanäle.  Dieses Flag lässt printtarg die zusätzlichen Kanäle in
+        den Alphakanal-Plätzen des TIFF ablegen, sodass alle Tintenwerte
+        in einer Datei erhalten bleiben.
+
+        Nur aktivieren, wenn dein Druckertreiber oder RIP ein
+        Mehrkanal-TIFF erwartet.  Für normale RGB- oder CMYK-Profilierung
+        brauchst du diese Option nicht.
+
+    "-K":
+      name: "Kalibrierung anwenden"
+      tooltip_title: "Kalibrierung auf Messfelder anwenden (-K)"
+      tooltip_body: |
+        Verwende dies, wenn dein Drucker kein eingebautes
+        Kalibrierungssystem hat — der Treiber oder RIP also keine
+        Kalibrierungskurve selbst anwenden kann.
+
+        Du erzeugst zuerst mit Argylls printcal eine .cal-Datei, die
+        beschreibt, wie der Drucker zu linearisieren ist.  Diese .cal
+        gib hier an: printtarg rechnet jeden Feldfarbwert vor der
+        Chart-Erzeugung durch die Kalibrierungskurven um — das gedruckte
+        Chart zeigt dann bereits das kalibrierte Druckerverhalten.
+        Die .cal wird außerdem in die .ti2 eingebettet, damit colprof sie
+        beim Erstellen des ICC-Profils berücksichtigen kann.
+
+        Typische Verwendung: Desktop-Tintenstrahler ohne eingebaute
+        Linearisierung, direkt aus einem TIFF und ohne RIP angesteuert.
+
+        Schließt sich mit „Kalibrierung einbetten“ (-I) gegenseitig aus —
+        nur eine Kalibrierungsoption kann gleichzeitig aktiv sein.
+
+    "-I":
+      name: "Kalibrierung nur einbetten"
+      tooltip_title: "Kalibrierung einbetten, nicht anwenden (-I)"
+      tooltip_body: |
+        Verwende dies, wenn dein Drucker oder RIP bereits selbst eine
+        Kalibrierungskurve anwendet — etwa ein Produktions-RIP mit eigener
+        Linearisierungs-LUT oder ein Drucker mit eingebauter
+        Dichtekalibrierung.
+
+        In diesem Fall soll printtarg die Feldwerte nicht umrechnen (das
+        erledigt der Drucker selbst), aber colprof soll von der
+        Kalibrierung wissen.  -I bettet die .cal-Datei nur als Metadaten
+        in die .ti2 ein und lässt alle Feldwerte unangetastet.
+
+        Typische Verwendung: professionelle Inkjet-RIPs (z. B. EFI Fiery,
+        Wasatch, ColorBurst) oder Drucker mit eingebauter Linearisierung,
+        die während des Profilierungs-Drucks aktiv ist.
+
+        Schließt sich mit „Kalibrierung anwenden“ (-K) gegenseitig aus —
+        nur eine Kalibrierungsoption kann gleichzeitig aktiv sein.
+
+    "-C":
+      name: "TIFF-Kompression deaktivieren"
+      tooltip_title: "TIFF-Kompression deaktivieren (-C)"
+      tooltip_body: |
+        Erzeugt unkomprimierte TIFF-Dateien statt der standardmäßigen
+        LZW-Kompression.  Unkomprimierte Dateien sind größer, aber mit
+        allen RIPs und Druckertreibern uneingeschränkt kompatibel.
+        Aktivieren, wenn dein Druck-Workflow komprimierte TIFFs ablehnt
+        oder beschädigt.
+
+    "-D":
+      name: "8 Bit aus 16 Bit dithern"
+      tooltip_title: "8-Bit-Ausgabe dithern (-D)"
+      tooltip_body: |
+        Verwendet beim Erzeugen eines 8-Bit-TIFFs Fehlerdiffusions-
+        Dithering, um von der internen 16-Bit-Präzision herunterzurechnen.
+        Das verringert Streifenbildung in glatten Verläufen, die sonst
+        durch Quantisierung entstünde.
+        Wirkt nur, wenn 8-Bit-TIFF-Ausgabe gewählt ist.
+
+    "-U":
+      name: "CUPS-CMM-Header weglassen"
+      tooltip_title: "CUPS-CMM-Header unterdrücken (-U)"
+      tooltip_body: |
+        Entfernt den Kommentar 'cupsJobTicket: cups-disable-cmm' aus
+        PostScript- und EPS-Ausgabedateien.  Manche CUPS-Versionen
+        reagieren unterschiedlich auf diesen Kommentar.
+        Diese Option betrifft nur PS-/EPS-Ausgabe und hat keine Wirkung
+        auf TIFF-Dateien.  Nur aktivieren, wenn beim Drucken unerwartet
+        Farbmanagement angewendet wird.
+
+    "-R":
+      name: "Zufalls-Startwert"
+      tooltip_title: "Randomisierungs-Startwert (-R)"
+      tooltip_body: |
+        Setzt den Startwert für den Feld-Randomisierungsalgorithmus.
+        Derselbe Startwert mit derselben Feldanzahl erzeugt immer
+        dasselbe Layout — Charts werden damit voll reproduzierbar.
+        Nützlich für Forschung oder wenn du später ein identisches
+        Chart neu erzeugen musst.
+        Hat keine Wirkung, wenn „Feldreihenfolge beibehalten“ (-r)
+        aktiv ist.
+
+    "-Q":
+      name: "Quantisierungs-Bits"
+      tooltip_title: "Feldwerte quantisieren (-Q)"
+      tooltip_body: |
+        Rundet alle Feldfarbwerte vor der Chart-Erzeugung auf die
+        angegebene Bittiefe.  Beispiel: -Q 8 rundet alle Werte auf
+        8-Bit-Präzision (256 Stufen).
+        Verwenden, wenn deine Druck-Pipeline bei einer bestimmten
+        Bittiefe Streifenbildung zeigt und du genau auf dieser
+        Präzisionsstufe testen möchtest.
+
+    "-A":
+      name: "Trennfeld-Skalierung"
+      tooltip_title: "Trennfeld-Skalierung (-A)"
+      tooltip_body: |
+        Skaliert nur die Trennbalken zusätzlich, ohne die mit -a gesetzten
+        Feldmaße zu ändern.
+        Werte über 1.0 machen Trennfelder breiter, unter 1.0 schmaler.
+        Nützlich für Geräte, die mehr Abstand zwischen den Streifen
+        brauchen — oder um Platz zu gewinnen, indem die Trennfelder
+        schmaler werden, während die Feldgröße konstant bleibt.
+
+        Hat keine Wirkung, wenn „Keine Trennfelder“ (-n) aktiv ist — die
+        Option ist dann ausgegraut und wird aus dem printtarg-Befehl
+        ausgeschlossen.
+
+    "-n":
+      name: "Keine Trennfelder"
+      tooltip_title: "Keine Trennfelder (-n)"
+      tooltip_body: |
+        Entfernt alle Trennbalken zwischen Feldern und Streifen.  Trennfelder
+        helfen dem Messgerät normalerweise, Streifengrenzen und -richtung
+        zu erkennen.
+        Nur deaktivieren, wenn dein Mess-Workflow ausdrücklich nicht darauf
+        angewiesen ist (z. B. manche Flachbettscanner-Setups).
+
+        Ist die Option aktiv, werden „S&W-Trennfelder erzwingen“ (-b) und
+        „Trennfeld-Skalierung“ (-A) automatisch deaktiviert, da beide nur
+        Trennfelder betreffen.
+
+    "-c":
+      name: "Farbige Trennfelder erzwingen"
+      tooltip_title: "Farbige Trennfelder erzwingen (-c)"
+      tooltip_body: |
+        Erzwingt farbige Trennbereiche zwischen den Feldern statt des
+        Standards (der je nach Geräteprofil schwarz/weiß sein kann).
+        Kann die Streifenerkennung auf manchen Farb-Tintenstrahlern
+        verbessern, wenn schwarze Trennfelder gegen dunkle Felder zu
+        wenig Kontrast haben.
+
+  chartread:
+
+    "-B":
+      name: "Bidirektional deaktivieren"
+      tooltip_title: "Bidirektionales Lesen deaktivieren (-B)"
+      tooltip_body: |
+        Hindert chartread daran, automatisch zu erkennen, ob ein Streifen
+        vorwärts oder rückwärts gescannt wurde. ChromIQ lässt dies
+        standardmäßig aus, damit das Gerät Streifen in beide Richtungen
+        lesen kann.
+
+        Nur einschalten, wenn dein Gerät beim Messen falsche
+        Richtungsfehler meldet.
+
+    "-b":
+      name: "Bidirektional erzwingen"
+      tooltip_title: "Bidirektionales Lesen erzwingen (-b)"
+      tooltip_body: |
+        Zwingt chartread, einen in beliebiger Richtung gescannten Streifen
+        zu akzeptieren.
+
+        Normalerweise erkennt chartread die Streifenrichtung nur auf
+        randomisierten Charts automatisch; ein Chart in fester Reihenfolge
+        liest es nur einseitig und lehnt rückwärts gescannte Streifen ab.
+        Schalte dies ein, um die Erkennung trotzdem zu erzwingen —
+        nützlich für die i1-Pro-Familie, die beide Richtungen liest.
+        Das Gegenteil von -B; nur eines von beiden kann gelten.
+
+    "-S":
+      name: "Warnmeldungen unterdrücken"
+      tooltip_title: "Warnungen unterdrücken (-S)"
+      tooltip_body: |
+        Unterdrückt nicht-fatale Mess-Warnmeldungen von chartread.
+        Empfohlen für unbeaufsichtigte oder Batch-Messsitzungen.
+        Fehler, die die Profilerstellung verhindern würden, werden
+        weiterhin gemeldet.
+
+    "-N":
+      name: "Keine Startkalibrierung"
+      tooltip_title: "Anfangskalibrierung deaktivieren (-N)"
+      tooltip_body: |
+        Überspringt die automatische Weißkachel-Kalibrierung des Geräts
+        beim Start.
+        Nur verwenden, wenn du das Gerät in dieser Sitzung bereits
+        kalibriert hast und weitere Charts ohne Neukalibrierung messen
+        möchtest.
+    "-p":
+      name: "Feld-für-Feld-Modus"
+      tooltip_title: "Feld-für-Feld-Modus (-p)"
+      tooltip_body: |
+        Wechselt vom Streifenlesen zur Einzelfeld-Messung.
+        Nützlich für handgeführte Einzelmessungen oder wenn das
+        Streifenlesen auf einem bestimmten Papier scheitert.  Bei großen
+        Charts deutlich langsamer.
+
+    "-H":
+      name: "Hochauflösendes Spektrum"
+      tooltip_title: "Hochauflösendes Spektrum (-H)"
+      tooltip_body: |
+        Aktiviert hochauflösende Spektralabtastung auf Geräten, die das
+        unterstützen (z. B. i1Pro 2/3).  Liefert genauere Lab-Werte,
+        verlängert die Messzeit aber leicht.
+
+    "-T":
+      name: "Feld-Konsistenztoleranz"
+      tooltip_title: "Feld-Toleranzfaktor (-T)"
+      tooltip_body: |
+        Ein Multiplikator auf chartreads eingebaute Feld-Konsistenzschwelle —
+        kein Delta-E-Wert. chartread liest jedes Feld mehrfach und lehnt
+        Streifen ab, deren Messungen um mehr als Schwelle × diesen Faktor
+        auseinanderliegen.
+
+        Niedriger = strenger. Eine strenge Einstellung erkennt echte
+        Probleme früh: verstopfte Tintendüsen, niedriger Tintenstand,
+        verschmutzte Walzen, driftender Lasertoner. Auf einer gesunden
+        Drucker-Spektralfotometer-Kombination lässt der Standard 0.7
+        bequemen Spielraum; erfahrene Nutzer auf printerknowledge.com
+        fahren 0.4 mit i1 Pro 2 / 3.
+
+        Auf 0.8–1.5 erhöhen, wenn du auf strukturierten, matten oder
+        Fine-Art-Papieren falsche „inconsistent patch“-Fehler bekommst —
+        dort trägt die Oberfläche selbst echte Varianz bei. Werte über 2
+        verschleiern meist echte Probleme; wer sie braucht, sollte zuerst
+        den Drucker in Ordnung bringen.
+
+    "-l":
+      name: "D50-L*a*b*-Werte speichern"
+      tooltip_title: "L*a*b* statt XYZ speichern (-l)"
+      tooltip_body: |
+        Speichert die Messdaten als D50-L*a*b*-Werte statt XYZ.
+        Die meisten Workflows nutzen XYZ (Standard).  Nur aktivieren,
+        wenn nachgelagerte Werkzeuge ausdrücklich L*a*b* verlangen.
+
+    "-X":
+      name: "Colorimeter-Korrektur"
+      tooltip_title: "Colorimeter-Korrekturmatrix (-X)"
+      tooltip_body: |
+        Wendet eine Colorimeter-Korrekturmatrix (.ccmx) oder ein
+        Kalibrierungs-Spektralset (.ccss) an, um die Genauigkeit von
+        Colorimetern zu verbessern.
+        Nur für Colorimeter relevant (nicht für Spektralfotometer).
+        Beziehe die passende Datei vom Gerätehersteller oder
+        erstelle sie mit den ArgyllCMS-Werkzeugen ccss/ccmx.
+
+  colprof:
+
+    "-D":
+      name: "Profilbeschreibung"
+      tooltip_title: "Profilbeschreibung (-D)"
+      tooltip_body: |
+        Der im ICC-Profil eingebettete Name — er erscheint in den
+        Farbmanagement-Menüs von Apps wie Photoshop, Lightroom und Vorschau.
+
+        Verwende ein einheitliches Format mit Drucker, Papier,
+        Tintentyp und Datum, damit das richtige Profil später leicht zu
+        finden ist:
+
+          Drucker · Papier · Tintentyp · Datum
+          z. B. "Epson P900 · Canson Baryta · Chromatic · 2026-04"
+
+        Die Ausgabedatei wird nach deiner .ti3-Datei benannt — halte
+        diesen Namen mit Unterstrichen statt Leerzeichen konsistent zur
+        Beschreibung:
+          z. B. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+
+    "-a":
+      name: "Profil-Algorithmus"
+      labels:
+        - "l — Lab cLUT (empfohlen für RGB-Drucker)"
+        - "x — XYZ cLUT"
+        - "X — XYZ cLUT (absolut)"
+        - "g — Gamma + Matrix (schnell, ungenauer)"
+        - "G — Gamma + Matrix (erzwungen)"
+        - "s — Einzelnes Gamma + Matrix"
+        - "S — Einzelnes Gamma + Matrix (erzwungen)"
+        - "m — Nur Matrix"
+        - "M — Nur Matrix (erzwungen)"
+      tooltip_title: "Profil-Algorithmus (-a)"
+      tooltip_body: |
+        Wählt den Farbtransformations-Algorithmus:
+        • Lab cLUT (-al): höchste Genauigkeit für Druckerprofile.
+          Verwendet eine volle 3D-Lookup-Tabelle im L*a*b*-Raum.  Empfohlen.
+        • XYZ cLUT (-ax): wie Lab, aber im XYZ-Raum.
+          Erzeugt manchmal glattere Neutralverläufe.
+        • Matrix/Gamma (-ag, -as): einfacheres Modell, für komplexes
+          Druckerverhalten ungenauer, dafür schneller zu berechnen.
+        Für erste RGB-Druckerprofile immer Lab cLUT (-al) verwenden.
+
+    "-q":
+      name: "Profilqualität"
+      labels:
+        - "l — Niedrig (schnell, ~30 s)"
+        - "m — Mittel (empfohlen, ~2 min)"
+        - "h — Hoch (~10 min)"
+        - "u — Ultra (~30+ min)"
+      tooltip_title: "Profilqualität (-q)"
+      tooltip_body: |
+        Steuert die cLUT-Gitterauflösung und die Glättungs-Iterationen:
+        • Niedrig: 17³-Gitter — schneller Test, nicht für den Einsatz
+        • Mittel: 33³-Gitter — gutes Gleichgewicht, empfohlener Standard
+        • Hoch: 45³-Gitter — Produktionsqualität
+        • Ultra: 65³-Gitter — maximale Genauigkeit, sehr langsam
+        Mittel reicht für die meiste Inkjet-Arbeit.
+        Hoch für Fine-Art- oder Proof-Anwendungen verwenden.
+
+    "-b":
+      name: "B2A-Tabellenqualität"
+      labels:
+        - "Wie Profilqualität (Standard)"
+        - "l — Niedrig"
+        - "m — Mittel"
+        - "h — Hoch"
+        - "u — Ultra"
+        - "n — Keine (B2A-Tabellen weglassen)"
+      tooltip_title: "B2A-Tabellenqualität (-b)"
+      tooltip_body: |
+        Steuert unabhängig die Qualität der B2A-Tabellen (Gerät→PCS),
+        die für Eingabe-Transformationen (z. B. Softproof) genutzt werden.
+        Leer lassen, um der Haupteinstellung -q zu folgen.
+        „n“ lässt die B2A-Tabellen weg und verkleinert die Profildatei
+        (reine Ausgabeprofile brauchen kein B2A).
+
+    "-r":
+      name: "Glättung/Rauschen (% ΔE)"
+      tooltip_title: "Mittleres Geräterauschen (-r)"
+      tooltip_body: |
+        Geschätztes mittleres Mess- oder Geräterauschen als Prozentsatz
+        von ΔE.  Höhere Werte verstärken die Profilglättung und mindern
+        den Einfluss von Ausreißer-Feldern.
+        • 0.5 %: saubere Messungen, gepflegter Drucker
+        • 1.0–2.0 %: verrauschte Messungen oder strukturiertes Papier
+        • 3.0–5.0 %: sehr verrauscht; erhöht die Glättung deutlich
+
+    "-s":
+      name: "Gamut-Quelle (perzeptiv)"
+      tooltip_title: "Perzeptive Gamut-Mapping-Quelle (-s)"
+      tooltip_body: |
+        Quell-ICC-Profil zur Berechnung der Gamut-Mapping-Tabellen der
+        perzeptiven Wiedergabeabsicht (A2B / B2A perzeptiv).
+        Ohne dieses Profil nutzt die perzeptive Absicht die farbmetrischen
+        Daten direkt (keine Gamut-Kompression).
+        Typischerweise ein Standard-RGB-Arbeitsfarbraum wie AdobeRGB oder
+        ProPhoto RGB.
+        .icc und .icm werden beide akzeptiert — ICM ist nur Microsofts
+        Name für das ICC-Profilformat, die Dateien sind identisch.
+
+    "-S":
+      name: "Gamut-Quelle (P+S)"
+      tooltip_title: "Quelle für Perzeptiv + Sättigung (-S)"
+      tooltip_body: |
+        Wie -s, wendet das Gamut-Mapping aber auf die perzeptive UND die
+        Sättigungs-Wiedergabeabsicht an.
+
+    "-A":
+      name: "Hersteller"
+      tooltip_title: "Hersteller-Eintrag (-A)"
+      tooltip_body: |
+        Hersteller-Text im ICC-Profilkopf.
+        Optional — dient der Identifikation in Profil-Auswahlmenüs.
+
+    "-M":
+      name: "Modell"
+      tooltip_title: "Modell-Eintrag (-M)"
+      tooltip_body: |
+        Modell-Text im ICC-Profilkopf.
+
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyright-Eintrag (-C)"
+      tooltip_body: |
+        Copyright-Hinweis im ICC-Profil.
+
+    "-ni":
+      name: "Keine Eingangs-Shaper"
+      tooltip_title: "Keine Eingangs-Shaper-Kurven (-ni)"
+      tooltip_body: |
+        Deaktiviert die 1D-Eingangskurven (Tonwertkurven), die Gerätewerte
+        vor der 3D-cLUT vorverarbeiten.  Diese Kurven verbessern die
+        Profilgenauigkeit normalerweise.  Nur zu Diagnosezwecken
+        deaktivieren.
+
+    "-no":
+      name: "Keine Ausgangs-Shaper"
+      tooltip_title: "Keine Ausgangs-Shaper-Kurven (-no)"
+      tooltip_body: |
+        Deaktiviert die 1D-Ausgangskurven nach der 3D-cLUT.
+        Nur zu Diagnosezwecken deaktivieren.
+    "-V":
+      name: "Schattengitter-Gewichtung"
+      tooltip_title: "Gitter-Gewichtung dunkler Bereiche (-V)"
+      tooltip_body: |
+        Fügt zusätzliche cLUT-Gitterpunkte in dunklen (Schatten-)Bereichen
+        ein.  1.0 = gleichmäßiges Gitter (Standard).  Auf 1.5–2.0 erhöhen
+        bei Druckern mit komplexem Schattenverhalten oder zugelaufenen
+        Schwärzen.
+
+  profcheck:
+
+    "-v":
+      name: "Ausführlichkeit"
+      labels:
+        - "2 — Pro Messfeld (für Streifenanalyse erforderlich)"
+        - "1 — Nur Zusammenfassung"
+      tooltip_title: "Ausführlichkeit (-v)"
+      tooltip_body: |
+        Der Pro-Messfeld-Modus gibt den individuellen ΔE-Wert jedes Felds
+        aus — erforderlich für die Streifenanalyse und die geführte
+        Verfeinerung.  Der Zusammenfassungs-Modus zeigt nur
+        Durchschnitts- und Spitzenfehler.
+
+    "-I":
+      name: "Wiedergabeabsicht"
+      labels:
+        - "a — Absolut farbmetrisch (Standard)"
+        - "r — Relativ farbmetrisch"
+      tooltip_title: "Wiedergabeabsicht (-I)"
+      tooltip_body: |
+        Absolut farbmetrisch prüft die absolute Farbgenauigkeit
+        einschließlich des Weißpunkts — der Standard bei der
+        Druckerprofilierung.
+        Relativ farbmetrisch normalisiert auf den Weißpunkt des Papiers.
+
+    "-s":
+      name: "Nach ΔE sortieren"
+      tooltip_title: "Nach ΔE sortieren (-s)"
+      tooltip_body: |
+        Sortiert die profcheck-Ausgabe so, dass die schlechtesten
+        Messfelder zuerst erscheinen.  Praktisch, um Problemzonen schnell
+        zu finden.
+        Wirkt nur, wenn die Ausführlichkeit auf „Pro Messfeld“ steht.
+
+    "-i":
+      name: "Lichtart"
+      labels:
+        - "D50 (Standard)"
+        - "D50M2 (D50 + UV-Filter)"
+        - "D65 (Tageslicht 6500 K)"
+        - "A (Glühlampe)"
+        - "C (Tageslicht-Simulation, älter)"
+        - "F5 (Leuchtstoff CWF)"
+        - "F8 (Leuchtstoff D50-Sim.)"
+        - "F10 (Leuchtstoff Ultralume)"
+      tooltip_title: "Lichtart (-i)"
+      tooltip_body: |
+        Wählt die Lichtquelle für die Umrechnung von Spektralmessungen in
+        Farbwerte.  Nur relevant, wenn deine .ti3 Spektraldaten enthält.
+        D50 ist der Standard für die Druckprofilierung.
+
+    "-o":
+      name: "CIE-Beobachter"
+      labels:
+        - "1931 2° (Standard)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+      tooltip_title: "CIE-Beobachter (-o)"
+      tooltip_body: |
+        Legt das Normalbeobachter-Modell für farbmetrische Berechnungen
+        fest.  Der Beobachter 1931 2° ist der ICC-Standard für die
+        Druckprofilierung.
+        Beim Standard belassen, sofern nichts anderes verlangt ist.
+
+    "-P":
+      name: "Ausreißer entfernen (ΔE ≤)"
+      tooltip_title: ".ti3 beschränken auf ΔE ≤ (-P)"
+      tooltip_body: |
+        Erstellt eine reduzierte Kopie deiner .ti3-Datei, die nur Messfelder
+        enthält, deren Farbfehler höchstens dem gesetzten Schwellwert
+        entspricht.
+        Nützlich, wenn schlecht gemessene Felder das Profil nach unten
+        ziehen.  Aktiviere die Option und setze das maximal
+        akzeptable ΔE.
+
+    "-w":
+      name: "X3DOM-Visualisierung"
+      tooltip_title: "X3DOM-Visualisierung (-w)"
+      tooltip_body: |
+        Erzeugt eine interaktive 3D-HTML-Visualisierung der Farbfehler
+        deines Profils.  Öffne die entstehende .x3d.html-Datei in
+        einem modernen Browser, um zu erkunden, welche Teile des Farbraums
+        die größten Fehler haben.
+
+  printcal:
+
+    "-v":
+      name: "Ausführlichkeit"
+      tooltip_title: "Ausführlichkeit (-v)"
+      tooltip_body: |
+        Steuert, wie viel Ausgabe printcal während der Kalibrierung
+        schreibt.
+          0 = still
+          1 = grundlegender Fortschritt (Standard)
+          2 = detaillierte Pro-Kanal-Infos
+          3 = Debug-Ausgabe
+
+    "-s":
+      name: "Kurvenglättung"
+      tooltip_title: "Kurvenglättung (-s)"
+      tooltip_body: |
+        Steuert, wie stark die Kalibrierungskurven zusätzlich geglättet
+        werden.  Höhere Werte ergeben glattere, aber weniger präzise Kurven.
+
+        Standard: 1.0 — gut für die meisten Drucker.
+        Erhöhen (z. B. 2.0–5.0), wenn der Drucker eine unruhige Tonwert-
+        antwort hat oder die Kalibrierungskurven zackig aussehen.
+
+    "-z":
+      name: "Kurvenauflösung"
+      tooltip_title: "Kurvenauflösung (-z)"
+      tooltip_body: |
+        Anzahl der Stufen in den ausgegebenen Kalibrierungskurven-Tabellen.
+        Höhere Werte geben feinere Auflösung, aber größere .cal-Dateien.
+        Der Standard (256) passt für praktisch alle Drucker.
+
+    "-A":
+      name: "Hersteller"
+      tooltip_title: "Hersteller (-A)"
+      tooltip_body: |
+        Setzt die Hersteller-Beschreibung in der .cal-Datei.
+        Rein informativ — die Kalibrierungskurven bleiben unberührt.
+
+    "-M":
+      name: "Modell"
+      tooltip_title: "Modell (-M)"
+      tooltip_body: |
+        Setzt die Druckermodell-Beschreibung in der .cal-Datei.
+        Rein informativ — die Kalibrierungskurven bleiben unberührt.
+
+    "-D":
+      name: "Beschreibung"
+      tooltip_title: "Beschreibung (-D)"
+      tooltip_body: |
+        Setzt eine menschenlesbare Beschreibung in der .cal-Datei.
+        Rein informativ — die Kalibrierungskurven bleiben unberührt.
+
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyright (-C)"
+      tooltip_body: |
+        Setzt den Copyright-Text in der .cal-Datei.
+        Rein informativ — die Kalibrierungskurven bleiben unberührt.
+
+  applycal:
+
+    "-v":
+      name: "Ausführlich"
+      tooltip_title: "Ausführlich (-v)"
+      tooltip_body: |
+        Gibt detaillierte Informationen zur angewendeten Kalibrierung aus,
+        einschließlich Kurvenstatistiken pro Kanal.

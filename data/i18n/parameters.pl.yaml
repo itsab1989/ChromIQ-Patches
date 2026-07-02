@@ -1,0 +1,1152 @@
+# Polish overlay for data/parameters.yaml — merged in translate_parameters()
+parameters:
+  targen:
+    "-d":
+      name: "Typ urządzenia"
+      tooltip_title: "Typ urządzenia (-d)"
+      tooltip_body: |-
+        Określa kombinację barwników urządzenia wyjściowego.
+
+        Przestrzenie druku są subtraktywne: wartość urządzenia 0 = biel
+        (brak atramentu), maksimum = czerń (pełny atrament).  Przestrzenie
+        wideo/ekranowe są addytywne: wartość 0 = czerń, maksimum = biel.
+
+        Częste wybory:
+          • Druk szary (-d 0)    — monochromatyczna drukarka w skali
+                                   szarości
+          • Wideo szare (-d 1)   — jednokanałowy ekran/monitor
+          • Druk RGB (-d 2)      — standardowa drukarka atramentowa RGB
+                                   (domyślnie, zalecane)
+          • Wideo RGB (-d 3)     — ekran/monitor RGB
+          • CMYK (-d 4)          — atramentówka czterokolorowa lub maszyna
+                                   offsetowa
+          • CMY (-d 5)           — trzy kolory, bez osobnego kanału czerni
+
+        Opcje 6–15 są dla specjalnych atramentówek wielokanałowych z
+        dodatkowymi atramentami (jasny cyjan/magenta, pomarańczowy,
+        zielony, fioletowy itd.).  Użyj -D (eksperci), aby doprecyzować
+        zestaw barwników w razie potrzeby.
+      labels:
+        - "Druk szary"
+        - "Wideo szare"
+        - "Druk RGB (zalecane)"
+        - "Wideo RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + jasne CM"
+        - "CMYK + jasne CMK"
+        - "CMYK + czerwony + niebieski"
+        - "CMYK + pomarańczowy + zielony"
+        - "CMYK + czerw. + ziel. + nieb."
+        - "CMYK + pomar. + ziel. + fiolet"
+        - "CMYK + pomar. + ziel. + nieb."
+        - "CMYK + jasne CMK + b. jasna K"
+        - "CMYK + pomar. + ziel. + jasne CM"
+        - "CMYK + jasne CM + średnie CM"
+    "-D":
+      name: "Barwnik +/−"
+      tooltip_title: "Dodaj/usuń barwnik (-D)"
+      tooltip_body: |-
+        Modyfikuje zestaw barwników ustalony przez Typ urządzenia (-d),
+        dodając lub usuwając pojedynczy barwnik.  Jeśli wybrany barwnik
+        jest już w zestawie — zostaje usunięty; jeśli go brakuje —
+        zostaje dodany.
+
+        Typowe zastosowania:
+          • Dodanie pomarańczowego (-D 5) do standardowego CMYK dla
+            rozszerzonego gamutu
+          • Dodanie jasnego cyjanu (-D 11) / jasnej magenty (-D 12) do
+            CMYK dla gładszych przejść w światłach
+
+        Włącz kilka pozycji, aby nawarstwić dodatkowe barwniki (każda
+        włączona pozycja odsłania następną, do 11 zmian łącznie).
+
+        Dla standardowych typów urządzeń 0–5 zostaw wyłączone.
+      labels:
+        - "Addytywny"
+        - "Cyjan"
+        - "Magenta"
+        - "Żółty"
+        - "Czarny"
+        - "Pomarańczowy"
+        - "Czerwony"
+        - "Zielony"
+        - "Niebieski"
+        - "Fioletowy"
+        - "Biały"
+        - "Jasny cyjan"
+        - "Jasna magenta"
+        - "Jasny żółty"
+        - "Jasny czarny"
+        - "Średni cyjan"
+        - "Średnia magenta"
+        - "Średni żółty"
+        - "Średni czarny"
+        - "Bardzo jasny czarny"
+    "-f":
+      name: "Łączna liczba pól"
+      tooltip_title: "Łączna liczba pól (-f)"
+      tooltip_body: |-
+        Ustala łączną liczbę pól kolorów.  Więcej pól = dokładniejszy
+        profil, ale dłuższy druk i pomiar.
+        Typowe zakresy dla atramentówki RGB:
+          • Szybki test:     400–600
+          • Standard:        800–1200
+          • Wysoka jakość:   1500–2000
+          • Najwyższa:       2500–3000
+
+        Auto (obok pola liczbowego): gdy zaznaczone, liczba pól jest
+        liczona na bieżąco z papieru, przyrządu, double density, lewej
+        krawędzi, skali pól, marginesu i pola Strony w sekcji printtarg —
+        wybierana jest największa wartość wypełniająca dokładnie tę
+        liczbę arkuszy bez pustych miejsc.  Pole jest wyłączone, dopóki
+        Auto działa, i pokazuje bieżące oszacowanie.  Dla układów
+        niestandardowych (nie-domyślna skala pól lub margines) Auto
+        wykonuje krótkie wyszukiwanie binarne z targen — wartość może
+        aktualizować się z sekundowym opóźnieniem.
+
+        W trybie prowadzonym liczona automatycznie z bazy pól-na-stronę ×
+        wybrana liczba stron.
+        W trybie prowadzonym ustaw 0 dla obliczenia automatycznego.
+    "-e":
+      name: "Pola białe"
+      tooltip_title: "Pola białe (-e)"
+      tooltip_body: |-
+        Ile pól czystej bieli papieru dodać do wzorca. Przyrząd mierzy
+        je, aby nauczyć się, jak biały dokładnie jest twój papier —
+        kotwicząc jasny koniec profilu. 4 to dobre domyślne; bardzo
+        błyszczące papiery mogą zyskać na kilku polach więcej.
+
+        Auto (pole wyboru):
+        Włącz „Auto”, a ChromIQ dobierze liczbę za ciebie, według liczby
+        pól całego wzorca — mały jednostronicowy wzorzec dostaje mało
+        pól białych, duży wielostronicowy więcej, bez twojego udziału.
+
+        Jak liczona jest wartość Auto:
+          • Wzorzec około 560 pól dostaje 4 pola białe.
+          • Za każdym mniej więcej podwojeniem wzorca liczba rośnie
+            o 50% (4 → 6 → 8 …).
+          • Nigdy nie przekracza 8 (więcej tylko marnuje miejsce) i
+            nigdy nie spada poniżej 2.
+
+        Z włączonym Auto pole jest wyłączone i pokazuje „Auto”.
+        Wyłącz w każdej chwili, aby wpisać własną liczbę.
+    "-B":
+      name: "Pola czarne"
+      tooltip_title: "Pola czarne (-B)"
+      tooltip_body: |-
+        Ile pól o maksymalnym ataramencie (czerń urządzenia) dodać do
+        wzorca. Przyrząd mierzy je, aby nauczyć się najciemniejszego
+        tonu, jaki drukarka potrafi wytworzyć — kotwicząc ciemny koniec
+        profilu. 4 to dobre domyślne dla drukarek RGB.
+
+        Auto (pole wyboru):
+        Włącz „Auto”, a ChromIQ dobierze liczbę za ciebie, według liczby
+        pól całego wzorca — mały wzorzec dostaje mało pól czarnych, duży
+        więcej.
+
+        Jak liczona jest wartość Auto:
+          • Wzorzec około 560 pól dostaje 4 pola czarne.
+          • Za każdym mniej więcej podwojeniem wzorca liczba rośnie
+            o 50% (4 → 6 → 8 …).
+          • Nigdy nie przekracza 8 i nigdy nie spada poniżej 2.
+
+        Z włączonym Auto pole jest wyłączone i pokazuje „Auto”.
+        Wyłącz w każdej chwili, aby wpisać własną liczbę.
+    "-g":
+      name: "Kroki osi szarości"
+      tooltip_title: "Kroki osi szarości (-g)"
+      tooltip_body: |-
+        Dodatkowe neutralne szare pola rozłożone równomiernie od bieli do
+        czerni. Pomagają profilowi czysto odtwarzać szarości, bez
+        przebarwień — ważne dla fotografii czarno-białej i tonów
+        neutralnych. Przybliżona wskazówka przy ręcznym ustawianiu: 0 dla
+        szybkiego profilu, 50–100 dla standardowego, 128+ dla wysokiej
+        jakości.
+
+        Auto (pole wyboru):
+        Włącz „Auto”, a ChromIQ dobierze liczbę za ciebie, proporcjonalnie
+        do liczby pól całego wzorca — większy wzorzec dostaje dłuższą i
+        drobniejszą rampę szarości.
+
+        Jak liczona jest wartość Auto:
+          • Wzorzec około 560 pól dostaje 32 kroki szarości.
+          • Za każdym mniej więcej podwojeniem wzorca kroki też się
+            podwajają (32 → 64 → 128).
+          • Nigdy nie przekracza 128 i nigdy nie spada poniżej 8.
+
+        Z włączonym Auto pole jest wyłączone i pokazuje „Auto”.
+        Wyłącz w każdej chwili, aby wpisać własną liczbę.
+
+        (Tryb prowadzony ustawia to zawsze automatycznie według tej samej
+        logiki.)
+    "-G":
+      name: "Dokładna optymalizacja"
+      tooltip_title: "Dokładna optymalizacja (-G)"
+      tooltip_body: |-
+        Każe targen poświęcić dodatkowy czas na rozmieszczenie pól tak
+        równomiernie, jak to możliwe, na gamucie drukarki. Zestaw pól
+        jest tego samego rodzaju (OFPS — Optimised Farthest Point
+        Sampling, domyślna dystrybucja) w obu przypadkach; to tylko
+        przełącza z trybu „szybkiego” na „dokładny”.
+
+        Zalecane WŁĄCZONE dla każdego wzorca, który naprawdę wydrukujesz
+        i zmierzysz: kilka sekund dodatkowych obliczeń przy generowaniu
+        daje mierzalnie lepszy profil.
+
+        Wyłącz tylko, gdy szybko iterujesz nad ustawieniami wzorca i nie
+        zależy ci na absolutnej jakości pól (np. testy układu przed
+        ostatecznym wzorcem).
+
+        Nie ma efektu, gdy „Dystrybucja pól” ustawiona jest na coś innego
+        niż OFPS — dystrybucje alternatywne (losowa, quasi-losowa, siatka
+        BCC, …) ignorują tę opcję.
+    "-s":
+      name: "Kroki pojedynczego kanału"
+      tooltip_title: "Kroki pojedynczego kanału (-s)"
+      tooltip_body: |-
+        Dodaje dodatkowe pola w rampach dla pojedynczych kanałów (R, G, B
+        osobno). Przydatne do scharakteryzowania zachowania poszczególnych
+        atramentów.
+        Typowo: 0 dla szybkiego, 20–50 dla standardu, 50–100 dla
+        wysokiego.
+    "-c":
+      name: "Profil wstępny"
+      tooltip_title: "Profil wstępny (-c)"
+      tooltip_body: |-
+        Istniejący profil ICC dla tej kombinacji drukarki/papieru, użyty
+        do wstępnego ukształtowania rozkładu pól w przestrzeni
+        percepcyjnej.  Użycie tu wcześniejszego profilu daje pola
+        rozłożone równomierniej w gamucie wyjściowym, z większą
+        dokładnością w drugim przejściu profilowania.
+        Dla pierwszego profilu zostaw puste.
+    "-C":
+      name: "Nadpisanie kalibracji"
+      tooltip_title: "Nadpisanie kalibracji (-C)"
+      tooltip_body: |-
+        Opcjonalny plik .cal, którego krzywe kalibracji są stosowane przy
+        szacowaniu limitu atramentu podczas generowania pól.  Zastępuje
+        każdy .cal osadzony w pliku .ti3 profilu ICC z wcześniejszego
+        przejścia profilowania.
+
+        Użyj, gdy masz zweryfikowaną kalibrację urządzenia (np. z
+        printcal/applycal) i chcesz, aby targen uwzględnił ją przy
+        obliczaniu, ile pól potrzeba w strefie cieni.
+
+        Wpisz w pole „none” (bez cudzysłowów), aby jawnie zablokować
+        użycie jakiegokolwiek .cal, nawet osadzonego w .ti3.
+
+        W większości przepływów zostaw puste — potrzebne tylko, gdy
+        zarządzasz osobną krzywą kalibracji, niezależną od profilu.
+    "-n":
+      name: "Kroki osi neutralnej"
+      tooltip_title: "Kroki osi neutralnej (-n)"
+      tooltip_body: |-
+        Dodaje dodatkowe pola klinowe wzdłuż percepcyjnie prawdziwej osi
+        neutralnej twojej drukarki + papieru, zdefiniowanej przez profil
+        wstępny wczytany przez -c.
+
+        Różnica względem -g (kroki osi szarości):
+          • -g idzie po wartościach RGB urządzenia (R = G = B): 0/0/0,
+            32/32/32, 64/64/64 … Zakłada, że równe wartości drukują
+            neutralną szarość — prawda tylko na idealnie zlinearyzowanej
+            drukarce.  Na prawdziwej drukarce „rampa szarości urządzenia”
+            ma zwykle przebarwienie.
+          • -n pyta dostarczony profil: „jakich wartości RGB TA drukarka
+            naprawdę potrzebuje, aby odtworzyć neutralne pole L*a*b*
+            (a* = b* = 0) na każdym kroku jasności?”  Te (zwykle nierówne)
+            wartości RGB są dodawane jako pola.
+
+        Różnica względem -N (nacisk na oś neutralną):
+          • -N to pokrętło 0–1 przechylające istniejącą dystrybucję OFPS
+            ku strefie neutralnej.  Nie dodaje nazwanych kroków.
+          • -n dodaje jawne pola neutralne, wyprowadzone z profilu, jako
+            uzupełnienie tego, co daje reszta dystrybucji.
+
+        Kiedy używać:
+          • Masz już profil ICC pierwszego przejścia dla tego papieru i
+            tworzysz wzorzec dopracowujący.  Wczytaj ten profil w Profil
+            wstępny (-c), a potem ustaw -n na 32–64, aby gęsto
+            scharakteryzować właściwą oś neutralną.
+          • Dla pierwszego wzorca bez -c zostaw 0 — bez profilu wstępnego
+            nie istnieje „prawdziwa” oś neutralna do próbkowania, a -g
+            i tak pokrywa rampę w przestrzeni urządzenia.
+
+        Typowe wartości dopracowania: 32 do zwykłej pracy, 64 dla
+        fine-art / prób, gdzie neutralność jest krytyczna.
+
+        Wymaga ustawionego -c; inaczej nie działa.
+    "-N":
+      name: "Nacisk na oś neutralną"
+      tooltip_title: "Nacisk na oś neutralną (-N)"
+      tooltip_body: |-
+        Steruje tym, jak mocno pola skupiają się przy osi neutralnej.
+        0.0 = bez nacisku, 1.0 = maksymalne skupienie na szarości.
+        Domyślne 0.5 pasuje do większości drukarek.
+    "-V":
+      name: "Nacisk na ciemne obszary"
+      tooltip_title: "Nacisk na ciemne obszary (-V)"
+      tooltip_body: |-
+        Dodaje dodatkowe pola w ciemnych obszarach (cieniach) gamutu.
+        1.0 = bez nacisku (domyślnie).  Zwiększ do 2.0–3.0 dla drukarek
+        o złożonym zachowaniu w cieniach (np. matowe papiery fine-art).
+    "-l":
+      name: "Łączny limit atramentu (%)"
+      tooltip_title: "Łączny limit atramentu (-l)"
+      tooltip_body: |-
+        Maksymalna łączna ilość atramentu, jaką drukarka może nałożyć na
+        papier, w procentach. 100% = jedna pełna warstwa, 200% = dwie
+        pełne warstwy (np. 100C + 100K), i tak dalej.
+
+        Dlaczego to ważne (zwłaszcza dla CMYK / CMYK+N):
+        Bez limitu targen radośnie generuje pola typu 100C + 100M +
+        100Y + 100K = 400%. Tyle mokrego atramentu może tworzyć kałuże,
+        schnąć wolno, rozmazywać się, a nawet falować papier — a profil
+        zbudowany z takich pól przewiduje kolory, których drukarka w
+        rzeczywistości nie wytworzy.
+
+        Jak dobrać wartość:
+          • Większość atramentówek CMYK:    260 – 320%
+          • Papiery powlekane / błyszczące: 320 – 360%
+          • Papier gazetowy, niska jakość:  220 – 260%
+          • Rozszerzony gamut (CMYKOGV):    400 – 500%  (więcej atramentów
+                                            dzieli wspólny budżet)
+
+        W razie wątpliwości: zajrzyj do dokumentacji drukarki lub
+        wytycznych profilu papieru, albo zmierz: wydrukuj mały klin
+        testowy limitu atramentu i wybierz najwyższą wartość, która
+        schnie czysto bez rozmazywania.
+
+        Dla przepływów RGB: zwykle zostaw wyłączone — atramentówki RGB
+        zarządzają limitem atramentu wewnętrznie, więc targen nie musi
+        dzielić budżetu między kanały.
+
+        Zaznacz pole, aby włączyć.
+    "__targen_distribution__":
+      name: "Dystrybucja pól"
+      tooltip_title: "Dystrybucja pól (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |-
+        Jak targen decyduje, gdzie umieścić każde pole koloru w gamucie
+        drukarki. Różne algorytmy oferują różne kompromisy między
+        pokryciem, równomiernością a szybkością.
+
+        Wybierz JEDEN. Wykluczają się wzajemnie — wybór jednego całkiem
+        zastępuje domyślne rozmieszczanie OFPS.
+
+        OFPS (domyślny, zalecany):
+        Optimised Farthest Point Sampling. Iteracyjnie umieszcza każde
+        nowe pole możliwie najdalej od wszystkich istniejących —
+        najrównomierniejsze pokrycie ze wszystkich wymienionych tu
+        algorytmów. Wolniejszy od alternatyw, ale to wzorzec jakości
+        profilu. Połącz z „Dokładną optymalizacją (-G)” dla najlepszego
+        wyniku.
+
+        Incremental Far Point (-t):
+        Prostsza metoda najdalszego punktu. Szybsza od OFPS, nieco mniej
+        równomierna. Użyj, gdy OFPS jest za wolny przy bardzo dużych
+        liczbach pól i akceptujesz mały spadek jakości.
+
+        Losowa — przestrzeń urządzenia (-r):
+        Pola jednostajnie losowe w surowych wartościach urządzenia (np.
+        RGB). Najszybsza możliwa, ale pokrycie w kolorze *postrzeganym*
+        jest nierówne — marnuje pola w strefach, które oko ledwo
+        rozróżnia.
+
+        Losowa — przestrzeń percepcyjna (-R):
+        Jednostajnie losowa w kolorze postrzeganym (Lab). Lepsza od -r,
+        jeśli już ma być losowo, bo pola rozkładają się równomiernie
+        według tego, co widzi oko. Nadal mniej optymalna od OFPS przy tej
+        samej liczbie.
+
+        Quasi-losowa wypełniająca (-q / -Q):
+        Ciągi o niskiej rozbieżności (typu Sobol), wypełniające przestrzeń
+        równomierniej niż prawdziwy los, bez iteracyjnego kosztu OFPS.
+        -q w przestrzeni urządzenia, -Q w percepcyjnej. Dobry kompromis,
+        gdy OFPS jest za wolny.
+
+        Siatka regularna centrowana (BCC) (-i / -I):
+        Stała regularna siatka (każde pole otoczone 8 sąsiadami w
+        sześciennym wzorze). Deterministyczna i bardzo równomierna, ale
+        sztywna — tylko niektóre liczby pól pasują do siatki. -i w
+        przestrzeni urządzenia, -I w percepcyjnej.
+
+        Większość użytkowników powinna zostawić OFPS.
+      labels:
+        - "OFPS — optymalizowany (zalecany)"
+        - "Incremental Far Point (-t)"
+        - "Losowa — urządzenie (-r)"
+        - "Losowa — percepcyjna (-R)"
+        - "Quasi-losowa — urządzenie (-q)"
+        - "Quasi-losowa — percepcyjna (-Q)"
+        - "Siatka BCC — urządzenie (-i)"
+        - "Siatka BCC — percepcyjna (-I)"
+    "-A":
+      name: "Adaptacja OFPS"
+      tooltip_title: "Adaptacja OFPS (-A)"
+      tooltip_body: |-
+        Jak mocno OFPS nagina swoją zasadę równomiernego pokrycia, aby
+        podążać za kształtem profilu wstępnego (-c). Ma znaczenie tylko,
+        gdy wybraną dystrybucją jest OFPS ORAZ ustawiono profil -c.
+
+        0.0 = całkiem ignoruj profil — czyste równomierne pokrycie w
+              przestrzeni urządzenia, jakby -c nie podano.
+        1.0 = całkiem podążaj za profilem — skup pola tam, gdzie profil
+              mówi, że gamut drukarki jest interesujący (czyli kształt
+              rzeczywistej przestrzeni barw).
+
+        Domyślne targen to 0.10 (łagodne) dla pierwszego przejścia i 1.0,
+        gdy ustawiono -c; ChromIQ zostawia 0.10, chyba że zmienisz jawnie
+        — bez niespodziewanych zmian zachowania.
+
+        Zwiększaj ku 1.0 w przejściach dopracowujących, gdy ufasz
+        pierwszemu profilowi i chcesz, aby drugi wzorzec gęsto próbkował
+        rzeczywisty gamut drukarki zamiast pustych zakątków przestrzeni
+        urządzenia.
+
+        Zaznacz pole, aby włączyć.
+    "-m":
+      name: "Kroki wnętrza kostki"
+      tooltip_title: "Kroki wnętrza kostki (-m)"
+      tooltip_body: |-
+        Dodaje regularną siatkę pól *wewnątrz* kostki kolorów drukarki —
+        N kroków na oś (N×N×N dla RGB itd.).  Dochodzą *dodatkowo* do pól
+        wybranych przez -f, -g, -s i pozostałe liczniki.
+
+        Ustaw 0 (domyślnie), aby pominąć — niemal zawsze właściwy wybór.
+        OFPS pokrywa wnętrze kostki wydajniej.
+
+        Kiedy używać:
+          • Powtarzalność między maszynami: stała siatka jest identyczna
+            za każdym razem, niezależnie od rozmieszczeń OFPS wybranych
+            przez targen — przydatne do porównywania profili między
+            uruchomieniami.
+          • Wzorce diagnostyczne z przewidywalnymi, nazwanymi pozycjami
+            kostki.
+
+        Typowe wartości przy użyciu: 3 – 6 (kroków na oś). Liczby szybko
+        rosną — 6 kroków w RGB to 216 pól, 8 to 512.
+
+        Zaznacz pole, aby włączyć.
+    "-M":
+      name: "Kroki powierzchni kostki"
+      tooltip_title: "Kroki powierzchni kostki (-M)"
+      tooltip_body: |-
+        Dodaje regularną siatkę pól na *powierzchni* kostki kolorów
+        drukarki — N kroków na ścianę. Pola trafiają na zewnątrz
+        (podstawowe, pochodne, brzeg gamutu), nie do środka.
+
+        Ustaw 0 (domyślnie), aby pominąć.
+
+        Kiedy używać:
+          • Chcesz przypilnować konkretnie granicy gamutu i narożników
+            podstawowych/pochodnych bez wewnętrznego narzutu -m.
+          • Porównanie, jak różne atramenty/papiery przesuwają obwiednię
+            gamutu — pola powierzchniowe są najbardziej dotknięte.
+
+        Typowe wartości przy użyciu: 4 – 8 kroków na ścianę.
+
+        Zaznacz pole, aby włączyć.
+    "-b":
+      name: "Kroki siatki BCC"
+      tooltip_title: "Kroki siatki BCC (-b)"
+      tooltip_body: |-
+        Dodaje pola na siatce regularnej centrowanej (BCC) — gęstszej niż
+        zwykła siatka sześcienna, bo punkty siedzą zarówno w narożach,
+        jak i w środkach sześcianów. N to liczba podziałów na oś.
+
+        Ustaw 0 (domyślnie), aby pominąć — to pokrętło niszowe.
+
+        Kiedy używać:
+          • Chcesz regularnych, dopasowanych do siatki pozycji pól, ale z
+            lepszym upakowaniem niż -m, bez sięgania po OFPS.
+          • Scenariusze badawcze / powtarzalności, gdzie sama struktura
+            BCC jest celem.
+
+        Uwaga: to forma *licznika kroków* (dodaje do listy pól); dla
+        wzorca, którego *cała* dystrybucja jest BCC, użyj selektora
+        „Dystrybucja pól” powyżej i tam wybierz opcję siatki centrowanej.
+
+        Zaznacz pole, aby włączyć.
+  printtarg:
+    "-i":
+      name: "Przyrząd pomiarowy"
+      tooltip_title: "Przyrząd pomiarowy (-i)"
+      tooltip_body: |-
+        Mówi generatorowi wzorców, którym spektrofotometrem odczytasz
+        wydrukowany wzorzec. Siatka pól jest budowana wokół szerokości
+        paska, rozmiaru pola i rozstawu tego przyrządu — trafny wybór
+        jest kluczowy.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — ręczny czytnik pasków,
+             najczęstszy wybór. Czyta kolumnę pól jednym przejazdem.
+
+          •  i1Pro 3 Plus — wersja i1Pro 3 z większą aperturą. Czyta
+             większe pola, więc mieści się ich znacznie mniej na arkusz
+             (~5× mniej niż zwykły i1Pro).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — urządzenie
+             podstawowe. Samo czyta jedno pole naraz; z opcjonalną
+             prowadnicą po dwa (zobacz Double density).
+
+          •  SpectroScan — płaski skaner XY. Zmotoryzowane ramię czyta
+             każde pole z osobna, upychając znacznie więcej kolorów na
+             arkusz niż jakikolwiek czytnik pasków.
+
+          •  i1iSis (przez i1Profiler) — automatyczny czytnik arkuszy.
+             ChromIQ nie może sterować tym urządzeniem bezpośrednio:
+             zamiast tego zapisuje listę pól w formacie i1Profiler obok
+             wzorca, a ty kończysz przepływ tam (druk, skan, budowa
+             profilu). Karty Drukuj i Zmierz ChromIQ nie są używane z
+             tym urządzeniem.
+
+        Wybór złego przyrządu daje wzorzec, do którego urządzenie nie
+        umie się wyrównać ani go pewnie odczytać — przy pomiarze
+        zobaczysz „patches not found” albo błędy wyrównania. W trybie
+        prowadzonym układ dostosowuje się do tego wyboru automatycznie.
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (płaski)"
+        - "i1iSis (przez i1Profiler)"
+    "-h":
+      name: "Double density"
+      tooltip_title: "Double density (-h)"
+      tooltip_body: |-
+        Zmienia gęstość pól na pasek w układzie printtarg. Dokładne
+        znaczenie zależy od aktywnego przyrządu:
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — podwaja liczbę
+             pól mieszczących się w każdym pasku pomiarowym. WYMAGA
+             fizycznej prowadnicy pomiarowej; bez niej urządzenie nie
+             wyrówna się do ciaśniejszego rozstawu i czyta błędnie.
+
+          •  SpectroScan — przełącza układ wzorca z pól prostokątnych na
+             sześciokątne. Sześciokąty układają się ciaśniej, więc ~14%
+             więcej pól na arkusz. Bez dodatkowego sprzętu.
+
+        Nie ma wpływu na i1Pro i i1Pro 3 Plus i jest zwykle ukryte, gdy
+        któryś z nich jest wybrany.
+    "-p":
+      name: "Format papieru"
+      tooltip_title: "Format papieru (-p)"
+      tooltip_body: |-
+        Ustala wymiary każdego arkusza drukowanego wzorca. Wzorzec zawsze
+        wypełnia stronę od krawędzi do krawędzi — większy papier mieści
+        więcej pól, czyli bardziej szczegółowy profil z mniejszej liczby
+        arkuszy.
+
+        Wybierz format, na którym faktycznie będziesz drukować, łącznie
+        z orientacją. Czytniki pasków (rodzina i1Pro) czytają z góry na
+        dół, więc:
+
+          •  Pionowo — dłuższe paski, mniej ich. Standardowy wybór.
+
+          •  Poziomo (A4R, LetterR, 420×297…) — krótsze paski, więcej
+             ich. Użyj, gdy drukarka pewniej podaje papier poziomo albo
+             gdy arkusz pionowy zostawiłby ostatni pasek zbyt blisko
+             krawędzi papieru.
+
+        Wybierz „Niestandardowy”, aby wpisać dokładną szerokość i
+        wysokość w milimetrach, gdy żaden nazwany format nie pasuje do
+        twojego papieru.
+
+        Po zmianie formatu liczba pól i stron w podglądzie poleceń
+        aktualizuje się automatycznie.
+      labels:
+        - "A2 pionowo (420 × 594 mm)"
+        - "A2 poziomo (594 × 420 mm)"
+        - "A3+ pionowo (329 × 483 mm)"
+        - "A3+ poziomo (483 × 329 mm)"
+        - "A3 pionowo (297 × 420 mm)"
+        - "A3 poziomo (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 pionowo (210 × 297 mm)"
+        - "A4 poziomo (297 × 210 mm)"
+        - "Letter pionowo (8,5 × 11\")"
+        - "Letter poziomo (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Niestandardowy (wpisz wymiary)"
+    "-t":
+      name: "DPI wyjściowego TIFF-a"
+      tooltip_title: "Rozdzielczość TIFF (-t)"
+      tooltip_body: |-
+        Rozdzielczość wyjściowa rastrowych plików TIFF wzorca.
+        300 DPI jest zalecane dla przyrządów czytających paski i daje
+        dobry kompromis między rozmiarem pliku a ostrością pól.
+        Dla bardzo dużych wzorców użyj 200 DPI, aby zmniejszyć rozmiar.
+        Wyższe wartości (600+) rzadko są potrzebne i dają duże pliki.
+    "-L":
+      name: "Ukryj lewy pas mocowania"
+      tooltip_title: "Ukryj lewy pas mocowania (-L)"
+      tooltip_body: |-
+        Usuwa pas mocowania po lewej stronie, odzyskując ~15 mm
+        szerokości strony na dodatkowe kolumny pól.
+        Włącz, chyba że używasz fizycznego uchwytu strony.
+        Wszystkie wartości bazy danych pól zakładają tę opcję WŁĄCZONĄ.
+    "-a":
+      name: "Skala rozmiaru pól"
+      tooltip_title: "Skala rozmiaru pól (-a)"
+      tooltip_body: |-
+        Skaluje równomiernie rozmiar pól i separatorów.
+        1.0 to domyślne (rozmiar zoptymalizowany pod przyrząd).
+        Zwiększ do 1.5–2.0 na papierach szorstkich / fakturowanych,
+        gdzie przyrząd potrzebuje większej powierzchni pomiaru.
+        Poniżej 1.0 mieści się więcej pól na stronę, ale na niektórych
+        przyrządach mogą pojawić się błędy odczytu.
+        Uwaga: wartość inna niż domyślna uruchamia przeliczenie metodą
+        wyszukiwania binarnego na żywo zamiast szybkiego odczytu z
+        tabeli.
+    "-m":
+      name: "Margines (mm)"
+      tooltip_title: "Margines (-m / -M)"
+      tooltip_body: |-
+        Ustala margines w milimetrach zarówno dla obszaru zadruku (-m),
+        jak i wymiarów pliku TIFF (-M).  Oba pozostają zsynchronizowane.
+        6 mm odpowiada minimalnym marginesom większości drukarek.
+        Zmniejszaj tylko, jeśli drukarka obsługuje druk bez marginesów.
+
+        Wybranie i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus automatycznie
+        podnosi wartość do 10 mm, aby optyka czytnika pasków nie
+        zjeżdżała na goły brzeg papieru (błędy „not enough patches
+        read”).  Powrót do ColorMunki / SpectroScan przywraca 6 mm.
+        Wartość własna (inna niż 6 lub 10) jest zachowywana przy zmianach
+        przyrządu.
+
+        Tabele pól-na-stronę istnieją tylko dla 6 i 10 mm — inne wartości
+        uruchamiają przeliczenie wyszukiwaniem binarnym na żywo.
+    "-r":
+      name: "Zachowaj kolejność (bez losowania)"
+      tooltip_title: "Bez losowania (-r)"
+      tooltip_body: |-
+        Domyślnie printtarg losuje pozycje pól, aby zmniejszyć artefakty
+        dryfu przyrządu.
+        Włącz tę opcję tylko, gdy testujesz konkretną sekwencję pól albo
+        gdy przyrząd wymaga pól uporządkowanych.
+    "-b":
+      name: "Wymuś separatory cz-b"
+      tooltip_title: "Wymuś separatory czarno-białe (-b)"
+      tooltip_body: |-
+        Wymusza czarno-białe separatory między paskami zamiast
+        kolorowych.  Nie wpływa na liczbę pól ani geometrię układu.
+
+        Nie ma efektu, gdy działa „Bez separatorów” (-n) — wtedy opcja
+        jest wyłączona i pomijana w poleceniu printtarg.
+    "-P":
+      name: "Nie ograniczaj pasków"
+      tooltip_title: "Nie ograniczaj długości pasków (-P)"
+      tooltip_body: |-
+        Domyślnie printtarg ogranicza długość pasków, aby każdy mieścił
+        się w papierze bez wystawania.
+        Ta opcja usuwa limit, pozwalając na bardzo długie paski.
+        Przydatne dla wąskiego papieru w roli albo gdy chcesz możliwie
+        mało pasków przy danej liczbie pól.
+        Uwaga: przy wielu polach paski mogą wyjść poza krawędź papieru —
+        sprawdź wygenerowany TIFF przed drukiem.
+    "-N":
+      name: "TIFF N-kanałowy (>4 atramenty)"
+      tooltip_title: "TIFF N-kanałowy (-N)"
+      tooltip_body: |-
+        Dla drukarek z więcej niż 4 kanałami atramentu (np. CMYK plus
+        dodatkowe kolory dodatkowe): standardowy TIFF obsługuje najwyżej
+        4 kanały.  Ta opcja każe printtarg kodować dodatkowe kanały w
+        slotach kanału alfa TIFF-a, zachowując wszystkie wartości
+        atramentów w jednym pliku.
+
+        Włącz tylko, jeśli sterownik drukarki lub RIP oczekuje TIFF-a
+        wielokanałowego.  Do zwykłego profilowania RGB lub CMYK nie jest
+        potrzebne.
+    "-K":
+      name: "Zastosuj plik kalibracji"
+      tooltip_title: "Zastosuj kalibrację do pól (-K)"
+      tooltip_body: |-
+        Użyj, gdy drukarka nie ma żadnego wbudowanego systemu kalibracji
+        — czyli sterownik lub RIP nie potrafi sam zastosować krzywej
+        kalibracji.
+
+        Najpierw uruchom printcal Argylla, aby wytworzyć plik .cal
+        opisujący, jak zlinearyzować drukarkę.  Potem przekaż go tutaj:
+        printtarg przelicza każdą wartość koloru pól przez krzywe
+        kalibracji przed wygenerowaniem wzorca — wydrukowany wzorzec już
+        odzwierciedla skalibrowane zachowanie urządzenia.  Plik .cal jest
+        też osadzany w pliku .ti2, aby colprof mógł się do niego odwołać
+        przy budowie profilu ICC.
+
+        Typowe zastosowanie: biurkowe atramentówki bez wbudowanej
+        linearyzacji, sterowane bezpośrednio TIFF-em bez pośredniego RIP.
+
+        Wyklucza się wzajemnie z „Osadź kalibrację” (-I) — tylko jedna
+        opcja kalibracji może być aktywna naraz.
+    "-I":
+      name: "Tylko osadź kalibrację"
+      tooltip_title: "Osadź kalibrację bez stosowania (-I)"
+      tooltip_body: |-
+        Użyj, gdy drukarka lub RIP już natywnie stosuje krzywą kalibracji
+        — na przykład produkcyjny RIP atramentowy z własną tablicą LUT
+        linearyzacji albo drukarka z wbudowaną kalibracją gęstości.
+
+        Wtedy nie chcesz, aby printtarg przeliczał wartości pól (robi to
+        drukarka), ale chcesz, aby colprof wiedział o kalibracji.  -I
+        osadza plik .cal w wyjściowym .ti2 wyłącznie jako metadane,
+        zostawiając wszystkie wartości nietknięte.
+
+        Typowe zastosowanie: profesjonalne RIP-y atramentowe (np. EFI
+        Fiery, Wasatch, ColorBurst) lub drukarki z aktywną wbudowaną
+        linearyzacją podczas druku profilującego.
+
+        Wyklucza się wzajemnie z „Zastosuj kalibrację” (-K) — tylko jedna
+        opcja kalibracji może być aktywna naraz.
+    "-C":
+      name: "Wyłącz kompresję TIFF"
+      tooltip_title: "Wyłącz kompresję TIFF (-C)"
+      tooltip_body: |-
+        Tworzy nieskompresowane pliki TIFF zamiast domyślnej kompresji
+        LZW.  Pliki nieskompresowane są większe, ale uniwersalnie zgodne
+        ze wszystkimi RIP-ami i sterownikami.
+        Włącz, jeśli twój tor druku odrzuca lub psuje skompresowane
+        TIFF-y.
+    "-D":
+      name: "Dithering 16 → 8 bitów"
+      tooltip_title: "Dithering wyjścia 8-bitowego (-D)"
+      tooltip_body: |-
+        Przy generowaniu 8-bitowego TIFF-a używa ditheringu z dyfuzją
+        błędu do redukcji z wewnętrznej precyzji 16-bitowej.  Zmniejsza
+        to pasmowanie w gładkich przejściach, które inaczej powodowałaby
+        kwantyzacja.
+        Działa tylko, gdy wybrano wyjście TIFF 8-bitowe.
+    "-U":
+      name: "Pomiń nagłówek kolorów CUPS"
+      tooltip_title: "Pomiń nagłówek CMM CUPS (-U)"
+      tooltip_body: |-
+        Usuwa komentarz 'cupsJobTicket: cups-disable-cmm' z wyjściowych
+        plików PostScript i EPS.  Niektóre wersje CUPS reagują na ten
+        komentarz różnie.
+        Opcja dotyczy tylko wyjścia PS/EPS i nie ma wpływu na pliki TIFF.
+        Włącz tylko, jeśli podczas druku stosowane jest nieoczekiwane
+        zarządzanie kolorem.
+    "-R":
+      name: "Ziarno losowania"
+      tooltip_title: "Ziarno losowania (-R)"
+      tooltip_body: |-
+        Ustala początkowe ziarno algorytmu losowania pól.  To samo ziarno
+        z tą samą liczbą pól zawsze daje ten sam układ — wzorce stają się
+        w pełni odtwarzalne.
+        Przydatne w badaniach albo gdy później musisz odtworzyć
+        identyczny wzorzec.
+        Nie ma efektu, gdy działa „Zachowaj kolejność” (-r).
+    "-Q":
+      name: "Bity kwantyzacji"
+      tooltip_title: "Kwantyzuj wartości pól (-Q)"
+      tooltip_body: |-
+        Zaokrągla wszystkie wartości kolorów pól do podanej głębi bitowej
+        przed wygenerowaniem wzorca.  Na przykład -Q 8 zaokrągla
+        wszystkie wartości do precyzji 8 bitów (256 poziomów).
+        Użyj, gdy twój tor druku wprowadza pasmowanie przy konkretnej
+        głębi bitowej i chcesz testować dokładnie na tym poziomie
+        precyzji.
+    "-A":
+      name: "Skaluj tylko separatory"
+      tooltip_title: "Skaluj tylko separatory (-A)"
+      tooltip_body: |-
+        Stosuje dodatkowy współczynnik skali tylko do pasków
+        separatorów, bez zmiany rozmiaru pól ustawionego przez -a.
+        Wartości powyżej 1.0 poszerzają separatory; poniżej 1.0 je
+        zwężają.  Przydatne dla przyrządów potrzebujących większego
+        odstępu między paskami albo do odzyskania miejsca przez zwężenie
+        separatorów przy stałym rozmiarze pól.
+
+        Nie ma efektu, gdy działa „Bez separatorów” (-n) — wtedy opcja
+        jest wyłączona i pomijana w poleceniu printtarg.
+    "-n":
+      name: "Bez separatorów"
+      tooltip_title: "Bez separatorów (-n)"
+      tooltip_body: |-
+        Usuwa wszystkie paski separatorów między polami i paskami.
+        Separatory zwykle pomagają przyrządowi rozpoznawać granice i
+        kierunek pasków.
+        Wyłącz je tylko, jeśli twój przepływ pomiarowy jawnie na nich
+        nie polega (np. niektóre konfiguracje ze skanerem płaskim).
+
+        Gdy działa, „Wymuś separatory cz-b” (-b) i „Skaluj tylko
+        separatory” (-A) są automatycznie wyłączane — obie dotyczą tylko
+        separatorów.
+    "-c":
+      name: "Wymuś separatory kolorowe"
+      tooltip_title: "Wymuś separatory kolorowe (-c)"
+      tooltip_body: |-
+        Wymusza rysowanie obszarów separatorów między polami w kolorze
+        zamiast domyślnego (które zależnie od profilu przyrządu bywa
+        czarno-białe).  Może poprawić rozpoznawanie pasków na niektórych
+        kolorowych atramentówkach, gdzie czarne separatory mają mały
+        kontrast z ciemnymi polami.
+  chartread:
+    "-B":
+      name: "Odczyt dwukierunkowy wył."
+      tooltip_title: "Wyłącz odczyt dwukierunkowy (-B)"
+      tooltip_body: |-
+        Uniemożliwia chartread automatyczne wykrywanie, czy pasek
+        zeskanowano do przodu czy do tyłu. ChromIQ zostawia to domyślnie
+        wyłączone, aby przyrząd mógł czytać paski w obu kierunkach.
+
+        Włącz tylko, jeśli przyrząd zgłasza fałszywe błędy kierunku
+        paska podczas pomiaru.
+    "-b":
+      name: "Wymuś odczyt dwukierunkowy"
+      tooltip_title: "Wymuś odczyt dwukierunkowy (-b)"
+      tooltip_body: |-
+        Zmusza chartread do akceptowania paska zeskanowanego w dowolnym
+        kierunku.
+
+        Normalnie chartread wykrywa kierunek automatycznie tylko na
+        wzorcach losowych; na wzorcu o stałej kolejności czyta w jednym
+        kierunku i odrzuca paski skanowane odwrotnie. Włącz, aby mimo to
+        wymusić wykrywanie — przydatne dla rodziny i1 Pro, która chętnie
+        czyta w obie strony. To przeciwieństwo -B; obowiązywać może
+        tylko jedno.
+    "-S":
+      name: "Ukryj ostrzeżenia"
+      tooltip_title: "Ukryj ostrzeżenia (-S)"
+      tooltip_body: |-
+        Ukrywa niekrytyczne okna ostrzeżeń chartread.
+        Zalecane dla sesji pomiarowych bez nadzoru lub seryjnych.
+        Błędy uniemożliwiające zbudowanie profilu są nadal zgłaszane.
+    "-N":
+      name: "Bez kalibracji początkowej"
+      tooltip_title: "Wyłącz kalibrację początkową (-N)"
+      tooltip_body: |-
+        Pomija automatyczną kalibrację na białej płytce przy starcie.
+        Użyj tylko, jeśli przyrząd był już kalibrowany w tej sesji i
+        chcesz mierzyć kolejne wzorce bez rekalibracji.
+    "-p":
+      name: "Tryb pole po polu"
+      tooltip_title: "Tryb pole po polu (-p)"
+      tooltip_body: |-
+        Przełącza z odczytu pasków na pomiar pojedynczych pól.
+        Przydatne do pojedynczych pomiarów ręcznych albo gdy odczyt
+        pasków zawodzi na danym papierze.  Zdecydowanie wolniejsze na
+        dużych wzorcach.
+    "-H":
+      name: "Tryb spektralny wys. rozdz."
+      tooltip_title: "Widmo wysokiej rozdzielczości (-H)"
+      tooltip_body: |-
+        Włącza spektralne próbkowanie wysokiej rozdzielczości na
+        przyrządach, które je obsługują (np. i1Pro 2/3).  Daje
+        dokładniejsze wartości Lab, ale nieznacznie wydłuża pomiar.
+    "-T":
+      name: "Tolerancja spójności"
+      tooltip_title: "Mnożnik tolerancji pól (-T)"
+      tooltip_body: |-
+        Mnożnik wbudowanego w chartread progu spójności pól — nie
+        wartość delta-E. chartread odczytuje każde pole ponownie i
+        odrzuca paski, których odczyty różnią się o więcej niż próg ×
+        ta liczba.
+
+        Niżej = surowiej. Surowe ustawienie wcześnie łapie prawdziwe
+        problemy: zatkane dysze, mało atramentu, brudne rolki bębna,
+        niestabilny toner. Przy zdrowej parze drukarka +
+        spektrofotometr domyślne 0.7 zostawia wygodny zapas;
+        doświadczeni użytkownicy z printerknowledge.com używają 0.4 z
+        i1 Pro 2 / 3.
+
+        Zwiększ do 0.8–1.5, jeśli na papierach fakturowanych, matowych
+        lub fine-art dostajesz fałszywe błędy „inconsistent patch” —
+        tam sama powierzchnia wnosi rzeczywistą zmienność. Wartości
+        powyżej 2 głównie maskują prawdziwe problemy; jeśli ich
+        potrzebujesz, najpierw napraw drukarkę.
+    "-l":
+      name: "Zapisz wartości D50 L*a*b*"
+      tooltip_title: "Zapisz L*a*b* zamiast XYZ (-l)"
+      tooltip_body: |-
+        Zapisuje dane pomiarowe jako wartości L*a*b* D50 zamiast XYZ.
+        Większość przepływów używa XYZ (domyślnie).  Włącz tylko, jeśli
+        dalsze narzędzia wymagają konkretnie wejścia L*a*b*.
+    "-X":
+      name: "Korekcja kolorymetru"
+      tooltip_title: "Macierz korekcji kolorymetru (-X)"
+      tooltip_body: |-
+        Stosuje macierz korekcji kolorymetru (.ccmx) albo spektralny
+        zestaw kalibracji (.ccss), aby poprawić dokładność kolorymetru.
+        Dotyczy tylko kolorymetrów (nie spektrofotometrów).
+        Właściwy plik weź od producenta przyrządu albo utwórz
+        narzędziami ccss/ccmx ArgyllCMS.
+  colprof:
+    "-D":
+      name: "Opis profilu"
+      tooltip_title: "Opis profilu (-D)"
+      tooltip_body: |-
+        Nazwa osadzona w profilu ICC — pokazywana w menu zarządzania
+        kolorem aplikacji takich jak Photoshop, Lightroom czy Podgląd.
+
+        Używaj spójnego formatu z drukarką, papierem, rodzajem atramentu
+        i datą, aby właściwy profil był łatwy do znalezienia:
+
+          Drukarka · Papier · Rodzaj atramentu · Data
+          np. „Epson P900 · Canson Baryta · Chromatic · 2026-04”
+
+        Plik wyjściowy bierze nazwę z pliku .ti3 — zachowaj spójność z
+        opisem, używając podkreśleń zamiast spacji:
+          np. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+    "-a":
+      name: "Algorytm profilu"
+      tooltip_title: "Algorytm profilu (-a)"
+      tooltip_body: |-
+        Wybiera algorytm transformacji kolorów:
+        • Lab cLUT (-al): najlepsza dokładność dla profili drukarek.
+          Używa pełnej trójwymiarowej tablicy przeglądowej w przestrzeni
+          L*a*b*. Zalecane.
+        • XYZ cLUT (-ax): podobne do Lab, ale w przestrzeni XYZ.
+          Czasem daje gładsze neutralne przejścia.
+        • Macierz/gamma (-ag, -as): prostszy model — mniej dokładny dla
+          złożonego zachowania drukarek, ale szybszy w obliczeniach.
+        Dla pierwszych profili drukarek RGB zawsze używaj Lab cLUT (-al).
+      labels:
+        - "l — Lab cLUT (zalecane dla drukarek RGB)"
+        - "x — XYZ cLUT"
+        - "X — XYZ cLUT (bezwzględny)"
+        - "g — gamma + macierz (szybkie, mniej dokładne)"
+        - "G — gamma + macierz (wymuszone)"
+        - "s — jedna gamma + macierz"
+        - "S — jedna gamma + macierz (wymuszone)"
+        - "m — tylko macierz"
+        - "M — tylko macierz (wymuszone)"
+    "-q":
+      name: "Jakość profilu"
+      tooltip_title: "Jakość profilu (-q)"
+      tooltip_body: |-
+        Steruje rozdzielczością siatki cLUT i iteracjami wygładzania:
+        • Niska: siatka 17³ — szybki test, nie do produkcji
+        • Średnia: siatka 33³ — dobry kompromis, zalecane domyślne
+        • Wysoka: siatka 45³ — jakość produkcyjna
+        • Ultra: siatka 65³ — maksymalna dokładność, bardzo wolno
+        Średnia jakość wystarcza do większości prac atramentowych.
+        Wysokiej użyj do fine-art lub prób kontraktowych.
+      labels:
+        - "l — niska (szybka, ~30 s)"
+        - "m — średnia (zalecana, ~2 min)"
+        - "h — wysoka (~10 min)"
+        - "u — ultra (~30+ min)"
+    "-b":
+      name: "Jakość tablic B2A"
+      tooltip_title: "Jakość tablic B2A (-b)"
+      tooltip_body: |-
+        Steruje niezależnie jakością tablic B2A (urządzenie→PCS)
+        używanych do transformacji wejściowych (np. próby ekranowe).
+        Zostaw puste, aby podążać za głównym ustawieniem -q.
+        Użyj „n”, aby pominąć tablice B2A i zmniejszyć rozmiar profilu
+        (profile tylko-wyjściowe nie potrzebują B2A).
+      labels:
+        - "Jak jakość profilu (domyślnie)"
+        - "l — niska"
+        - "m — średnia"
+        - "h — wysoka"
+        - "u — ultra"
+        - "n — żadna (pomiń tablice B2A)"
+    "-r":
+      name: "Wygładzanie/szum (% ΔE)"
+      tooltip_title: "Średni szum urządzenia (-r)"
+      tooltip_body: |-
+        Szacowany średni szum pomiaru lub urządzenia jako procent ΔE.
+        Wyższe wartości zwiększają wygładzanie profilu, zmniejszając
+        wpływ pól odstających.
+        • 0,5%: czyste pomiary, zadbana drukarka
+        • 1,0–2,0%: szumne pomiary lub papiery fakturowane
+        • 3,0–5,0%: bardzo szumno; znacznie zwiększa wygładzanie
+    "-s":
+      name: "Źródło gamutu (percep.)"
+      tooltip_title: "Źródło mapowania gamutu percepcyjnego (-s)"
+      tooltip_body: |-
+        Źródłowy profil ICC używany do obliczenia tablic mapowania
+        gamutu percepcyjnego sposobu odwzorowania (A2B / B2A
+        percepcyjne).
+        Bez niego sposób percepcyjny używa wprost danych
+        kolorymetrycznych (bez kompresji gamutu).
+        Zwykle ustawiany na standardową przestrzeń roboczą RGB, jak
+        AdobeRGB lub ProPhoto RGB.
+        Akceptowane są pliki .icc i .icm — ICM to po prostu microsoftowa
+        nazwa formatu profili ICC; są identyczne.
+    "-S":
+      name: "Źródło gamutu (P+N)"
+      tooltip_title: "Źródło percepcyjne + nasycenie (-S)"
+      tooltip_body: |-
+        Jak -s, ale stosuje mapowanie gamutu zarówno do percepcyjnego,
+        jak i nasyceniowego sposobu odwzorowania.
+    "-A":
+      name: "Producent"
+      tooltip_title: "Tekst producenta (-A)"
+      tooltip_body: |-
+        Tekst producenta osadzany w nagłówku profilu ICC.
+        Opcjonalny — służy identyfikacji w wyborach profili.
+    "-M":
+      name: "Model"
+      tooltip_title: "Tekst modelu (-M)"
+      tooltip_body: |-
+        Tekst modelu osadzany w nagłówku profilu ICC.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Tekst copyright (-C)"
+      tooltip_body: |-
+        Nota copyright osadzana w profilu ICC.
+    "-ni":
+      name: "Bez krzywych wejściowych"
+      tooltip_title: "Bez wejściowych krzywych kształtujących (-ni)"
+      tooltip_body: |-
+        Wyłącza wejściowe jednowymiarowe krzywe tonalne wstępnie
+        kształtujące wartości urządzenia przed trójwymiarową cLUT.  Te
+        krzywe zwykle poprawiają dokładność profilu.  Wyłączaj tylko w
+        celach diagnostycznych.
+    "-no":
+      name: "Bez krzywych wyjściowych"
+      tooltip_title: "Bez wyjściowych krzywych kształtujących (-no)"
+      tooltip_body: |-
+        Wyłącza wyjściowe jednowymiarowe krzywe kształtujące stosowane
+        po trójwymiarowej cLUT.  Wyłączaj tylko w celach
+        diagnostycznych.
+    "-V":
+      name: "Nacisk siatki w cieniach"
+      tooltip_title: "Nacisk siatki na ciemne obszary (-V)"
+      tooltip_body: |-
+        Dodaje dodatkowe punkty siatki cLUT w ciemnych obszarach
+        (cieniach). 1.0 = siatka jednolita (domyślnie).  Zwiększ do
+        1.5–2.0 dla drukarek o złożonym zachowaniu w cieniach lub
+        zapchanych czerniach.
+  profcheck:
+    "-v":
+      name: "Poziom szczegółów"
+      tooltip_title: "Poziom szczegółów (-v)"
+      tooltip_body: |-
+        Tryb na pole zwraca indywidualną wartość ΔE każdego pola —
+        wymaganą do analizy na poziomie pasków i prowadzonego
+        dopracowania.  Tryb podsumowania pokazuje tylko błędy średni i
+        maksymalny.
+      labels:
+        - "2 — na pole (wymagane do analizy pasków)"
+        - "1 — tylko podsumowanie"
+    "-I":
+      name: "Sposób odwzorowania"
+      tooltip_title: "Sposób odwzorowania (-I)"
+      tooltip_body: |-
+        Kolorymetryczny bezwzględny sprawdza bezwzględną dokładność
+        kolorów profilu łącznie z punktem bieli — standard przy
+        profilowaniu drukarek.
+        Kolorymetryczny względny normalizuje do punktu bieli podłoża.
+      labels:
+        - "a — kolorymetryczny bezwzgl. (domyślny)"
+        - "r — kolorymetryczny względny"
+    "-s":
+      name: "Najgorsze ΔE najpierw"
+      tooltip_title: "Sortuj wg ΔE (-s)"
+      tooltip_body: |-
+        Sortuje wyjście profcheck tak, aby pola o najgorszych wynikach
+        były na początku.  Przydatne do szybkiego znajdowania
+        problematycznych obszarów.
+        Działa tylko, gdy poziom szczegółów to „na pole”.
+    "-i":
+      name: "Iluminant"
+      tooltip_title: "Iluminant (-i)"
+      tooltip_body: |-
+        Wybiera źródło światła używane przy konwersji pomiarów
+        spektralnych na wartości kolorów.  Ma znaczenie tylko, jeśli
+        .ti3 zawiera dane spektralne.  D50 to standard profilowania
+        druku.
+      labels:
+        - "D50 (domyślny)"
+        - "D50M2 (D50 + filtr UV)"
+        - "D65 (światło dzienne 6500 K)"
+        - "A (wolfram / żarówka)"
+        - "C (symulacja światła dziennego, przestarzały)"
+        - "F5 (świetlówka CWF)"
+        - "F8 (świetlówka symulująca D50)"
+        - "F10 (świetlówka Ultralume)"
+    "-o":
+      name: "Obserwator CIE"
+      tooltip_title: "Obserwator CIE (-o)"
+      tooltip_body: |-
+        Określa model obserwatora standardowego dla obliczeń
+        kolorymetrycznych.  Obserwator 1931 2° to standard ICC dla
+        profilowania druku.  Zostaw domyślny, chyba że wyraźnie wymagane
+        jest co innego.
+      labels:
+        - "1931 2° (domyślny)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+    "-P":
+      name: "Okrój do ΔE ≤"
+      tooltip_title: "Ogranicz .ti3 do ΔE ≤ (-P)"
+      tooltip_body: |-
+        Tworzy okrojoną kopię pliku .ti3 zawierającą tylko pola,
+        których błąd koloru jest równy progowi lub niższy.
+        Przydatne, gdy źle zmierzone pola ciągną profil w dół.
+        Włącz opcję i ustaw maksymalną akceptowalną wartość ΔE.
+    "-w":
+      name: "Utwórz wizualizację 3D X3DOM"
+      tooltip_title: "Wizualizacja X3DOM (-w)"
+      tooltip_body: |-
+        Generuje interaktywną wizualizację 3D HTML błędów kolorów
+        twojego profilu.  Otwórz powstały plik .x3d.html w nowoczesnej
+        przeglądarce, aby zbadać, które części gamutu mają największe
+        błędy.
+  printcal:
+    "-v":
+      name: "Poziom szczegółów"
+      tooltip_title: "Poziom szczegółów (-v)"
+      tooltip_body: |-
+        Steruje ilością informacji wypisywanych przez printcal podczas
+        kalibracji.
+          0 = cicho
+          1 = podstawowy postęp (domyślnie)
+          2 = szczegóły dla kanałów
+          3 = wyjście debugowania
+    "-s":
+      name: "Wygładzanie krzywych"
+      tooltip_title: "Wygładzanie krzywych (-s)"
+      tooltip_body: |-
+        Steruje dodatkowym wygładzaniem krzywych kalibracji.  Wyższe
+        wartości dają gładsze, ale mniej dokładne krzywe.
+
+        Domyślnie: 1.0 — odpowiednie dla większości drukarek.
+        Zwiększ (np. 2.0–5.0), jeśli odpowiedź tonalna drukarki wygląda
+        nieregularnie albo krzywe są postrzępione.
+    "-z":
+      name: "Rozdzielczość krzywych"
+      tooltip_title: "Rozdzielczość krzywych (-z)"
+      tooltip_body: |-
+        Liczba kroków w tablicach wyjściowych krzywych kalibracji.
+        Wyższe wartości dają drobniejszą rozdzielczość, ale większe
+        pliki .cal.
+        Domyślne (256) pasuje do praktycznie wszystkich drukarek.
+    "-A":
+      name: "Producent"
+      tooltip_title: "Producent (-A)"
+      tooltip_body: |-
+        Ustawia opis producenta osadzany w pliku .cal.
+        Czysto informacyjny — nie wpływa na krzywe kalibracji.
+    "-M":
+      name: "Model"
+      tooltip_title: "Model (-M)"
+      tooltip_body: |-
+        Ustawia opis modelu drukarki osadzany w pliku .cal.
+        Czysto informacyjny — nie wpływa na krzywe kalibracji.
+    "-D":
+      name: "Opis"
+      tooltip_title: "Opis (-D)"
+      tooltip_body: |-
+        Ustawia czytelny opis osadzany w pliku .cal.
+        Czysto informacyjny — nie wpływa na krzywe kalibracji.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyright (-C)"
+      tooltip_body: |-
+        Ustawia tekst copyright osadzany w pliku .cal.
+        Czysto informacyjny — nie wpływa na krzywe kalibracji.
+  applycal:
+    "-v":
+      name: "Szczegółowo"
+      tooltip_title: "Szczegółowo (-v)"
+      tooltip_body: |-
+        Pokazuje szczegółowe informacje o zastosowanej kalibracji,
+        łącznie ze statystykami krzywych dla każdego kanału.

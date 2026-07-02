@@ -1,0 +1,1209 @@
+# French overlay for data/parameters.yaml — merged in translate_parameters()
+parameters:
+  targen:
+    "-d":
+      name: "Type de périphérique"
+      tooltip_title: "Type de périphérique (-d)"
+      tooltip_body: |-
+        Définit la combinaison de colorants de ton périphérique de sortie.
+
+        Les espaces d'impression sont soustractifs : valeur 0 = blanc (pas
+        d'encre), maximum = noir (encre pleine).  Les espaces vidéo/écran
+        sont additifs : valeur 0 = noir, maximum = blanc.
+
+        Choix courants :
+          • Impression grise (-d 0) — imprimante monocanale en niveaux de
+                                      gris
+          • Vidéo grise (-d 1)      — écran/moniteur monocanal
+          • Impression RGB (-d 2)   — jet d'encre RGB standard (par défaut,
+                                      recommandé)
+          • Vidéo RGB (-d 3)        — écran/moniteur RGB
+          • CMYK (-d 4)             — jet d'encre quadri ou presse offset
+          • CMY (-d 5)              — trois couleurs, sans canal noir séparé
+
+        Les options 6–15 visent les jets d'encre multicanaux spéciaux avec
+        encres supplémentaires (cyan/magenta clair, orange, vert, violet,
+        etc.).  Utilise -D (experts) pour affiner le jeu de colorants si
+        besoin.
+      labels:
+        - "Impression grise"
+        - "Vidéo grise"
+        - "Impression RGB (recommandé)"
+        - "Vidéo RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + CM clair"
+        - "CMYK + CMK clair"
+        - "CMYK + rouge + bleu"
+        - "CMYK + orange + vert"
+        - "CMYK + rouge + vert + bleu"
+        - "CMYK + orange + vert + violet"
+        - "CMYK + orange + vert + bleu"
+        - "CMYK + CMK clair + K très clair"
+        - "CMYK + orange + vert + CM clair"
+        - "CMYK + CM clair + CM moyen"
+    "-D":
+      name: "Colorant +/−"
+      tooltip_title: "Ajouter/retirer un colorant (-D)"
+      tooltip_body: |-
+        Modifie le jeu de colorants fixé par le Type de périphérique (-d)
+        en ajoutant ou retirant un colorant précis.  Si le colorant choisi
+        est déjà dans le jeu, il est retiré ; s'il manque, il est ajouté.
+
+        Usages typiques :
+          • Ajouter de l'orange (-D 5) au CMYK standard pour un gamut
+            étendu
+          • Ajouter du cyan clair (-D 11) / magenta clair (-D 12) au CMYK
+            pour des dégradés plus doux dans les hautes lumières
+
+        Active plusieurs positions pour empiler des colorants
+        supplémentaires (chaque position activée révèle la suivante,
+        jusqu'à 11 modifications au total).
+
+        Laisse désactivé pour les types de périphérique standard 0–5.
+      labels:
+        - "Additif"
+        - "Cyan"
+        - "Magenta"
+        - "Jaune"
+        - "Noir"
+        - "Orange"
+        - "Rouge"
+        - "Vert"
+        - "Bleu"
+        - "Violet"
+        - "Blanc"
+        - "Cyan clair"
+        - "Magenta clair"
+        - "Jaune clair"
+        - "Noir clair"
+        - "Cyan moyen"
+        - "Magenta moyen"
+        - "Jaune moyen"
+        - "Noir moyen"
+        - "Noir très clair"
+    "-f":
+      name: "Nombre total de plages"
+      tooltip_title: "Nombre total de plages (-f)"
+      tooltip_body: |-
+        Fixe le nombre total de plages de couleur.  Plus de plages =
+        profil plus précis, mais impression et mesure plus longues.
+        Plages typiques pour un jet d'encre RGB :
+          • Test rapide :   400–600
+          • Standard :      800–1200
+          • Haute qualité : 1500–2000
+          • Très haute :    2500–3000
+
+        Auto (à côté du champ numérique) : si coché, le nombre de plages
+        est calculé en temps réel à partir du papier, de l'instrument, du
+        double density, du bord gauche, de l'échelle de plage, de la marge
+        et du champ Pages de la section printtarg — en choisissant la plus
+        grande valeur qui remplit exactement ce nombre de feuilles sans
+        vide.  Le champ est désactivé tant qu'Auto est actif et montre
+        l'estimation actuelle.  Pour les dispositions personnalisées
+        (échelle de plage ou marge non par défaut), Auto fait une courte
+        recherche binaire avec targen — la valeur peut mettre une seconde
+        à se mettre à jour.
+
+        En mode guidé, il est calculé automatiquement à partir de la base
+        de données plages-par-page × le nombre de pages choisi.
+        En mode guidé, mets 0 pour le calcul automatique.
+    "-e":
+      name: "Plages blanches"
+      tooltip_title: "Plages blanches (-e)"
+      tooltip_body: |-
+        Combien de plages de blanc papier pur ajouter à la mire.
+        L'instrument les mesure pour apprendre exactement à quel point ton
+        papier est blanc — ancrant l'extrémité claire du profil. 4 est un
+        bon défaut ; les papiers très brillants peuvent profiter de
+        quelques plages de plus.
+
+        Auto (case) :
+        Active « Auto » et ChromIQ choisit le nombre pour toi, selon le
+        nombre de plages de toute la mire — une petite mire d'une page
+        reçoit peu de plages blanches, une grande mire multipage plus,
+        sans que tu aies à y penser.
+
+        Comment le nombre Auto est calculé :
+          • Une mire d'environ 560 plages reçoit 4 plages blanches.
+          • Chaque fois que la mire double à peu près, le nombre croît
+            de 50 % (4 → 6 → 8 …).
+          • Il ne dépasse jamais 8 (plus ne fait que gâcher de la place)
+            et ne descend jamais sous 2.
+
+        Avec Auto actif, le champ est désactivé et affiche « Auto ».
+        Désactive-le à tout moment pour saisir ton propre nombre.
+    "-B":
+      name: "Plages noires"
+      tooltip_title: "Plages noires (-B)"
+      tooltip_body: |-
+        Combien de plages à encre maximale (noir du périphérique) ajouter
+        à la mire. L'instrument les mesure pour apprendre le ton le plus
+        sombre que l'imprimante peut produire — ancrant l'extrémité sombre
+        du profil. 4 est un bon défaut pour les imprimantes RGB.
+
+        Auto (case) :
+        Active « Auto » et ChromIQ choisit le nombre pour toi, selon le
+        nombre de plages de toute la mire — une petite mire reçoit peu de
+        plages noires, une grande plus.
+
+        Comment le nombre Auto est calculé :
+          • Une mire d'environ 560 plages reçoit 4 plages noires.
+          • Chaque fois que la mire double à peu près, le nombre croît
+            de 50 % (4 → 6 → 8 …).
+          • Il ne dépasse jamais 8 et ne descend jamais sous 2.
+
+        Avec Auto actif, le champ est désactivé et affiche « Auto ».
+        Désactive-le à tout moment pour saisir ton propre nombre.
+    "-g":
+      name: "Pas de l'axe des gris"
+      tooltip_title: "Pas de l'axe des gris (-g)"
+      tooltip_body: |-
+        Plages grises neutres supplémentaires réparties uniformément du
+        blanc au noir. Elles aident le profil à reproduire les gris
+        proprement, sans dominantes de couleur — important pour les photos
+        noir et blanc et les tons neutres. Guide approximatif si tu règles
+        à la main : 0 pour un profil rapide, 50–100 pour un standard, 128+
+        pour la haute qualité.
+
+        Auto (case) :
+        Active « Auto » et ChromIQ choisit le nombre pour toi, en
+        proportion du nombre de plages de toute la mire — une mire plus
+        grande reçoit une rampe de gris plus longue et plus fine.
+
+        Comment le nombre Auto est calculé :
+          • Une mire d'environ 560 plages reçoit 32 pas de gris.
+          • Chaque fois que la mire double à peu près, les pas doublent
+            aussi (32 → 64 → 128).
+          • Il ne dépasse jamais 128 et ne descend jamais sous 8.
+
+        Avec Auto actif, le champ est désactivé et affiche « Auto ».
+        Désactive-le à tout moment pour saisir ton propre nombre.
+
+        (Le mode guidé le règle toujours automatiquement avec la même
+        logique.)
+    "-G":
+      name: "Optimisation précise (lente)"
+      tooltip_title: "Optimisation précise (-G)"
+      tooltip_body: |-
+        Fait passer à targen du temps supplémentaire pour placer les
+        plages aussi uniformément que possible sur le gamut de ton
+        imprimante. Le jeu de plages est du même type (OFPS — Optimised
+        Farthest Point Sampling, la distribution par défaut) dans les deux
+        cas ; ceci passe seulement du mode « rapide » au mode « précis ».
+
+        Recommandé ACTIVÉ pour toute mire que tu vas vraiment imprimer et
+        mesurer : quelques secondes de calcul en plus à la génération
+        donnent un profil mesurablement meilleur.
+
+        Désactive-le seulement si tu itères vite sur les réglages de la
+        mire et que la qualité absolue des plages t'indiffère (p. ex.
+        tests de mise en page avant la mire définitive).
+
+        Sans effet quand « Distribution des plages » est réglé sur autre
+        chose qu'OFPS — les distributions alternatives (aléatoire,
+        quasi-aléatoire, réseau BCC, …) ignorent cette option.
+    "-s":
+      name: "Pas par canal unique"
+      tooltip_title: "Pas par canal unique (-s)"
+      tooltip_body: |-
+        Ajoute des plages en rampe par canal individuel (R, G, B
+        séparément). Utile pour caractériser le comportement de chaque
+        encre.
+        Typique : 0 pour rapide, 20–50 pour standard, 50–100 pour élevé.
+    "-c":
+      name: "Profil précondition."
+      tooltip_title: "Profil de préconditionnement (-c)"
+      tooltip_body: |-
+        Un profil ICC existant pour cette combinaison imprimante/papier,
+        utilisé pour préconditionner la distribution des plages dans
+        l'espace perceptuel.  Utiliser ici un profil antérieur donne des
+        plages réparties plus uniformément dans le gamut de sortie, avec
+        plus de précision lors d'une seconde passe de profilage.
+        Laisse vide pour un premier profil.
+    "-C":
+      name: "Forçage de calibration"
+      tooltip_title: "Forçage de calibration (-C)"
+      tooltip_body: |-
+        Fichier .cal facultatif dont les courbes de calibration sont
+        appliquées dans l'estimation de la limite d'encre pour la
+        génération des plages.  Remplace tout .cal incorporé dans le .ti3
+        du profil ICC d'une passe de profilage antérieure.
+
+        Sers-t'en quand tu as une calibration du périphérique validée
+        (p. ex. de printcal/applycal) et que tu veux que targen en tienne
+        compte pour calculer combien de plages sont nécessaires dans la
+        zone des ombres.
+
+        Tape « none » dans le champ (sans guillemets) pour empêcher
+        explicitement l'usage de tout .cal, même incorporé dans le .ti3.
+
+        Laisse vide dans la plupart des flux — utile seulement quand tu
+        gères une courbe de calibration séparée, indépendante du profil.
+    "-n":
+      name: "Pas de l'axe neutre"
+      tooltip_title: "Pas de l'axe neutre (-n)"
+      tooltip_body: |-
+        Ajoute des plages en coin supplémentaires le long de l'axe neutre
+        perceptuellement vrai de ton imprimante + papier, tel que défini
+        par le profil de préconditionnement chargé via -c.
+
+        Différence avec -g (pas de l'axe des gris) :
+          • -g parcourt des valeurs RGB du périphérique (R = G = B) :
+            0/0/0, 32/32/32, 64/64/64 … Il suppose que des valeurs égales
+            impriment un gris neutre — vrai seulement sur une imprimante
+            parfaitement linéarisée.  Sur une vraie imprimante, la « rampe
+            de gris du périphérique » a en général une dominante.
+          • -n demande au profil fourni : « quelles valeurs RGB faut-il
+            vraiment à CETTE imprimante pour reproduire une plage L*a*b*
+            neutre (a* = b* = 0) à chaque pas de luminosité ? »  Ces
+            valeurs RGB (typiquement non égales) sont ajoutées comme
+            plages.
+
+        Différence avec -N (accent sur l'axe neutre) :
+          • -N est un bouton 0–1 qui incline la distribution OFPS
+            existante vers la zone neutre.  Il n'ajoute pas de pas nommés.
+          • -n ajoute des plages neutres explicites, dérivées du profil,
+            en plus de ce que le reste de la distribution produit.
+
+        Quand l'utiliser :
+          • Tu as déjà un profil ICC de première passe pour ce papier et
+            tu crées une mire d'affinage.  Charge ce profil dans Profil de
+            préconditionnement (-c), puis mets -n à 32–64 pour
+            caractériser densément l'axe neutre correct.
+          • Pour une première mire sans -c, laisse à 0 — sans profil de
+            préconditionnement il n'existe pas d'axe neutre « vrai » à
+            échantillonner, et -g couvre déjà la rampe dans l'espace du
+            périphérique.
+
+        Valeurs d'affinage typiques : 32 pour le travail ordinaire, 64
+        pour le fine-art / l'épreuvage où la neutralité est critique.
+
+        Exige que -c soit défini ; sinon, sans effet.
+    "-N":
+      name: "Accent sur l'axe neutre"
+      tooltip_title: "Accent sur l'axe neutre (-N)"
+      tooltip_body: |-
+        Contrôle à quel point les plages se regroupent près de l'axe
+        neutre. 0.0 = aucun accent, 1.0 = regroupement maximal sur le
+        gris. Le défaut 0.5 convient à la plupart des imprimantes.
+    "-V":
+      name: "Accent zones sombres"
+      tooltip_title: "Accent sur les zones sombres (-V)"
+      tooltip_body: |-
+        Ajoute des plages supplémentaires dans les zones sombres (ombres)
+        du gamut. 1.0 = aucun accent (par défaut).  Monte à 2.0–3.0 pour
+        les imprimantes au comportement complexe dans les ombres (p. ex.
+        papiers fine-art mats).
+    "-l":
+      name: "Limite totale d'encre (%)"
+      tooltip_title: "Limite totale d'encre (-l)"
+      tooltip_body: |-
+        La quantité maximale totale d'encre que l'imprimante peut déposer
+        sur le papier, en pourcentage. 100 % = une couche pleine, 200 % =
+        deux couches pleines (p. ex. 100C + 100K), et ainsi de suite.
+
+        Pourquoi c'est important (surtout en CMYK / CMYK+N) :
+        Sans limite, targen génère allègrement des plages comme 100C +
+        100M + 100Y + 100K = 400 %. Autant d'encre humide peut former des
+        flaques, sécher lentement, baver ou même gondoler le papier — et
+        le profil construit sur ces plages prédit des couleurs que
+        l'imprimante ne peut en réalité pas produire.
+
+        Comment choisir une valeur :
+          • Majorité des jets d'encre CMYK :   260 – 320 %
+          • Papiers couchés / brillants :      320 – 360 %
+          • Papier journal, basse qualité :    220 – 260 %
+          • Gamut étendu (CMYKOGV) :           400 – 500 %  (plus d'encres
+                                               se partagent le budget)
+
+        Dans le doute : consulte la documentation de l'imprimante ou les
+        recommandations du profil papier, ou mesure : imprime un petit
+        coin de test de limite d'encre et choisis la valeur la plus haute
+        qui sèche proprement sans baver.
+
+        Pour les flux RGB : laisse en général désactivé — les jets d'encre
+        RGB gèrent la limitation d'encre en interne, targen n'a donc pas à
+        répartir le budget entre canaux.
+
+        Coche la case pour activer.
+    "__targen_distribution__":
+      name: "Distribution des plages"
+      tooltip_title: "Distribution des plages (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |-
+        Comment targen décide où placer chaque plage de couleur dans le
+        gamut de l'imprimante. Les différents algorithmes offrent des
+        compromis différents entre couverture, uniformité et vitesse.
+
+        Choisis-en UN. Ils s'excluent mutuellement — en sélectionner un
+        remplace complètement le placement OFPS par défaut.
+
+        OFPS (par défaut, recommandé) :
+        Optimised Farthest Point Sampling. Place itérativement chaque
+        nouvelle plage aussi loin que possible de toutes les plages
+        existantes — la couverture la plus uniforme de tous les
+        algorithmes listés ici. Plus lent que les alternatives, mais la
+        référence en qualité de profil. Associe-le à « Optimisation
+        précise (-G) » pour le meilleur résultat.
+
+        Incremental Far Point (-t) :
+        Une méthode du point le plus lointain plus simple. Plus rapide
+        qu'OFPS, un peu moins uniforme. À utiliser quand OFPS est trop
+        lent avec de très grands nombres de plages et que tu acceptes une
+        petite perte de qualité.
+
+        Aléatoire — espace du périphérique (-r) :
+        Plages uniformément aléatoires dans les valeurs brutes du
+        périphérique (p. ex. RGB). Le plus rapide possible, mais la
+        couverture en couleur *perçue* est inégale — des plages sont
+        gâchées dans des zones que l'œil distingue à peine.
+
+        Aléatoire — espace perceptuel (-R) :
+        Uniformément aléatoire en couleur perçue (Lab). Mieux que -r s'il
+        faut vraiment de l'aléatoire, car les plages se répartissent
+        uniformément selon ce que l'œil voit. Reste moins optimal qu'OFPS
+        à nombre égal.
+
+        Quasi-aléatoire remplissant (-q / -Q) :
+        Des suites à basse discrépance (type Sobol) qui remplissent
+        l'espace plus uniformément que le vrai hasard, sans le coût
+        itératif d'OFPS. -q en espace du périphérique, -Q en espace
+        perceptuel. Un bon compromis quand OFPS est trop lent.
+
+        Réseau cubique centré (-i / -I) :
+        Un réseau régulier fixe (chaque plage entourée de 8 voisines en
+        motif cubique). Déterministe et très uniforme, mais rigide — seuls
+        certains nombres de plages rentrent dans le réseau. -i en espace
+        du périphérique, -I en espace perceptuel.
+
+        La plupart des utilisateurs devraient le laisser sur OFPS.
+      labels:
+        - "OFPS — optimisé (recommandé)"
+        - "Incremental Far Point (-t)"
+        - "Aléatoire — périphérique (-r)"
+        - "Aléatoire — perceptuel (-R)"
+        - "Quasi-aléatoire — périph. (-q)"
+        - "Quasi-aléatoire — percept. (-Q)"
+        - "Réseau BCC — espace périphérique (-i)"
+        - "Réseau BCC — perceptuel (-I)"
+    "-A":
+      name: "Adaptation OFPS"
+      tooltip_title: "Adaptation OFPS (-A)"
+      tooltip_body: |-
+        À quel point OFPS plie sa règle de couverture uniforme pour suivre
+        la forme d'un profil de préconditionnement (-c). N'a de sens que
+        quand OFPS est la distribution choisie ET qu'un profil -c est
+        défini.
+
+        0.0 = ignore complètement le profil — pure couverture uniforme en
+              espace du périphérique, comme si -c n'était pas fourni.
+        1.0 = suit complètement le profil — concentre les plages là où le
+              profil dit que le gamut de l'imprimante est intéressant
+              (c'est-à-dire la forme de l'espace colorimétrique réel).
+
+        Le défaut de targen est 0.10 (doux) pour une première passe et
+        1.0 quand -c est défini ; ChromIQ le laisse à 0.10 sauf si tu le
+        changes explicitement — pas de changement de comportement
+        surprise.
+
+        Monte vers 1.0 dans les passes d'affinage où tu fais confiance au
+        premier profil et veux que la seconde mire échantillonne densément
+        le gamut réel de l'imprimante plutôt que des coins vides de
+        l'espace du périphérique.
+
+        Coche la case pour activer.
+    "-m":
+      name: "Pas intérieurs du cube"
+      tooltip_title: "Pas intérieurs du cube (-m)"
+      tooltip_body: |-
+        Ajoute une grille régulière de plages *à l'intérieur* du cube de
+        couleur de l'imprimante — N pas par axe (N×N×N pour le RGB, etc.).
+        Elles s'ajoutent *en plus* des plages choisies par -f, -g, -s et
+        les autres compteurs.
+
+        Mets 0 (par défaut) pour sauter — presque toujours le bon choix.
+        OFPS couvre déjà l'intérieur du cube plus efficacement.
+
+        Quand l'utiliser :
+          • Répétabilité entre machines : une grille fixe est identique à
+            chaque fois, quels que soient les placements OFPS choisis par
+            targen — utile pour comparer des profils entre exécutions.
+          • Mires de diagnostic avec des positions de cube prévisibles et
+            nommées.
+
+        Valeurs typiques quand utilisé : 3 – 6 (pas par axe). Les nombres
+        grimpent vite — 6 pas en RGB font 216 plages, 8 en font 512.
+
+        Coche la case pour activer.
+    "-M":
+      name: "Pas de surface du cube"
+      tooltip_title: "Pas de surface du cube (-M)"
+      tooltip_body: |-
+        Ajoute une grille régulière de plages sur la *surface* du cube de
+        couleur de l'imprimante — N pas par face. Les plages vont à
+        l'extérieur (primaires, secondaires, bord du gamut), pas à
+        l'intérieur.
+
+        Mets 0 (par défaut) pour sauter.
+
+        Quand l'utiliser :
+          • Tu veux cerner spécifiquement la frontière du gamut et les
+            coins primaires/secondaires sans le surcoût intérieur de -m.
+          • Comparer comment différentes encres/papiers déplacent
+            l'enveloppe du gamut — les plages de surface sont les plus
+            touchées.
+
+        Valeurs typiques quand utilisé : 4 – 8 pas par face.
+
+        Coche la case pour activer.
+    "-b":
+      name: "Pas de réseau BCC"
+      tooltip_title: "Pas de réseau BCC (-b)"
+      tooltip_body: |-
+        Ajoute des plages sur un réseau cubique centré (BCC) — plus dense
+        qu'une simple grille cubique car les points occupent à la fois les
+        coins et les centres des cubes. N est le nombre de subdivisions
+        par axe.
+
+        Mets 0 (par défaut) pour sauter — c'est un réglage de niche.
+
+        Quand l'utiliser :
+          • Tu veux des positions de plages régulières, alignées sur le
+            réseau, mais avec un meilleur empilement que -m, sans aller
+            jusqu'à OFPS.
+          • Scénarios de recherche / répétabilité où la structure BCC
+            elle-même est le but.
+
+        Note : c'est la forme à *compteur de pas* (elle s'ajoute à ta
+        liste de plages) ; pour une mire dont la distribution *entière*
+        est BCC, utilise le sélecteur « Distribution des plages »
+        ci-dessus et choisis-y l'option cubique centrée.
+
+        Coche la case pour activer.
+  printtarg:
+    "-i":
+      name: "Instrument de mesure"
+      tooltip_title: "Instrument de mesure (-i)"
+      tooltip_body: |-
+        Indique au générateur de mires avec quel spectrophotomètre tu
+        liras la mire imprimée. La grille de plages est construite autour
+        de la largeur de bande, de la taille de plage et de l'espacement
+        de cet instrument — bien le régler est essentiel.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — lecteur de bandes à main, le
+             choix le plus courant. Lit une colonne de plages en un
+             passage.
+
+          •  i1Pro 3 Plus — version de l'i1Pro 3 à plus grande ouverture.
+             Lit des plages plus grandes, donc beaucoup moins par feuille
+             (~5× moins que l'i1Pro normal).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — appareil
+             d'entrée de gamme. Lit seul une plage à la fois ; avec la
+             règle de mesure facultative, deux ensemble (voir Double
+             density).
+
+          •  SpectroScan — scanner XY à plat. Un bras motorisé lit chaque
+             plage individuellement, et stocke bien plus de couleurs par
+             feuille que tout lecteur de bandes.
+
+          •  i1iSis (via i1Profiler) — lecteur de feuilles automatique.
+             ChromIQ ne peut pas piloter directement cet appareil : à la
+             place, il enregistre la liste de plages au format propre
+             d'i1Profiler à côté de la mire, et tu termines le flux
+             là-bas (impression, scan, création du profil). Les onglets
+             Imprimer et Mesurer de ChromIQ ne servent pas pour cet
+             appareil.
+
+        Choisir le mauvais instrument produit une mire que ton appareil
+        ne peut ni aligner ni lire de façon fiable — à la mesure tu
+        verras des erreurs « patches not found » ou d'alignement. En mode
+        guidé, la disposition s'adapte automatiquement à ce choix.
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (à plat)"
+        - "i1iSis (via i1Profiler)"
+    "-h":
+      name: "Double density"
+      tooltip_title: "Double density (-h)"
+      tooltip_body: |-
+        Change la densité de plages par bande de la disposition printtarg.
+        Le sens exact dépend de l'instrument actif :
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — double le
+             nombre de plages qui tiennent dans chaque bande de mesure.
+             EXIGE l'accessoire physique de règle de mesure ; sans lui,
+             l'appareil ne peut pas s'aligner sur l'espacement plus serré
+             et lit mal.
+
+          •  SpectroScan — passe la disposition de la mire de plages
+             rectangulaires à hexagonales. Les hexagones s'emboîtent plus
+             serré, donc ~14 % de plages en plus par feuille. Aucun
+             matériel supplémentaire requis.
+
+        Sans effet sur i1Pro et i1Pro 3 Plus, et normalement masqué quand
+        l'un d'eux est sélectionné.
+    "-p":
+      name: "Format de papier"
+      tooltip_title: "Format de papier (-p)"
+      tooltip_body: |-
+        Définit les dimensions de chaque feuille de la mire imprimée. La
+        mire remplit toujours la page bord à bord — un papier plus grand
+        signifie plus de plages, donc un profil plus détaillé avec moins
+        de feuilles.
+
+        Choisis le format sur lequel tu imprimeras réellement, orientation
+        comprise. Les lecteurs de bandes (famille i1Pro) lisent de haut en
+        bas, donc :
+
+          •  Portrait — bandes plus longues, moins nombreuses. Le choix
+             standard.
+
+          •  Paysage (A4R, LetterR, 420×297…) — bandes plus courtes, plus
+             nombreuses. À utiliser quand l'imprimante charge le paysage
+             plus fiablement, ou quand une feuille portrait laisserait la
+             dernière bande trop près du bord du papier.
+
+        Choisis « Personnalisé » pour saisir la largeur et la hauteur
+        exactes en millimètres quand aucun format nommé ne correspond à
+        ton papier.
+
+        Si tu changes de format, le nombre de plages et de pages dans
+        l'aperçu des commandes se met à jour automatiquement.
+      labels:
+        - "A2 portrait (420 × 594 mm)"
+        - "A2 paysage (594 × 420 mm)"
+        - "A3+ portrait (329 × 483 mm)"
+        - "A3+ paysage (483 × 329 mm)"
+        - "A3 portrait (297 × 420 mm)"
+        - "A3 paysage (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 portrait (210 × 297 mm)"
+        - "A4 paysage (297 × 210 mm)"
+        - "Letter portrait (8,5 × 11\")"
+        - "Letter paysage (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Personnalisé (saisir les mesures)"
+    "-t":
+      name: "DPI de sortie du TIFF"
+      tooltip_title: "Résolution du TIFF (-t)"
+      tooltip_body: |-
+        Résolution de sortie des fichiers raster TIFF de la mire.
+        300 DPI est recommandé pour les instruments à lecture de bandes
+        et donne un bon équilibre entre taille de fichier et netteté des
+        plages.
+        Utilise 200 DPI pour les très grandes mires afin de réduire la
+        taille.
+        Des valeurs plus hautes (600+) servent rarement et produisent de
+        gros fichiers.
+    "-L":
+      name: "Supprimer le bord de pince g."
+      tooltip_title: "Supprimer le bord de pince gauche (-L)"
+      tooltip_body: |-
+        Retire la bande de pince du côté gauche, récupérant ~15 mm de
+        largeur de page pour des colonnes de plages supplémentaires.
+        Active-le sauf si tu utilises un gabarit physique de serrage de
+        page.
+        Toutes les valeurs de la base de données de plages supposent
+        cette option ACTIVÉE.
+    "-a":
+      name: "Échelle de taille de plage"
+      tooltip_title: "Échelle de taille de plage (-a)"
+      tooltip_body: |-
+        Met à l'échelle uniformément la taille des plages et des
+        séparateurs.
+        1.0 est le défaut (taille optimisée pour l'instrument).
+        Monte à 1.5–2.0 sur les papiers rugueux / texturés où l'instrument
+        a besoin d'une zone de mesure plus grande.
+        Sous 1.0, plus de plages tiennent par page, mais des erreurs de
+        lecture peuvent survenir sur certains instruments.
+        Note : une valeur différente du défaut déclenche un recalcul par
+        recherche binaire en temps réel au lieu de la consultation rapide
+        en table.
+    "-m":
+      name: "Marge (mm)"
+      tooltip_title: "Marge (-m / -M)"
+      tooltip_body: |-
+        Fixe la marge en millimètres à la fois pour la zone imprimable
+        (-m) et pour les dimensions du fichier TIFF (-M).  Les deux
+        restent synchronisées.
+        6 mm correspond aux marges minimales de la plupart des
+        imprimantes.  Réduis seulement si l'imprimante gère l'impression
+        sans marges.
+
+        Sélectionner un i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus monte
+        automatiquement la valeur à 10 mm, pour que l'optique du lecteur
+        de bandes ne glisse pas sur le bord nu du papier (erreurs « not
+        enough patches read »).  Revenir à ColorMunki / SpectroScan la
+        ramène à 6 mm.  Une valeur personnalisée (autre que 6 ou 10) est
+        préservée lors des changements d'instrument.
+
+        Les tables plages-par-page n'existent que pour 6 et 10 mm —
+        d'autres valeurs déclenchent un recalcul par recherche binaire en
+        temps réel.
+    "-r":
+      name: "Garder l'ordre (sans random)"
+      tooltip_title: "Pas de randomisation (-r)"
+      tooltip_body: |-
+        Par défaut, printtarg randomise les positions des plages pour
+        réduire les artefacts de dérive de l'instrument.
+        N'active cette option que si tu testes une séquence de plages
+        précise ou si ton instrument exige des plages ordonnées.
+    "-b":
+      name: "Forcer séparateurs N/B"
+      tooltip_title: "Forcer les séparateurs N/B (-b)"
+      tooltip_body: |-
+        Force les séparateurs entre bandes à être en noir et blanc plutôt
+        qu'en couleur.  N'affecte ni le nombre de plages ni la géométrie
+        de la disposition.
+
+        Sans effet quand « Aucun séparateur » (-n) est actif — dans ce
+        cas l'option est désactivée et exclue de la commande printtarg.
+    "-P":
+      name: "Ne pas limiter les bandes"
+      tooltip_title: "Ne pas limiter la longueur des bandes (-P)"
+      tooltip_body: |-
+        Par défaut, printtarg limite la longueur des bandes pour que
+        chacune tienne dans le papier sans déborder.
+        Cette option retire la limite, autorisant des bandes très
+        longues.
+        Utile pour le papier en rouleau étroit ou quand tu veux le moins
+        de bandes possible pour un nombre de plages donné.
+        Attention : avec beaucoup de plages, les bandes peuvent dépasser
+        le bord du papier — vérifie le TIFF généré avant d'imprimer.
+    "-N":
+      name: "TIFF N-canaux (>4 encres)"
+      tooltip_title: "TIFF N-canaux (-N)"
+      tooltip_body: |-
+        Pour les imprimantes à plus de 4 canaux d'encre (p. ex. CMYK plus
+        tons directs supplémentaires) : le TIFF standard ne gère que 4
+        canaux au maximum.  Cette option fait encoder par printtarg les
+        canaux supplémentaires dans les emplacements du canal alpha du
+        TIFF, préservant toutes les valeurs d'encre dans un seul fichier.
+
+        Ne l'active que si le pilote de l'imprimante ou le RIP attend un
+        TIFF multicanal.  Pour le profilage RGB ou CMYK normal, tu n'en
+        as pas besoin.
+    "-K":
+      name: "Appliquer le fichier .cal"
+      tooltip_title: "Appliquer la calibration aux plages (-K)"
+      tooltip_body: |-
+        Sers-t'en quand l'imprimante n'a aucun système de calibration
+        intégré — c'est-à-dire que le pilote ou le RIP ne peut pas
+        appliquer lui-même une courbe de calibration.
+
+        Lance d'abord printcal d'Argyll pour produire un fichier .cal
+        décrivant comment linéariser l'imprimante.  Puis passe-le ici :
+        printtarg recalcule chaque valeur de couleur des plages à travers
+        les courbes de calibration avant de générer la mire — la cible
+        imprimée reflète donc déjà le comportement calibré du
+        périphérique.  Le .cal est aussi incorporé dans le fichier .ti2
+        pour que colprof puisse s'y référer à la création du profil ICC.
+
+        Usage typique : jets d'encre de bureau sans linéarisation
+        intégrée, pilotés directement depuis un TIFF sans RIP
+        intermédiaire.
+
+        S'exclut mutuellement avec « Incorporer la calibration » (-I) —
+        une seule option de calibration peut être active à la fois.
+    "-I":
+      name: "Incorporer la calib. seule"
+      tooltip_title: "Incorporer la calibration sans l'appliquer (-I)"
+      tooltip_body: |-
+        Sers-t'en quand l'imprimante ou le RIP applique déjà une courbe
+        de calibration nativement — par exemple un RIP jet d'encre de
+        production avec sa propre LUT de linéarisation, ou une imprimante
+        à calibration de densité intégrée.
+
+        Dans ce cas, tu ne veux pas que printtarg recalcule les valeurs
+        des plages (l'imprimante s'en charge), mais tu veux que colprof
+        connaisse la calibration.  -I incorpore le fichier .cal dans le
+        .ti2 de sortie comme simples métadonnées, en laissant toutes les
+        valeurs intactes.
+
+        Usage typique : RIP jet d'encre professionnels (p. ex. EFI Fiery,
+        Wasatch, ColorBurst) ou imprimantes à linéarisation intégrée
+        active pendant l'impression de profilage.
+
+        S'exclut mutuellement avec « Appliquer la calibration » (-K) —
+        une seule option de calibration peut être active à la fois.
+    "-C":
+      name: "Désactiver compression TIFF"
+      tooltip_title: "Désactiver la compression TIFF (-C)"
+      tooltip_body: |-
+        Produit des fichiers TIFF non compressés au lieu de la
+        compression LZW par défaut.  Les fichiers non compressés sont
+        plus gros mais universellement compatibles avec tous les RIP et
+        pilotes.
+        Active-le si ta chaîne d'impression rejette ou abîme les TIFF
+        compressés.
+    "-D":
+      name: "Tramage 16 → 8 bits"
+      tooltip_title: "Tramage de la sortie 8 bits (-D)"
+      tooltip_body: |-
+        Lors de la génération d'un TIFF 8 bits, utilise un tramage par
+        diffusion d'erreur pour réduire depuis la précision interne de
+        16 bits.  Cela réduit le banding dans les dégradés doux que la
+        quantification causerait sinon.
+        N'a d'effet que quand la sortie TIFF 8 bits est sélectionnée.
+    "-U":
+      name: "Supprimer l'en-tête couleur CUPS"
+      tooltip_title: "Supprimer l'en-tête CMM de CUPS (-U)"
+      tooltip_body: |-
+        Retire le commentaire 'cupsJobTicket: cups-disable-cmm' des
+        fichiers de sortie PostScript et EPS.  Certaines versions de CUPS
+        réagissent différemment à ce commentaire.
+        L'option ne concerne que la sortie PS/EPS et n'a aucun effet sur
+        les fichiers TIFF.  Active-la seulement si une gestion des
+        couleurs inattendue est appliquée à l'impression.
+    "-R":
+      name: "Graine de randomisation"
+      tooltip_title: "Graine de randomisation (-R)"
+      tooltip_body: |-
+        Fixe la graine initiale de l'algorithme de randomisation des
+        plages.  La même graine avec le même nombre de plages produit
+        toujours la même disposition — les mires deviennent entièrement
+        reproductibles.
+        Utile pour la recherche ou quand tu dois régénérer une mire
+        identique plus tard.
+        Sans effet quand « Garder l'ordre » (-r) est actif.
+    "-Q":
+      name: "Bits de quantification"
+      tooltip_title: "Quantifier les valeurs de plage (-Q)"
+      tooltip_body: |-
+        Arrondit toutes les valeurs de couleur des plages à la profondeur
+        de bits indiquée avant de générer la mire.  Par exemple, -Q 8
+        arrondit toutes les valeurs à une précision de 8 bits (256
+        niveaux).
+        Sers-t'en quand ta chaîne d'impression introduit du banding à une
+        profondeur de bits précise et que tu veux tester exactement à ce
+        niveau de précision.
+    "-A":
+      name: "Échelle séparateurs seuls"
+      tooltip_title: "Échelle des séparateurs seuls (-A)"
+      tooltip_body: |-
+        Applique un facteur d'échelle supplémentaire aux seules barres
+        séparatrices, sans changer la taille de plage fixée par -a.
+        Au-dessus de 1.0, les séparateurs s'élargissent ; en dessous de
+        1.0, ils se rétrécissent.  Utile pour les instruments qui ont
+        besoin de plus de séparation entre bandes, ou pour récupérer de
+        la place en rétrécissant les séparateurs à taille de plage
+        constante.
+
+        Sans effet quand « Aucun séparateur » (-n) est actif — dans ce
+        cas l'option est désactivée et exclue de la commande printtarg.
+    "-n":
+      name: "Aucun séparateur"
+      tooltip_title: "Aucun séparateur (-n)"
+      tooltip_body: |-
+        Retire toutes les barres séparatrices entre plages et bandes.
+        Les séparateurs aident normalement l'instrument à reconnaître les
+        limites et le sens des bandes.
+        Ne les désactive que si ton flux de mesure ne s'appuie pas
+        explicitement dessus (p. ex. certaines configurations avec
+        scanner à plat).
+
+        Quand c'est actif, « Forcer séparateurs N/B » (-b) et « Échelle
+        séparateurs seuls » (-A) sont désactivés automatiquement — les
+        deux ne concernent que les séparateurs.
+    "-c":
+      name: "Forcer séparateurs colorés"
+      tooltip_title: "Forcer les séparateurs colorés (-c)"
+      tooltip_body: |-
+        Force les zones séparatrices entre les plages à être dessinées en
+        couleur plutôt qu'avec le défaut (qui selon le profil
+        d'instrument peut être noir et blanc).  Peut améliorer la
+        reconnaissance des bandes sur certains jets d'encre couleur où
+        les séparateurs noirs contrastent peu avec les plages sombres.
+  chartread:
+    "-B":
+      name: "Lecture bidirectionnelle off"
+      tooltip_title: "Désactiver la lecture bidirectionnelle (-B)"
+      tooltip_body: |-
+        Empêche chartread de détecter automatiquement si tu as scanné une
+        bande vers l'avant ou vers l'arrière. ChromIQ le laisse désactivé
+        par défaut, pour que l'instrument puisse lire les bandes dans les
+        deux sens.
+
+        Ne l'active que si l'instrument signale de fausses erreurs de
+        sens de bande pendant la mesure.
+    "-b":
+      name: "Forcer lecture bidirectionnelle"
+      tooltip_title: "Forcer la lecture bidirectionnelle (-b)"
+      tooltip_body: |-
+        Oblige chartread à accepter une bande scannée dans n'importe quel
+        sens.
+
+        Normalement, chartread ne détecte le sens automatiquement que sur
+        les mires randomisées ; sur une mire à ordre fixe, il ne lit que
+        dans un sens et rejette les bandes scannées à l'envers. Active-le
+        pour forcer quand même la détection — utile pour la famille
+        i1 Pro, qui lit volontiers dans les deux sens. C'est l'inverse de
+        -B ; un seul des deux peut s'appliquer.
+    "-S":
+      name: "Supprimer les avertissements"
+      tooltip_title: "Supprimer les avertissements (-S)"
+      tooltip_body: |-
+        Supprime les fenêtres d'avertissement non fatales de chartread.
+        Recommandé pour les sessions de mesure sans surveillance ou en
+        série.
+        Les erreurs qui empêcheraient la génération du profil restent
+        signalées.
+    "-N":
+      name: "Sans calibration initiale"
+      tooltip_title: "Désactiver la calibration initiale (-N)"
+      tooltip_body: |-
+        Saute la calibration automatique sur la céramique blanche au
+        démarrage. Sers-t'en seulement si tu as déjà calibré l'instrument
+        dans cette session et veux mesurer d'autres mires sans
+        recalibrer.
+    "-p":
+      name: "Mode plage par plage"
+      tooltip_title: "Mode plage par plage (-p)"
+      tooltip_body: |-
+        Passe de la lecture de bandes à la mesure de plages individuelles.
+        Utile pour des mesures ponctuelles à la main ou si la lecture de
+        bandes échoue sur un papier donné.  Nettement plus lent sur les
+        grandes mires.
+    "-H":
+      name: "Mode spectral haute résol."
+      tooltip_title: "Spectre haute résolution (-H)"
+      tooltip_body: |-
+        Active l'échantillonnage spectral haute résolution sur les
+        instruments qui le permettent (p. ex. i1Pro 2/3).  Produit des
+        valeurs Lab plus précises mais augmente légèrement le temps de
+        mesure.
+    "-T":
+      name: "Tolérance de cohérence"
+      tooltip_title: "Multiplicateur de tolérance de plage (-T)"
+      tooltip_body: |-
+        Un multiplicateur du seuil de cohérence des plages intégré à
+        chartread — pas une valeur delta-E. chartread relit chaque plage
+        et rejette les bandes dont les lectures divergent de plus que le
+        seuil × ce nombre.
+
+        Plus bas = plus strict. Un réglage strict détecte tôt les vrais
+        problèmes : buses bouchées, encre faible, rouleaux sales, toner
+        laser instable. Sur un couple imprimante + spectrophotomètre
+        sain, le 0.7 par défaut laisse une marge confortable ; les
+        utilisateurs expérimentés de printerknowledge.com tournent à 0.4
+        avec un i1 Pro 2 / 3.
+
+        Monte à 0.8–1.5 si tu obtiens de fausses erreurs « inconsistent
+        patch » sur des papiers texturés, mats ou fine-art — la surface
+        elle-même y apporte une variance réelle. Au-dessus de 2, on
+        masque surtout de vrais problèmes ; si tu en as besoin, répare
+        d'abord l'imprimante.
+    "-l":
+      name: "Garder valeurs D50 L*a*b*"
+      tooltip_title: "Garder L*a*b* au lieu de XYZ (-l)"
+      tooltip_body: |-
+        Enregistre les données de mesure en valeurs L*a*b* D50 au lieu de
+        XYZ. La plupart des flux utilisent XYZ (par défaut).  N'active
+        que si des outils en aval exigent spécifiquement une entrée
+        L*a*b*.
+    "-X":
+      name: "Correction de colorimètre"
+      tooltip_title: "Matrice de correction de colorimètre (-X)"
+      tooltip_body: |-
+        Applique une matrice de correction de colorimètre (.ccmx) ou un
+        jeu spectral de calibration (.ccss) pour améliorer la précision
+        d'un colorimètre.
+        Pertinent uniquement pour les colorimètres (pas les
+        spectrophotomètres).
+        Procure-toi le bon fichier auprès du fabricant de l'instrument ou
+        crée-le avec les outils ccss/ccmx d'ArgyllCMS.
+  colprof:
+    "-D":
+      name: "Description du profil"
+      tooltip_title: "Description du profil (-D)"
+      tooltip_body: |-
+        Le nom incorporé dans le profil ICC — affiché dans les menus de
+        gestion des couleurs d'applications comme Photoshop, Lightroom et
+        Aperçu.
+
+        Utilise un format cohérent identifiant l'imprimante, le papier,
+        le type d'encre et la date, pour retrouver facilement le bon
+        profil :
+
+          Imprimante · Papier · Type d'encre · Date
+          p. ex. « Epson P900 · Canson Baryta · Chromatic · 2026-04 »
+
+        Le fichier de sortie est nommé d'après ton fichier .ti3 — garde
+        ce nom cohérent avec la description en remplaçant les espaces par
+        des tirets bas :
+          p. ex. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+    "-a":
+      name: "Algorithme du profil"
+      tooltip_title: "Algorithme du profil (-a)"
+      tooltip_body: |-
+        Sélectionne l'algorithme de transformation des couleurs :
+        • Lab cLUT (-al) : la meilleure précision pour les profils
+          d'imprimante. Utilise une table de correspondance 3D complète
+          dans l'espace L*a*b*. Recommandé.
+        • XYZ cLUT (-ax) : similaire à Lab mais dans l'espace XYZ.
+          Produit parfois des dégradés neutres plus doux.
+        • Matrice/gamma (-ag, -as) : modèle plus simple — moins précis
+          pour le comportement complexe des imprimantes, mais plus rapide
+          à calculer.
+        Pour les premiers profils d'imprimantes RGB, utilise toujours
+        Lab cLUT (-al).
+      labels:
+        - "l — Lab cLUT (recommandé pour imprimantes RGB)"
+        - "x — XYZ cLUT"
+        - "X — XYZ cLUT (absolu)"
+        - "g — gamma + matrice (rapide, moins précis)"
+        - "G — gamma + matrice (forcé)"
+        - "s — gamma unique + matrice"
+        - "S — gamma unique + matrice (forcé)"
+        - "m — matrice seule"
+        - "M — matrice seule (forcé)"
+    "-q":
+      name: "Qualité du profil"
+      tooltip_title: "Qualité du profil (-q)"
+      tooltip_body: |-
+        Contrôle la résolution de la grille cLUT et les itérations de
+        lissage :
+        • Basse : grille 17³ — test rapide, pas pour la production
+        • Moyenne : grille 33³ — bon équilibre, défaut recommandé
+        • Haute : grille 45³ — qualité de production
+        • Ultra : grille 65³ — précision maximale, très lent
+        La qualité moyenne suffit pour la plupart du travail jet d'encre.
+        Utilise Haute pour le fine-art ou les épreuves contractuelles.
+      labels:
+        - "l — basse (rapide, ~30 s)"
+        - "m — moyenne (recommandée, ~2 min)"
+        - "h — haute (~10 min)"
+        - "u — ultra (~30+ min)"
+    "-b":
+      name: "Qualité des tables B2A"
+      tooltip_title: "Qualité des tables B2A (-b)"
+      tooltip_body: |-
+        Contrôle indépendamment la qualité des tables B2A
+        (périphérique→PCS) utilisées pour les transformations d'entrée
+        (p. ex. l'épreuvage écran).
+        Laisse vide pour suivre le réglage principal -q.
+        Utilise « n » pour omettre les tables B2A et réduire la taille du
+        profil (les profils sortie-seulement n'ont pas besoin de B2A).
+      labels:
+        - "Comme la qualité du profil (par défaut)"
+        - "l — basse"
+        - "m — moyenne"
+        - "h — haute"
+        - "u — ultra"
+        - "n — aucune (omettre les tables B2A)"
+    "-r":
+      name: "Lissage/bruit (% ΔE)"
+      tooltip_title: "Bruit moyen du périphérique (-r)"
+      tooltip_body: |-
+        Bruit moyen estimé de la mesure ou du périphérique en pourcentage
+        de ΔE.  Des valeurs plus hautes augmentent le lissage du profil,
+        réduisant l'effet des plages anormales.
+        • 0,5 % : mesures propres, imprimante bien entretenue
+        • 1,0–2,0 % : mesures bruitées ou papiers texturés
+        • 3,0–5,0 % : très bruité ; augmente nettement le lissage
+    "-s":
+      name: "Source gamut (percept.)"
+      tooltip_title: "Source de mappage de gamut perceptuel (-s)"
+      tooltip_body: |-
+        Profil ICC source utilisé pour calculer les tables de mappage de
+        gamut de l'intention de rendu perceptuelle (A2B / B2A perceptuel).
+        Sans lui, l'intention perceptuelle utilise directement les
+        données colorimétriques (aucune compression de gamut).
+        Typiquement réglé sur un espace de travail RGB standard comme
+        AdobeRGB ou ProPhoto RGB.
+        Les fichiers .icc et .icm sont tous deux acceptés — ICM est
+        simplement le nom Microsoft du format de profil ICC ; ils sont
+        identiques.
+    "-S":
+      name: "Source de gamut (P+S)"
+      tooltip_title: "Source perceptuel + saturation (-S)"
+      tooltip_body: |-
+        Comme -s, mais applique le mappage de gamut à la fois à
+        l'intention de rendu perceptuelle et à celle de saturation.
+    "-A":
+      name: "Fabricant"
+      tooltip_title: "Texte de fabricant (-A)"
+      tooltip_body: |-
+        Texte de fabricant incorporé dans l'en-tête du profil ICC.
+        Facultatif — sert à l'identification dans les sélecteurs de
+        profils.
+    "-M":
+      name: "Modèle"
+      tooltip_title: "Texte de modèle (-M)"
+      tooltip_body: |-
+        Texte de modèle incorporé dans l'en-tête du profil ICC.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Texte de copyright (-C)"
+      tooltip_body: |-
+        Mention de copyright incorporée dans le profil ICC.
+    "-ni":
+      name: "Pas de courbes d'entrée"
+      tooltip_title: "Pas de courbes d'entrée (-ni)"
+      tooltip_body: |-
+        Désactive les courbes tonales 1D d'entrée qui préconditionnent
+        les valeurs du périphérique avant la cLUT 3D.  Ces courbes
+        améliorent normalement la précision du profil.  Ne les désactive
+        qu'à des fins de diagnostic.
+    "-no":
+      name: "Pas de courbes de sortie"
+      tooltip_title: "Pas de courbes de sortie (-no)"
+      tooltip_body: |-
+        Désactive les courbes de sortie 1D appliquées après la cLUT 3D.
+        Ne les désactive qu'à des fins de diagnostic.
+    "-V":
+      name: "Accent grille ombres"
+      tooltip_title: "Accent de grille dans les zones sombres (-V)"
+      tooltip_body: |-
+        Ajoute des points supplémentaires à la grille cLUT dans les zones
+        sombres (ombres). 1.0 = grille uniforme (par défaut).  Monte à
+        1.5–2.0 pour les imprimantes au comportement complexe dans les
+        ombres ou aux noirs bouchés.
+  profcheck:
+    "-v":
+      name: "Niveau de détail"
+      tooltip_title: "Niveau de détail (-v)"
+      tooltip_body: |-
+        Le mode par plage renvoie la valeur ΔE individuelle de chaque
+        plage — requis pour l'analyse au niveau des bandes et l'affinage
+        guidé.  Le mode résumé ne montre que les erreurs moyenne et
+        maximale.
+      labels:
+        - "2 — par plage (requis pour l'analyse des bandes)"
+        - "1 — résumé seul"
+    "-I":
+      name: "Intention de rendu"
+      tooltip_title: "Intention de rendu (-I)"
+      tooltip_body: |-
+        Le colorimétrique absolu vérifie la précision colorimétrique
+        absolue du profil, point blanc compris — le standard pour le
+        profilage d'imprimantes.
+        Le colorimétrique relatif normalise au point blanc du support.
+      labels:
+        - "a — colorimétrique absolu (par défaut)"
+        - "r — colorimétrique relatif"
+    "-s":
+      name: "Pires ΔE en premier"
+      tooltip_title: "Trier par ΔE (-s)"
+      tooltip_body: |-
+        Trie la sortie de profcheck pour que les plages aux pires
+        résultats apparaissent en premier.  Utile pour repérer vite les
+        zones à problème.
+        N'a d'effet que quand le niveau de détail est par plage.
+    "-i":
+      name: "Illuminant"
+      tooltip_title: "Illuminant (-i)"
+      tooltip_body: |-
+        Sélectionne la source lumineuse utilisée pour convertir les
+        mesures spectrales en valeurs de couleur.  Pertinent seulement si
+        ton .ti3 contient des données spectrales.  D50 est le standard du
+        profilage d'impression.
+      labels:
+        - "D50 (par défaut)"
+        - "D50M2 (D50 + filtre UV)"
+        - "D65 (lumière du jour 6500 K)"
+        - "A (tungstène / incandescence)"
+        - "C (simulation lumière du jour, daté)"
+        - "F5 (fluorescent CWF)"
+        - "F8 (fluorescent simulation D50)"
+        - "F10 (fluorescent Ultralume)"
+    "-o":
+      name: "Observateur CIE"
+      tooltip_title: "Observateur CIE (-o)"
+      tooltip_body: |-
+        Définit le modèle d'observateur standard pour les calculs
+        colorimétriques.  L'observateur 1931 2° est le standard ICC pour
+        le profilage d'impression.  Garde le défaut sauf demande expresse
+        d'autre chose.
+      labels:
+        - "1931 2° (par défaut)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+    "-P":
+      name: "Élaguer à ΔE ≤"
+      tooltip_title: "Limiter le .ti3 à ΔE ≤ (-P)"
+      tooltip_body: |-
+        Crée une copie réduite de ton fichier .ti3 ne contenant que les
+        plages dont l'erreur de couleur est inférieure ou égale au seuil
+        fixé.
+        Utile si des plages mal mesurées tirent le profil vers le bas.
+        Active l'option et fixe la valeur de ΔE maximale acceptable.
+    "-w":
+      name: "Créer visualisation 3D X3DOM"
+      tooltip_title: "Visualisation X3DOM (-w)"
+      tooltip_body: |-
+        Génère une visualisation 3D HTML interactive des erreurs de
+        couleur de ton profil.  Ouvre le fichier .x3d.html obtenu dans un
+        navigateur moderne pour explorer quelles parties du gamut ont les
+        erreurs les plus grandes.
+  printcal:
+    "-v":
+      name: "Niveau de détail"
+      tooltip_title: "Niveau de détail (-v)"
+      tooltip_body: |-
+        Contrôle la quantité de sortie que printcal écrit pendant la
+        calibration.
+          0 = silencieux
+          1 = progression de base (par défaut)
+          2 = infos détaillées par canal
+          3 = sortie de débogage
+    "-s":
+      name: "Lissage des courbes"
+      tooltip_title: "Lissage des courbes (-s)"
+      tooltip_body: |-
+        Contrôle le lissage supplémentaire appliqué aux courbes de
+        calibration.  Des valeurs plus hautes donnent des courbes plus
+        douces mais moins précises.
+
+        Défaut : 1.0 — adapté à la plupart des imprimantes.
+        Monte (p. ex. 2.0–5.0) si la réponse tonale de l'imprimante
+        paraît irrégulière ou si les courbes semblent dentelées.
+    "-z":
+      name: "Résolution des courbes"
+      tooltip_title: "Résolution des courbes (-z)"
+      tooltip_body: |-
+        Nombre de pas dans les tables des courbes de calibration de
+        sortie.
+        Des valeurs plus hautes donnent une résolution plus fine mais des
+        fichiers .cal plus gros.
+        Le défaut (256) convient à pratiquement toutes les imprimantes.
+    "-A":
+      name: "Fabricant"
+      tooltip_title: "Fabricant (-A)"
+      tooltip_body: |-
+        Fixe la description de fabricant incorporée dans le fichier .cal.
+        Purement informative — n'affecte pas les courbes de calibration.
+    "-M":
+      name: "Modèle"
+      tooltip_title: "Modèle (-M)"
+      tooltip_body: |-
+        Fixe la description du modèle d'imprimante incorporée dans le
+        fichier .cal.
+        Purement informative — n'affecte pas les courbes de calibration.
+    "-D":
+      name: "Description"
+      tooltip_title: "Description (-D)"
+      tooltip_body: |-
+        Fixe une description lisible incorporée dans le fichier .cal.
+        Purement informative — n'affecte pas les courbes de calibration.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyright (-C)"
+      tooltip_body: |-
+        Fixe le texte de copyright incorporé dans le fichier .cal.
+        Purement informatif — n'affecte pas les courbes de calibration.
+  applycal:
+    "-v":
+      name: "Détaillé"
+      tooltip_title: "Détaillé (-v)"
+      tooltip_body: |-
+        Affiche des informations détaillées sur la calibration appliquée,
+        y compris des statistiques des courbes par canal.

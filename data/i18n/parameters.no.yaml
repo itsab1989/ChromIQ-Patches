@@ -1,0 +1,1113 @@
+# Norwegian overlay for data/parameters.yaml — merged in translate_parameters()
+parameters:
+  targen:
+    "-d":
+      name: "Enhetstype"
+      tooltip_title: "Enhetstype (-d)"
+      tooltip_body: |-
+        Definerer fargestoffkombinasjonen til utdataenheten din.
+
+        Trykkrom er subtraktive: enhetsverdi 0 = hvit (uten blekk),
+        maksimum = svart (fullt blekk).  Video-/skjermrom er additive:
+        enhetsverdi 0 = svart, maksimum = hvit.
+
+        Vanlige valg:
+          • Trykk grå (-d 0)   — énkanals gråtoneskriver
+          • Video grå (-d 1)   — énkanals skjerm/monitor
+          • Trykk RGB (-d 2)   — vanlig RGB-blekkskriver (standard, anbefalt)
+          • Video RGB (-d 3)   — RGB-skjerm/monitor
+          • CMYK (-d 4)        — firefargers blekkskriver eller offsetpresse
+          • CMY (-d 5)         — trefargers, uten egen svartkanal
+
+        Valg 6–15 er for spesielle flerkanals-blekkskrivere med ekstra
+        blekk (lys cyan/magenta, oransje, grønn, fiolett osv.).
+        Bruk -D (ekspert) for å finjustere fargestoffsettet ved behov.
+      labels:
+        - "Trykk grå"
+        - "Video grå"
+        - "Trykk RGB (anbefalt)"
+        - "Video RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + lys CM"
+        - "CMYK + lys CMK"
+        - "CMYK + rød + blå"
+        - "CMYK + oransje + grønn"
+        - "CMYK + rød + grønn + blå"
+        - "CMYK + oransje + grønn + fiolett"
+        - "CMYK + oransje + grønn + blå"
+        - "CMYK + lys CMK + lys lys K"
+        - "CMYK + oransje + grønn + lys CM"
+        - "CMYK + lys CM + middels CM"
+    "-D":
+      name: "Fargestoff +/−"
+      tooltip_title: "Legg til/fjern fargestoff (-D)"
+      tooltip_body: |-
+        Endrer fargestoffsettet fra enhetstypen (-d) ved å legge til eller
+        fjerne ett enkelt fargestoff.  Er det valgte fargestoffet allerede i
+        settet, fjernes det; mangler det, legges det til.
+
+        Typisk bruk:
+          • Legg til oransje (-D 5) i standard-CMYK for et videre gamut
+          • Legg til lys cyan (-D 11) / lys magenta (-D 12) i CMYK
+            for jevnere overganger i høylysene
+
+        Aktiver flere posisjoner for å stable ekstra fargestoffer (hver
+        aktiverte posisjon viser den neste, opptil 11 endringer totalt).
+
+        La stå av for standard-enhetstypene 0–5.
+      labels:
+        - "Additiv"
+        - "Cyan"
+        - "Magenta"
+        - "Gul"
+        - "Svart"
+        - "Oransje"
+        - "Rød"
+        - "Grønn"
+        - "Blå"
+        - "Fiolett"
+        - "Hvit"
+        - "Lys cyan"
+        - "Lys magenta"
+        - "Lys gul"
+        - "Lys svart"
+        - "Middels cyan"
+        - "Middels magenta"
+        - "Middels gul"
+        - "Middels svart"
+        - "Lys lys svart"
+    "-f":
+      name: "Totalt feltantall"
+      tooltip_title: "Totalt feltantall (-f)"
+      tooltip_body: |-
+        Angir totalt antall fargefelt.  Flere felt = bedre profilnøyaktighet,
+        men lengre utskrifts- og måletid.
+        Typiske områder for RGB-blekkskrivere:
+          • Rask test: 400–600
+          • Standard:  800–1200
+          • Høy kvalitet: 1500–2000
+          • Svært høy: 2500–3000
+
+        Auto (ved siden av tallfeltet): avkrysset beregnes feltantallet
+        fortløpende ut fra valgt papir, instrument, double density,
+        venstrekant, feltskala, marg og side-tallfeltet i printtarg-
+        seksjonen — den største verdien som fyller nøyaktig så mange ark
+        uten tomrom.  Tallfeltet er nedtonet mens Auto er på og viser
+        gjeldende anslag.  Ved egendefinerte oppsett (annen feltskala
+        eller marg) kjører Auto et kort binærsøk mot targen — verdien kan
+        da bruke et sekund på å oppdateres.
+
+        I veiledet modus beregnes dette automatisk fra felt-per-side-
+        databasen × valgt sideantall.
+        Sett til 0 i veiledet modus for automatisk beregning.
+    "-e":
+      name: "Hvite felt"
+      tooltip_title: "Hvite felt (-e)"
+      tooltip_body: |-
+        Hvor mange rent papirhvite felt som legges til kartet. Instrumentet
+        måler disse for å lære nøyaktig hvor hvitt papiret ditt er — det
+        forankrer den lyse enden av profilen. 4 er en god standard; svært
+        glanset papir kan dra nytte av noen flere.
+
+        Auto (avkrysning):
+        Slå på "Auto", så velger ChromIQ tallet for deg ut fra hvor mange
+        felt hele kartet rommer — et lite énsideskart får noen få hvitfelt
+        og et stort flersideskart flere, uten at du må tenke på det.
+
+        Slik beregnes Auto-tallet:
+          • Et kart på omtrent 560 felt får 4 hvitfelt.
+          • Hver gang kartet omtrent dobles, vokser antallet
+            med 50 % (4 → 6 → 8 …).
+          • Det går aldri over 8 (mer sløser bare plass)
+            og aldri under 2.
+
+        Med Auto på er feltet nedtonet og viser "Auto". Slå det av når som
+        helst for å skrive inn ditt eget tall.
+    "-B":
+      name: "Svarte felt"
+      tooltip_title: "Svarte felt (-B)"
+      tooltip_body: |-
+        Hvor mange felt med maksimalt blekk (enhetssvart) som legges til
+        kartet. Instrumentet måler disse for å lære den mørkeste tonen
+        skriveren din kan lage — det forankrer skyggeenden av profilen.
+        4 er en god standard for RGB-skrivere.
+
+        Auto (avkrysning):
+        Slå på "Auto", så velger ChromIQ tallet for deg ut fra hvor mange
+        felt hele kartet rommer — et lite kart får noen få svartfelt, et
+        stort kart flere.
+
+        Slik beregnes Auto-tallet:
+          • Et kart på omtrent 560 felt får 4 svartfelt.
+          • Hver gang kartet omtrent dobles, vokser antallet
+            med 50 % (4 → 6 → 8 …).
+          • Det går aldri over 8 og aldri under 2.
+
+        Med Auto på er feltet nedtonet og viser "Auto". Slå det av når som
+        helst for å skrive inn ditt eget tall.
+    "-g":
+      name: "Gråakse-trinn"
+      tooltip_title: "Gråakse-trinn (-g)"
+      tooltip_body: |-
+        Ekstra nøytrale gråfelt jevnt fordelt fra hvitt til svart.
+        De hjelper profilen å gjengi gråtoner rent, uten fargestikk —
+        viktig for svart-hvitt-bilder og nøytrale toner.
+        Tommelfingerregel ved manuell innstilling: 0 for en rask profil,
+        50–100 for en standard, 128+ for høy kvalitet.
+
+        Auto (avkrysning):
+        Slå på "Auto", så velger ChromIQ tallet for deg, skalert etter hvor
+        mange felt hele kartet rommer — et større kart får en lengre,
+        finere gråtrapp.
+
+        Slik beregnes Auto-tallet:
+          • Et kart på omtrent 560 felt får 32 grå trinn.
+          • Hver gang kartet omtrent dobles, dobles trinnene
+            også (32 → 64 → 128).
+          • Det går aldri over 128 og aldri under 8.
+
+        Med Auto på er feltet nedtonet og viser "Auto". Slå det av når som
+        helst for å skrive inn ditt eget tall.
+
+        (Veiledet modus setter dette alltid automatisk etter samme idé.)
+    "-G":
+      name: "Grundig optimalisering (treg)"
+      tooltip_title: "Grundig optimalisering (-G)"
+      tooltip_body: |-
+        Lar targen bruke ekstra tid på å plassere feltene så jevnt som
+        mulig over skriverens fargegamut. Feltsettet er av samme type
+        (OFPS — Optimised Farthest Point Sampling, standardfordelingen)
+        uansett; dette bytter bare fra "rask" til "god" modus.
+
+        Anbefalt PÅ for hvert kart du faktisk skal skrive ut og måle: noen
+        sekunder ekstra datatid under genereringen gir en målbart bedre
+        profil.
+
+        Slå AV bare hvis du raskt prøver ut kartinnstillinger og ikke bryr
+        deg om absolutt feltkvalitet (f.eks. testing av utskriftsoppsett
+        før det endelige kartet).
+
+        Har ingen effekt når "Feltfordeling" står på noe annet enn OFPS —
+        de alternative fordelingene (tilfeldig, kvasi-tilfeldig, BCC, …)
+        ignorerer dette valget.
+    "-s":
+      name: "Enkeltkanal-trinn"
+      tooltip_title: "Enkeltkanal-trinn (-s)"
+      tooltip_body: |-
+        Legger til ekstra enkeltkanal-rampefelt (R, G, B hver for seg).
+        Nyttig for å karakterisere enkeltblekkets oppførsel.
+        Typisk: 0 for raskt, 20–50 for standard, 50–100 for høyt.
+    "-c":
+      name: "Forkondisjoneringsprofil"
+      tooltip_title: "Forkondisjoneringsprofil (-c)"
+      tooltip_body: |-
+        En eksisterende ICC-profil for denne skriver- og papirkombinasjonen,
+        brukt til å forkondisjonere feltfordelingen i perseptuelt rom.
+        En tidligere profil her gir felt som er jevnere fordelt i
+        utgangsgamuten — og dermed bedre nøyaktighet i en andre
+        profileringsrunde.  La stå tom for en førstegangsprofil.
+    "-C":
+      name: "Kalibrerings-overstyring"
+      tooltip_title: "Kalibrerings-overstyring (-C)"
+      tooltip_body: |-
+        Valgfri .cal-fil hvis kalibreringskurver brukes når blekkgrensen
+        for feltgenerering anslås.  Overstyrer en eventuell .cal innebygd
+        i ICC-mål-.ti3-filen fra en tidligere profileringsrunde.
+
+        Bruk dette når du har en validert enhetskalibrering (f.eks. fra
+        printcal/applycal) og targen skal ta hensyn til den når antall
+        felt i skyggeområdet beregnes.
+
+        Skriv "none" i feltet (uten anførselstegn) for uttrykkelig å hindre
+        at noen .cal brukes, selv om én er innebygd i .ti3-filen.
+
+        La stå tom i de fleste arbeidsflyter — bare nødvendig når du
+        forvalter en egen kalibreringskurve uavhengig av profilen.
+    "-n":
+      name: "Nøytralakse-trinn"
+      tooltip_title: "Nøytralakse-trinn (-n)"
+      tooltip_body: |-
+        Legger til ekstra kilefelt langs den perseptuelt sanne nøytralaksen
+        til skriveren + papiret ditt, slik den defineres av forkondisjonerings-
+        profilen lastet via -c.
+
+        Forskjellen fra -g (gråakse-trinn):
+          • -g går gjennom RGB-enhetsverdier (R = G = B): 0/0/0, 32/32/32,
+            64/64/64 … Det forutsetter at like enhetsverdier trykkes som
+            nøytral grå — noe som bare stemmer på en perfekt linearisert
+            skriver.  På en ekte skriver har "enhets-gråtrappen" som regel
+            et fargestikk.
+          • -n spør den angitte profilen: "hvilke RGB-verdier trenger DENNE
+            skriveren faktisk for å gjengi et nøytralt L*a*b*-felt
+            (a* = b* = 0) ved hvert lyshetstrinn?"  De (typisk ulike)
+            RGB-verdiene legges til som felt.
+
+        Forskjellen fra -N (nøytralakse-vekting):
+          • -N er en regulator fra 0–1 som bøyer den eksisterende OFPS-
+            feltfordelingen mot nøytralsonen.  Den legger ikke til navngitte
+            trinn.
+          • -n legger til eksplisitte, profilavledede nøytralfelt i tillegg
+            til det resten av fordelingen gir.
+
+        Når du bør bruke det:
+          • Du har allerede en ICC-profil fra første runde for dette papiret
+            og bygger et forbedringskart.  Last den profilen under
+            Forkondisjoneringsprofil (-c) og sett -n til 32–64 for å
+            bemonstre den korrigerte nøytralaksen tett.
+          • For et førstegangskart uten -c: la stå på 0 — uten
+            forkondisjoneringsprofil finnes ingen "sann" nøytralakse å
+            prøveta fra, og -g dekker allerede enhetsrommets rampe.
+
+        Typiske forbedringsverdier: 32 for vanlig arbeid, 64 for
+        fine-art / prøvetrykk der nøytralitet er kritisk.
+
+        Krever at -c er angitt; har ellers ingen effekt.
+    "-N":
+      name: "Nøytralakse-vekting"
+      tooltip_title: "Nøytralakse-vekting (-N)"
+      tooltip_body: |-
+        Styrer hvor sterkt felt klynger seg rundt nøytralaksen.
+        0.0 = ingen vekting, 1.0 = maksimal klyngning rundt grått.
+        Standarden 0.5 passer de fleste skrivere.
+    "-V":
+      name: "Skyggeområde-vekting"
+      tooltip_title: "Skyggeområde-vekting (-V)"
+      tooltip_body: |-
+        Legger til ekstra felt i mørke (skygge)områder av gamuten.
+        1.0 = ingen vekting (standard).  Øk til 2.0–3.0 for skrivere
+        med komplisert skyggeoppførsel (f.eks. matt fine-art-papir).
+    "-l":
+      name: "Total blekkgrense (%)"
+      tooltip_title: "Total blekkgrense (-l)"
+      tooltip_body: |-
+        Den maksimale totale blekkmengden skriveren får legge på papiret,
+        som prosent. 100 % = ett fullt blekklag, 200 % = to fulle lag
+        (f.eks. 100C + 100K), og så videre.
+
+        Hvorfor det betyr noe (særlig for CMYK / CMYK+N):
+        Uten grense genererer targen gladelig felt som 100C + 100M +
+        100Y + 100K = 400 %. Så mye vått blekk kan danne dammer, tørke
+        sakte, flekke eller til og med rive papiret — og profilen bygget
+        av slike felt forutsier farger skriveren faktisk ikke kan lage.
+
+        Slik velger du en verdi:
+          • De fleste CMYK-blekkskrivere:  260 – 320 %
+          • Bestrøket / glanset papir:     320 – 360 %
+          • Avispapir, lav kvalitet:       220 – 260 %
+          • Utvidet gamut (CMYKOGV):       400 – 500 %  (flere blekk
+                                            deler totalbudsjettet)
+
+        Er du usikker: sjekk skriverens dokumentasjon eller papirprofil-
+        veiledning, eller mål det — skriv ut en liten blekkgrense-testkile
+        og velg den høyeste verdien som tørker rent uten å flyte ut.
+
+        For RGB-arbeidsflyter: la vanligvis stå av — RGB-blekkskrivere
+        håndterer blekkbegrensningen internt, så targen trenger ikke
+        budsjettere over kanaler.
+
+        Kryss av boksen for å aktivere.
+    "__targen_distribution__":
+      name: "Feltfordeling"
+      tooltip_title: "Feltfordeling (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |-
+        Hvordan targen avgjør hvor hvert fargefelt plasseres i skriverens
+        gamut. Ulike algoritmer gir ulike avveininger mellom dekning,
+        jevnhet og hastighet.
+
+        Velg ÉN. De utelukker hverandre — å velge en av dem erstatter
+        standard-OFPS-plasseringen fullstendig.
+
+        OFPS (standard, anbefalt):
+        Optimised Farthest Point Sampling. Plasserer hvert nye felt
+        iterativt så langt som mulig fra hvert eksisterende felt — den
+        jevneste dekningen av alle algoritmene her. Tregere enn
+        alternativene, men gullstandarden for profilkvalitet. Kombiner
+        med "Grundig optimalisering (-G)" for best resultat.
+
+        Incremental Far Point (-t):
+        En enklere fjernpunkt-metode. Raskere enn OFPS, litt mindre jevn.
+        Bruk når OFPS er for treg ved svært store feltantall og du godtar
+        et lite kvalitetstap.
+
+        Tilfeldig — enhetsrom (-r):
+        Jevnt tilfeldige felt i rå enhetsverdier (f.eks. RGB). Raskest
+        mulig, men dekningen i *opplevd* farge er ujevn — sløser felt i
+        områder øyet knapt skiller.
+
+        Tilfeldig — perseptuelt rom (-R):
+        Jevnt tilfeldig i opplevd farge (Lab). Bedre enn -r hvis det må
+        være tilfeldig, siden feltene spres jevnt etter det øyet ser.
+        Fortsatt mindre optimalt enn OFPS for samme antall.
+
+        Kvasi-tilfeldig romfyllende (-q / -Q):
+        Lav-diskrepans-sekvenser (Sobol-aktige) som fyller rommet jevnere
+        enn ekte tilfeldighet, uten OFPS' iterative kostnad.
+        -q i enhetsrom, -Q i perseptuelt rom. En god mellomvei når OFPS
+        er for treg.
+
+        Kubisk romsentrert gitter (-i / -I):
+        Et fast regelmessig gitter (hvert felt omgitt av 8 naboer i et
+        kubemønster). Deterministisk og svært jevnt, men lite fleksibelt
+        — bare bestemte feltantall passer gitteret. -i i enhetsrom,
+        -I i perseptuelt rom.
+
+        De fleste bør la dette stå på OFPS.
+      labels:
+        - "OFPS — optimalisert (anbefalt)"
+        - "Incremental Far Point (-t)"
+        - "Jevnt tilfeldig — enhetsrom (-r)"
+        - "Jevnt tilfeldig — perseptuelt (-R)"
+        - "Kvasi-tilfeldig — enhetsrom (-q)"
+        - "Kvasi-tilfeldig — persept. (-Q)"
+        - "BCC-gitter — enhetsrom (-i)"
+        - "BCC-gitter — perseptuelt (-I)"
+    "-A":
+      name: "OFPS-adaptasjon"
+      tooltip_title: "OFPS-adaptasjon (-A)"
+      tooltip_body: |-
+        Hvor sterkt OFPS bøyer regelen om jevn dekning for å følge formen
+        til en forkondisjoneringsprofil (-c). Bare meningsfullt når OFPS er
+        valgt feltfordeling OG en -c-profil er angitt.
+
+        0.0 = ignorer profilen fullstendig — ren jevn dekning i enhetsrom,
+              som om ingen -c var gitt.
+        1.0 = følg profilen fullt ut — konsentrer felt der profilen sier
+              skriverens gamut er interessant (dvs. formen på det
+              faktiske fargerommet).
+
+        targen-standarden er 0.10 (mild) for en første runde og 1.0 når -c
+        er angitt; ChromIQ lar dette stå på 0.10 med mindre du uttrykkelig
+        endrer det — så du ikke får en overraskende atferdsendring.
+
+        Øk mot 1.0 i forbedringsrunder der du stoler på den første profilen
+        og vil at det andre kartet skal bemonstre skriverens reelle gamut
+        tett i stedet for tomme hjørner av enhetsrommet.
+
+        Kryss av boksen for å aktivere.
+    "-m":
+      name: "Kube-indre trinn"
+      tooltip_title: "Kube-indre trinn (-m)"
+      tooltip_body: |-
+        Legger til et regelmessig gitter av felt *inni* skriverens
+        fargekube — N trinn langs hver akse (N×N×N for RGB osv.). De
+        kommer *i tillegg til* feltene du har valgt med -f, -g, -s og de
+        andre tellerne.
+
+        Sett til 0 (standard) for å hoppe over — nesten alltid riktig
+        valg. OFPS dekker kubens indre mer effektivt allerede.
+
+        Når du bør bruke det:
+          • Reproduserbarhet mellom maskiner: et fast gitter er likt hver
+            gang, uansett hvilke OFPS-plasseringer targen valgte — det
+            hjelper med å sammenligne profiler mellom kjøringer.
+          • Diagnosekart med forutsigbare, navngitte kubeposisjoner.
+
+        Typiske verdier ved bruk: 3 – 6 (trinn per akse). Tallene vokser
+        raskt — 6 trinn i RGB er 216 felt, 8 er 512.
+
+        Kryss av boksen for å aktivere.
+    "-M":
+      name: "Kube-overflatetrinn"
+      tooltip_title: "Kube-overflatetrinn (-M)"
+      tooltip_body: |-
+        Legger til et regelmessig gitter av felt på *overflaten* av
+        skriverens fargekube — N trinn per flate. Feltene havner på
+        utsiden (primær- og sekundærfarger, gamutkanten), ikke i det indre.
+
+        Sett til 0 (standard) for å hoppe over.
+
+        Når du bør bruke det:
+          • Du vil spesifikt fastlegge gamutgrensen og primær-/sekundær-
+            hjørnene uten den indre kostnaden til -m.
+          • Sammenligning av hvordan ulike blekk/papirer forskyver
+            gamutomhyllingen — overflatefelt påvirkes mest.
+
+        Typiske verdier ved bruk: 4 – 8 trinn per flate.
+
+        Kryss av boksen for å aktivere.
+    "-b":
+      name: "BCC-gittertrinn"
+      tooltip_title: "BCC-gittertrinn (-b)"
+      tooltip_body: |-
+        Legger til felt på et kubisk romsentrert (BCC-)gitter — tettere
+        enn et vanlig kubegitter, fordi punkter ligger både på kubehjørnene
+        og i kubesentrene. N er antall inndelinger per akse.
+
+        Sett til 0 (standard) for å hoppe over — dette er en nisjeknapp.
+
+        Når du bør bruke det:
+          • Du vil ha regelmessige, gitterjusterte feltposisjoner, men med
+            bedre pakking enn -m gir, uten å gå helt til OFPS.
+          • Forsknings-/reproduserbarhetsscenarioer der selve BCC-
+            strukturen er poenget.
+
+        Merk: dette er *trinnteller*-formen (legger til i feltlisten din);
+        for et kart der *hele* fordelingen er BCC, bruk velgeren
+        "Feltfordeling" ovenfor og velg BCC-valget der.
+
+        Kryss av boksen for å aktivere.
+  printtarg:
+    "-i":
+      name: "Måleinstrument"
+      tooltip_title: "Måleinstrument (-i)"
+      tooltip_body: |-
+        Forteller kartgeneratoren hvilket spektrofotometer du skal lese det
+        utskrevne kartet med. Feltrutenettet bygges rundt instrumentets
+        stripebredde, feltstørrelse og avstand — å sette dette riktig er
+        derfor essensielt.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — håndholdt stripeleser, det
+             vanligste valget. Leser en kolonne felt i én skanning.
+
+          •  i1Pro 3 Plus — versjon av i1Pro 3 med større måleåpning.
+             Leser større felt, så langt færre får plass per ark (~5×
+             færre enn vanlig i1Pro).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — instegsenhet.
+             Leser ett felt om gangen alene; med den valgfrie måleskinnen
+             to og to (se Double density).
+
+          •  SpectroScan — XY-planskanner. En motorisert arm leser hvert
+             felt enkeltvis og pakker dermed langt flere farger per ark
+             enn noen stripeleser.
+
+          •  i1iSis (via i1Profiler) — automatisk arkmatet kartleser.
+             ChromIQ kan ikke styre denne enheten direkte: i stedet lagres
+             feltlisten i i1Profilers eget format ved siden av kartet, og
+             du fullfører arbeidsflyten der (skriv ut, skann, bygg profil).
+             ChromIQs faner Skriv ut og Mål brukes ikke for denne enheten.
+
+        Feil instrument gir et kart enheten din ikke klarer å justere seg
+        etter eller lese pålitelig — du ser \"patches not found\" eller
+        justeringsfeil ved måling. I veiledet modus tilpasser oppsettet
+        seg dette valget automatisk.
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (planskanner)"
+        - "i1iSis (via i1Profiler)"
+    "-h":
+      name: "Double density"
+      tooltip_title: "Double density (-h)"
+      tooltip_body: |-
+        Endrer felttettheten per stripe i printtarg-oppsettet.
+        Den nøyaktige betydningen avhenger av det aktive instrumentet:
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — dobler antall
+             felt som får plass i hver målestripe.
+             KREVER det fysiske måleskinne-tilbehøret; uten det klarer
+             ikke enheten å treffe den tettere avstanden og leser feil.
+
+          •  SpectroScan — bytter kartoppsettet fra rektangulære til
+             sekskantede felt. Sekskanter pakker tettere, så ~14 % flere
+             felt per ark. Ingen ekstra maskinvare nødvendig.
+
+        Har ingen effekt på i1Pro eller i1Pro 3 Plus og er normalt skjult
+        når en av dem er valgt.
+    "-p":
+      name: "Papirstørrelse"
+      tooltip_title: "Papirstørrelse (-p)"
+      tooltip_body: |-
+        Angir målene til hvert ark i det utskrevne kartet. Kartet fyller
+        alltid siden fra kant til kant — større papir gir plass til flere
+        felt, som betyr en mer detaljert profil fra færre ark.
+
+        Velg størrelsen du faktisk skal skrive ut på, inkludert retningen.
+        Stripelesere (i1Pro-familien) leser ovenfra og ned, så:
+
+          •  Stående — lengre striper, færre av dem. Standardvalget.
+
+          •  Liggende (A4R, LetterR, 420×297…) — kortere striper, flere av
+             dem. Bruk dette når skriveren mater liggende mer pålitelig,
+             eller når et stående ark ville plassert siste stripe for nær
+             papirkanten.
+
+        Velg "Egendefinert" for å skrive inn nøyaktig bredde og høyde i
+        millimeter når ingen av de navngitte størrelsene passer papiret
+        ditt.
+
+        Endrer du papirstørrelse, oppdateres feltantallet og sideantallet
+        i kommandoforhåndsvisningen automatisk.
+      labels:
+        - "A2 stående (420 × 594 mm)"
+        - "A2 liggende (594 × 420 mm)"
+        - "A3+ stående (329 × 483 mm)"
+        - "A3+ liggende (483 × 329 mm)"
+        - "A3 stående (297 × 420 mm)"
+        - "A3 liggende (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 stående (210 × 297 mm)"
+        - "A4 liggende (297 × 210 mm)"
+        - "Letter stående (8,5 × 11\")"
+        - "Letter liggende (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Egendefinert (angi mål)"
+    "-t":
+      name: "TIFF-utdata-DPI"
+      tooltip_title: "TIFF-oppløsning (-t)"
+      tooltip_body: |-
+        Utdataoppløsning for TIFF-rasterkartfilene.
+        300 DPI anbefales for stripelesende instrumenter og gir en god
+        balanse mellom filstørrelse og feltskarphet.
+        Bruk 200 DPI for svært store kart for å redusere filstørrelsen.
+        Høyere verdier (600+) trengs sjelden og gir store filer.
+    "-L":
+      name: "Fjern venstre klemmekant"
+      tooltip_title: "Undertrykk venstre klemmekant (-L)"
+      tooltip_body: |-
+        Fjerner klemmekant-stripen på venstre side og vinner ~15 mm
+        sidebredde til ekstra feltkolonner.
+        Slå på med mindre du bruker en fysisk papirklemme.
+        Alle verdier i feltdatabasen forutsetter at dette er PÅ.
+    "-a":
+      name: "Feltstørrelse-skala"
+      tooltip_title: "Feltstørrelse-skala (-a)"
+      tooltip_body: |-
+        Skalerer felt- og skillefeltmålene jevnt.
+        1.0 er standard (instrumentoptimalisert størrelse).
+        Øk til 1.5–2.0 på rue / teksturerte papirer der instrumentet
+        trenger et større måleområde.
+        Under 1.0 får flere felt plass per side, men det kan gi lesefeil
+        på noen instrumenter.
+        Merk: en annen verdi enn standard utløser en fortløpende binærsøk-
+        omberegning i stedet for det raske tabelloppslaget.
+    "-m":
+      name: "Marg (mm)"
+      tooltip_title: "Marg (-m / -M)"
+      tooltip_body: |-
+        Angir margen i millimeter for både utskriftsområdet (-m) og
+        TIFF-filmålene (-M).  Begge holdes synkronisert.
+        6 mm passer minimumsmargene til de fleste skrivere.  Reduser bare
+        hvis skriveren din kan skrive kantløst.
+
+        Å velge en i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus setter dette
+        automatisk til 10 mm, slik at stripeleser-optikken ikke glir ut på
+        den bare papirkanten (feil som "not enough patches read").
+        Bytte til ColorMunki / SpectroScan setter den tilbake til 6 mm.
+        En egendefinert verdi (annet enn 6 eller 10) bevares ved
+        instrumentbytter.
+
+        Felt-per-side-oppslagstabeller finnes bare for 6 og 10 mm — andre
+        verdier utløser en fortløpende binærsøk-omberegning.
+    "-r":
+      name: "Behold feltrekkefølge (ikke stokk)"
+      tooltip_title: "Ingen randomisering (-r)"
+      tooltip_body: |-
+        Som standard randomiserer printtarg feltposisjonene for å redusere
+        drift-artefakter fra instrumentet.  Slå på dette valget bare hvis
+        du tester en bestemt feltrekkefølge eller instrumentet ditt krever
+        ordnede felt.
+    "-b":
+      name: "Tving S/H-skillefelt"
+      tooltip_title: "Tving S/H-skillefelt (-b)"
+      tooltip_body: |-
+        Tvinger skillefeltene mellom stripene til å være svart-hvite i
+        stedet for fargede.  Påvirker ikke feltantallet eller oppsetts-
+        geometrien.
+
+        Har ingen effekt når "Ingen skillefelt" (-n) er aktivert — valget
+        er da nedtonet og utelates fra printtarg-kommandoen.
+    "-P":
+      name: "Ikke begrens stripelengde"
+      tooltip_title: "Ikke begrens stripelengde (-P)"
+      tooltip_body: |-
+        Som standard begrenser printtarg stripelengden slik at hver stripe
+        passer innenfor papiret uten overløp.  Dette valget fjerner den
+        grensen og tillater svært lange striper.
+        Nyttig for smalt rullepapir eller når du vil ha så få striper som
+        mulig for et gitt feltantall.
+        Advarsel: ved høyt feltantall kan striper strekke seg utenfor
+        papirkanten — kontroller den genererte TIFF-en før utskrift.
+    "-N":
+      name: "N-kanals TIFF (>4 blekk)"
+      tooltip_title: "N-kanals TIFF (-N)"
+      tooltip_body: |-
+        For skrivere med mer enn 4 blekkanaler (f.eks. CMYK pluss ekstra
+        spotfarger): standard-TIFF støtter bare opptil 4 kanaler.  Dette
+        valget får printtarg til å kode de ekstra kanalene i TIFF-ens
+        alfakanalplasser, slik at alle blekkverdier bevares i én fil.
+
+        Slå på bare hvis skriverdriveren eller RIP-en forventer en
+        flerkanals-TIFF.  For vanlig RGB- eller CMYK-profilering trenger
+        du ikke dette valget.
+    "-K":
+      name: "Bruk kalibreringsfil"
+      tooltip_title: "Bruk kalibrering på feltene (-K)"
+      tooltip_body: |-
+        Bruk dette når skriveren din ikke har noe innebygd kalibrerings-
+        system — dvs. skriverdriveren eller RIP-en kan ikke selv bruke en
+        kalibreringskurve.
+
+        Du kjører først Argylls printcal for å lage en .cal-fil som
+        beskriver hvordan skriveren lineariseres.  Den .cal-filen angir du
+        her: printtarg regner hver feltfargeverdi gjennom kalibrerings-
+        kurvene før kartet genereres, slik at det utskrevne kartet allerede
+        gjenspeiler kalibrert enhetsoppførsel.  .cal-filen bygges også inn
+        i .ti2-filen slik at colprof kan referere til den når ICC-profilen
+        bygges.
+
+        Typisk bruk: skrivebords-blekkskrivere uten innebygd linearisering,
+        styrt direkte fra en TIFF uten mellomliggende RIP.
+
+        Utelukker "Bygg inn kalibrering" (-I) — bare ett kalibreringsvalg
+        kan være aktivt om gangen.
+    "-I":
+      name: "Bygg kun inn kalibrering"
+      tooltip_title: "Bygg inn kalibrering uten å bruke den (-I)"
+      tooltip_body: |-
+        Bruk dette når skriveren eller RIP-en allerede bruker en
+        kalibreringskurve selv — for eksempel en produksjons-RIP med egen
+        lineariserings-LUT, eller en skriver med innebygd tetthets-
+        kalibrering.
+
+        I så fall vil du ikke at printtarg skal regne om feltverdiene
+        (det gjør skriveren selv), men du vil at colprof skal vite om
+        kalibreringen.  -I bygger .cal-filen inn i .ti2-utdataene kun som
+        metadata og lar alle feltverdier være urørt.
+
+        Typisk bruk: profesjonelle blekkskriver-RIP-er (f.eks. EFI Fiery,
+        Wasatch, ColorBurst) eller skrivere med innebygd linearisering som
+        er aktiv under profilerings-utskriften.
+
+        Utelukker "Bruk kalibrering" (-K) — bare ett kalibreringsvalg kan
+        være aktivt om gangen.
+    "-C":
+      name: "Slå av TIFF-komprimering"
+      tooltip_title: "Slå av TIFF-komprimering (-C)"
+      tooltip_body: |-
+        Skriver ukomprimerte TIFF-filer i stedet for standard LZW-
+        komprimering.  Ukomprimerte filer er større, men universelt
+        kompatible med alle RIP-er og skriverdrivere.
+        Slå på hvis utskriftsløpet ditt avviser eller ødelegger
+        komprimerte TIFF-er.
+    "-D":
+      name: "8-bit dithering fra 16-bit"
+      tooltip_title: "Dither 8-bit-utdata (-D)"
+      tooltip_body: |-
+        Bruker feilspredning-dithering ved generering av en 8-bit-TIFF for
+        å nedskalere fra intern 16-bit-presisjon.  Det reduserer striper
+        (banding) i jevne overganger som ellers ville oppstått ved
+        kvantisering.
+        Har bare effekt når 8-bit-TIFF-utdata er valgt.
+    "-U":
+      name: "Undertrykk CUPS-fargestyringsheader"
+      tooltip_title: "Undertrykk CUPS-CMM-header (-U)"
+      tooltip_body: |-
+        Fjerner kommentaren 'cupsJobTicket: cups-disable-cmm' fra
+        PostScript- og EPS-utdatafiler.  Noen CUPS-versjoner reagerer
+        ulikt på denne kommentaren.
+        Valget gjelder bare PS-/EPS-utdata og har ingen effekt på TIFF-
+        filer.  Slå på bare hvis uventet fargestyring brukes under
+        utskrift.
+    "-R":
+      name: "Randomiserings-seed"
+      tooltip_title: "Randomiserings-seed (-R)"
+      tooltip_body: |-
+        Angir startverdien (seed) for felt-randomiseringsalgoritmen.
+        Samme seed med samme feltantall gir alltid samme kartoppsett —
+        kart blir dermed fullt reproduserbare.
+        Nyttig for forskning eller når du senere må gjenskape et identisk
+        kart.
+        Har ingen effekt når "Behold feltrekkefølge" (-r) er aktivert.
+    "-Q":
+      name: "Kvantiseringsbits"
+      tooltip_title: "Kvantiser feltverdier (-Q)"
+      tooltip_body: |-
+        Avrunder alle feltfargeverdier til angitt bitdybde før kartet
+        genereres.  For eksempel avrunder -Q 8 alle verdier til 8-bit-
+        presisjon (256 nivåer).
+        Bruk dette når skriverløpet ditt gir banding ved en bestemt
+        bitdybde og du vil teste på nøyaktig det presisjonsnivået.
+    "-A":
+      name: "Skillefelt-skala"
+      tooltip_title: "Kun-skillefelt-skala (-A)"
+      tooltip_body: |-
+        Bruker en ekstra skaleringsfaktor bare på skillefeltbjelkene, uten
+        å endre feltmålene satt med -a.
+        Verdier over 1.0 gjør skillefelt bredere; under 1.0 smalere.
+        Nyttig for instrumenter som trenger ekstra avstand mellom striper,
+        eller for å vinne plass ved å smalne skillefeltene mens felt-
+        størrelsen holdes konstant.
+
+        Har ingen effekt når "Ingen skillefelt" (-n) er aktivert — valget
+        er da nedtonet og utelates fra printtarg-kommandoen.
+    "-n":
+      name: "Ingen skillefelt"
+      tooltip_title: "Ingen skillefelt (-n)"
+      tooltip_body: |-
+        Fjerner alle skillefeltbjelker mellom felt og striper.
+        Skillefelt hjelper normalt instrumentet med å gjenkjenne
+        stripegrenser og -retning.
+        Slå dem av bare hvis målearbeidsflyten din uttrykkelig ikke
+        bygger på dem (f.eks. enkelte planskanner-oppsett).
+
+        Når aktivert slås "Tving S/H-skillefelt" (-b) og "Skillefelt-
+        skala" (-A) av automatisk — begge gjelder jo bare skillefelt.
+    "-c":
+      name: "Tving fargede skillefelt"
+      tooltip_title: "Tving fargede skillefelt (-c)"
+      tooltip_body: |-
+        Tvinger skillefeltområdene mellom feltene til å tegnes i farger i
+        stedet for standarden (som avhengig av instrumentprofilen kan være
+        svart-hvit).  Kan forbedre stripegjenkjenningen på enkelte farge-
+        blekkskrivere der svarte skillefelt har lav kontrast mot mørke felt.
+  chartread:
+    "-B":
+      name: "Toveis stripegjenkjenning av"
+      tooltip_title: "Toveis lesing av (-B)"
+      tooltip_body: |-
+        Hindrer chartread i å automatisk oppdage om du skannet en stripe
+        forover eller bakover. ChromIQ lar dette stå av som standard, slik
+        at instrumentet kan lese striper i begge retninger.
+
+        Slå på bare hvis instrumentet melder falske stripe-retningsfeil
+        under måling.
+    "-b":
+      name: "Tving toveis stripegjenkjenning"
+      tooltip_title: "Tving toveis lesing (-b)"
+      tooltip_body: |-
+        Tvinger chartread til å godta en stripe skannet i hvilken som helst
+        retning.
+
+        Normalt oppdager chartread striperetningen automatisk bare på
+        randomiserte kart; på et kart med fast rekkefølge leser det bare én
+        retning og avviser striper skannet baklengs. Slå på dette for å
+        tvinge gjenkjenningen uansett — nyttig for i1 Pro-familien, som
+        leser begge veier. Dette er det motsatte av -B; bare ett kan gjelde.
+    "-S":
+      name: "Undertrykk advarsler"
+      tooltip_title: "Undertrykk advarsler (-S)"
+      tooltip_body: |-
+        Undertrykker ikke-fatale måleadvarsler-dialoger fra chartread.
+        Anbefalt for ubetjente eller batch-måleøkter.
+        Feil som ville hindret profilgenerering, rapporteres fortsatt.
+    "-N":
+      name: "Slå av startkalibrering"
+      tooltip_title: "Slå av startkalibrering (-N)"
+      tooltip_body: |-
+        Hopper over den automatiske hvitflis-kalibreringen ved oppstart.
+        Bruk bare hvis du allerede har kalibrert instrumentet i denne
+        økten og vil måle flere kart uten å kalibrere på nytt.
+    "-p":
+      name: "Felt-for-felt-modus"
+      tooltip_title: "Felt-for-felt-modus (-p)"
+      tooltip_body: |-
+        Bytter fra stripelesing til måling av enkeltfelt.
+        Nyttig for håndholdte enkeltmålinger eller hvis stripelesing
+        mislykkes på et bestemt papir.  Betydelig tregere for store kart.
+    "-H":
+      name: "Spektralmodus i høy oppløsning"
+      tooltip_title: "Høyoppløst spektrum (-H)"
+      tooltip_body: |-
+        Slår på spektral prøvetaking i høy oppløsning på instrumenter som
+        støtter det (f.eks. i1Pro 2/3).  Gir mer nøyaktige Lab-verdier,
+        men øker måletiden litt.
+    "-T":
+      name: "Felt-konsistenstoleranse"
+      tooltip_title: "Felt-toleransefaktor (-T)"
+      tooltip_body: |-
+        En multiplikator på chartreads innebygde terskel for felt-
+        konsistens — ikke en delta-E-verdi. chartread leser hvert felt på
+        nytt og avviser striper der avlesningene avviker mer enn terskelen
+        × dette tallet.
+
+        Lavere = strengere. En streng innstilling fanger ekte problemer
+        tidlig: tette blekkdyser, lite blekk, skitne trommelruller,
+        drivende lasertoner. På en frisk skriver-spektrofotometer-kombo
+        gir standarden 0.7 god margin; erfarne brukere på
+        printerknowledge.com kjører 0.4 med i1 Pro 2 / 3.
+
+        Øk til 0.8–1.5 hvis du får falske "inconsistent patch"-feil på
+        teksturert, matt eller fine-art-papir — selve overflaten bidrar
+        med reell variasjon der. Verdier over 2 maskerer stort sett ekte
+        problemer; trenger du dem, fiks skriveren først.
+    "-l":
+      name: "Lagre D50-L*a*b*-verdier"
+      tooltip_title: "Lagre L*a*b* i stedet for XYZ (-l)"
+      tooltip_body: |-
+        Lagrer måledata som D50-L*a*b*-verdier i stedet for XYZ.
+        De fleste arbeidsflyter bruker XYZ (standard).  Slå på bare hvis
+        etterfølgende verktøy spesifikt krever L*a*b*-inndata.
+    "-X":
+      name: "Kolorimeter-korreksjon"
+      tooltip_title: "Kolorimeter-korreksjonsmatrise (-X)"
+      tooltip_body: |-
+        Bruker en kolorimeter-korreksjonsmatrise (.ccmx) eller et spektralt
+        kalibreringssett (.ccss) for å forbedre kolorimeter-nøyaktigheten.
+        Bare relevant for kolorimetre (ikke spektrofotometre).
+        Få riktig fil fra instrumentprodusenten, eller lag den med
+        ArgyllCMS' ccss-/ccmx-verktøy.
+  colprof:
+    "-D":
+      name: "Profilbeskrivelse"
+      tooltip_title: "Profilbeskrivelse (-D)"
+      tooltip_body: |-
+        Navnet som bygges inn i ICC-profilen — vises i fargestyrings-
+        menyene i programmer som Photoshop, Lightroom og Forhåndsvisning.
+
+        Bruk et konsistent format som identifiserer skriver, papir,
+        blekktype og dato, så riktig profil er lett å finne senere:
+
+          Skriver · Papir · Blekktype · Dato
+          f.eks. "Epson P900 · Canson Baryta · Chromatic · 2026-04"
+
+        Utdatafilen får navn etter .ti3-filen din — hold det navnet
+        konsistent med beskrivelsen, med understreker i stedet for
+        mellomrom:
+          f.eks. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+    "-a":
+      name: "Profilalgoritme"
+      tooltip_title: "Profilalgoritme (-a)"
+      tooltip_body: |-
+        Velger fargetransformasjons-algoritmen:
+        • Lab-cLUT (-al): best nøyaktighet for skriverprofiler.
+          Bruker en full 3D-oppslagstabell i L*a*b*-rom.  Anbefalt.
+        • XYZ-cLUT (-ax): som Lab, men i XYZ-rom.
+          Gir noen ganger jevnere nøytrale overganger.
+        • Matrise/gamma (-ag, -as): enklere modell — mindre nøyaktig
+          for komplisert skriveroppførsel, men raskere å beregne.
+        Bruk alltid Lab-cLUT (-al) for førstegangsprofiler av RGB-skrivere.
+      labels:
+        - "l — Lab-cLUT (anbefalt for RGB-skrivere)"
+        - "x — XYZ-cLUT"
+        - "X — XYZ-cLUT (absolutt)"
+        - "g — gamma + matrise (rask, mindre nøyaktig)"
+        - "G — gamma + matrise (tvunget)"
+        - "s — enkel gamma + matrise"
+        - "S — enkel gamma + matrise (tvunget)"
+        - "m — kun matrise"
+        - "M — kun matrise (tvunget)"
+    "-q":
+      name: "Profilkvalitet"
+      tooltip_title: "Profilkvalitet (-q)"
+      tooltip_body: |-
+        Styrer cLUT-rutenettoppløsningen og glattingsiterasjonene:
+        • Lav: 17³-rutenett — rask test, ikke for produksjon
+        • Middels: 33³-rutenett — god balanse, anbefalt standard
+        • Høy: 45³-rutenett — produksjonskvalitet
+        • Ultra: 65³-rutenett — maksimal nøyaktighet, svært tregt
+        Middels kvalitet holder for det meste av blekkskriverarbeid.
+        Bruk Høy for fine-art- eller kontraktsprøvetrykk.
+      labels:
+        - "l — lav (rask, ~30 s)"
+        - "m — middels (anbefalt, ~2 min)"
+        - "h — høy (~10 min)"
+        - "u — ultra (~30+ min)"
+    "-b":
+      name: "B2A-tabellkvalitet"
+      tooltip_title: "B2A-tabellkvalitet (-b)"
+      tooltip_body: |-
+        Styrer kvaliteten på B2A-tabellene (enhet→PCS) for inndata-
+        transformasjoner (f.eks. soft-proofing) uavhengig.
+        La stå tom for å følge hovedinnstillingen -q.
+        Bruk "n" for å utelate B2A-tabeller og redusere profilfil-
+        størrelsen (kun-utdata-profiler trenger ikke B2A).
+      labels:
+        - "Samme som profilkvalitet (standard)"
+        - "l — lav"
+        - "m — middels"
+        - "h — høy"
+        - "u — ultra"
+        - "n — ingen (utelat B2A-tabeller)"
+    "-r":
+      name: "Glatting/støy (% ΔE)"
+      tooltip_title: "Gjennomsnittlig enhetsstøy (-r)"
+      tooltip_body: |-
+        Anslått gjennomsnittlig måle- eller enhetsstøy som prosent ΔE.
+        Høyere verdier øker profilglattingen og reduserer effekten av
+        avvikende felt.
+        • 0,5 %: rene målinger, godt vedlikeholdt skriver
+        • 1,0–2,0 %: støyende målinger eller teksturert papir
+        • 3,0–5,0 %: svært støyende; øker glattingen betydelig
+    "-s":
+      name: "Gamutkilde (perseptuell)"
+      tooltip_title: "Perseptuell gamut-tilordningskilde (-s)"
+      tooltip_body: |-
+        Kilde-ICC-profil som brukes til å beregne gamut-tilordnings-
+        tabellene for det perseptuelle gjengivelsesformålet (A2B / B2A
+        perseptuell).
+        Uten denne bruker det perseptuelle formålet de kolorimetriske
+        dataene direkte (ingen gamutkompresjon).
+        Settes typisk til et standard RGB-arbeidsrom som AdobeRGB eller
+        ProPhoto RGB.
+        Både .icc- og .icm-filer godtas — ICM er bare Microsofts navn på
+        ICC-profilformatet; de er identiske.
+    "-S":
+      name: "Gamutkilde (P+M)"
+      tooltip_title: "Kilde perseptuell + metning (-S)"
+      tooltip_body: |-
+        Som -s, men bruker gamut-tilordningen på både det perseptuelle og
+        det metningsbaserte gjengivelsesformålet.
+    "-A":
+      name: "Produsent"
+      tooltip_title: "Produsenttekst (-A)"
+      tooltip_body: |-
+        Produsenttekst som bygges inn i ICC-profilheaderen.
+        Valgfri — brukes til identifikasjon i profilvelger-grensesnitt.
+    "-M":
+      name: "Modell"
+      tooltip_title: "Modelltekst (-M)"
+      tooltip_body: |-
+        Modelltekst som bygges inn i ICC-profilheaderen.
+    "-C":
+      name: "Opphavsrett"
+      tooltip_title: "Opphavsrettstekst (-C)"
+      tooltip_body: |-
+        Opphavsrettsnotis som bygges inn i ICC-profilen.
+    "-ni":
+      name: "Ingen inndata-formingskurver"
+      tooltip_title: "Ingen inndata-formingskurver (-ni)"
+      tooltip_body: |-
+        Slår av 1D-inndata-tonekurvene som forbehandler enhetsverdier før
+        3D-cLUT-en.  Disse kurvene forbedrer normalt profilnøyaktigheten.
+        Slå av kun for diagnose.
+    "-no":
+      name: "Ingen utdata-formingskurver"
+      tooltip_title: "Ingen utdata-formingskurver (-no)"
+      tooltip_body: |-
+        Slår av 1D-utdata-formingskurvene som brukes etter 3D-cLUT-en.
+        Slå av kun for diagnose.
+    "-V":
+      name: "Skygge-rutenettvekting"
+      tooltip_title: "Rutenettvekting i mørke områder (-V)"
+      tooltip_body: |-
+        Legger til ekstra cLUT-rutenettpunkter i mørke (skygge)områder.
+        1.0 = jevnt rutenett (standard).  Øk til 1.5–2.0 for skrivere med
+        komplisert skyggeoppførsel eller tette svarttoner.
+  profcheck:
+    "-v":
+      name: "Detaljnivå"
+      tooltip_title: "Detaljnivå (-v)"
+      tooltip_body: |-
+        Per-felt-modus gir hvert felts individuelle ΔE-verdi — noe som
+        kreves for stripeanalyse og veiledet forbedring.  Sammendragsmodus
+        viser bare snitt- og toppfeil.
+      labels:
+        - "2 — per felt (kreves for stripeanalyse)"
+        - "1 — kun sammendrag"
+    "-I":
+      name: "Gjengivelsesformål"
+      tooltip_title: "Gjengivelsesformål (-I)"
+      tooltip_body: |-
+        Absolutt kolorimetrisk sjekker absolutt fargenøyaktighet inkludert
+        hvitpunkt — standarden for skriverprofilering.
+        Relativ kolorimetrisk normaliserer til mediets hvitpunkt.
+      labels:
+        - "a — absolutt kolorimetrisk (standard)"
+        - "r — relativ kolorimetrisk"
+    "-s":
+      name: "Verste ΔE først"
+      tooltip_title: "Sorter etter ΔE (-s)"
+      tooltip_body: |-
+        Sorterer profcheck-utdataene slik at feltene med dårligst resultat
+        står først.  Nyttig for raskt å finne problemområder.
+        Virker bare når detaljnivået står på per felt.
+    "-i":
+      name: "Lyskilde"
+      tooltip_title: "Lyskilde (-i)"
+      tooltip_body: |-
+        Velger lyskilden som brukes når spektrale målinger konverteres til
+        fargeverdier.  Bare relevant hvis .ti3-filen inneholder spektral-
+        data.  D50 er standarden for utskriftsprofilering.
+      labels:
+        - "D50 (standard)"
+        - "D50M2 (D50 + UV-filter)"
+        - "D65 (dagslys 6500 K)"
+        - "A (glødelampe)"
+        - "C (dagslyssimulering, eldre)"
+        - "F5 (fluorescerende CWF)"
+        - "F8 (fluorescerende D50-sim.)"
+        - "F10 (fluorescerende Ultralume)"
+    "-o":
+      name: "CIE-observatør"
+      tooltip_title: "CIE-observatør (-o)"
+      tooltip_body: |-
+        Definerer standardobservatørmodellen for kolorimetriske
+        beregninger.  1931 2°-observatøren er ICC-standarden for
+        utskriftsprofilering.  La stå på standard med mindre noe annet
+        kreves spesifikt.
+      labels:
+        - "1931 2° (standard)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+    "-P":
+      name: "Beskjær på ΔE ≤"
+      tooltip_title: "Begrens .ti3 til ΔE ≤ (-P)"
+      tooltip_body: |-
+        Lager en redusert kopi av .ti3-filen din som bare inneholder felt
+        med fargefeil på eller under terskelen du angir.
+        Nyttig hvis dårlig målte felt trekker profilen ned.
+        Aktiver valget og angi maksimal akseptabel ΔE-verdi.
+    "-w":
+      name: "Lag X3DOM-3D-visualisering"
+      tooltip_title: "X3DOM-visualisering (-w)"
+      tooltip_body: |-
+        Genererer en interaktiv 3D-HTML-visualisering av profilens
+        fargefeil.  Åpne den resulterende .x3d.html-filen i en moderne
+        nettleser for å utforske hvilke deler av fargegamuten som har de
+        største feilene.
+  printcal:
+    "-v":
+      name: "Detaljnivå"
+      tooltip_title: "Detaljnivå (-v)"
+      tooltip_body: |-
+        Styrer hvor mye utdata printcal skriver under kalibreringen.
+          0 = stille
+          1 = grunnleggende framdrift (standard)
+          2 = detaljert per-kanal-info
+          3 = debugutdata
+    "-s":
+      name: "Kurveglatting"
+      tooltip_title: "Kurveglatting (-s)"
+      tooltip_body: |-
+        Styrer hvor mye ekstra glatting som brukes på kalibrerings-
+        kurvene.  Høyere verdier gir glattere, men mindre presise kurver.
+
+        Standard: 1.0 — bra for de fleste skrivere.
+        Øk (f.eks. 2.0–5.0) hvis skriveren har støyende tonerespons eller
+        kalibreringskurvene ser hakkete ut.
+    "-z":
+      name: "Kurveoppløsning"
+      tooltip_title: "Kurveoppløsning (-z)"
+      tooltip_body: |-
+        Antall trinn i utdata-kalibreringskurvetabellene.
+        Høyere verdier gir finere oppløsning, men større .cal-filer.
+        Standarden (256) passer så godt som alle skrivere.
+    "-A":
+      name: "Produsent"
+      tooltip_title: "Produsent (-A)"
+      tooltip_body: |-
+        Angir produsentbeskrivelsen som bygges inn i .cal-filen.
+        Kun informativ — påvirker ikke kalibreringskurvene.
+    "-M":
+      name: "Modell"
+      tooltip_title: "Modell (-M)"
+      tooltip_body: |-
+        Angir skrivermodellbeskrivelsen som bygges inn i .cal-filen.
+        Kun informativ — påvirker ikke kalibreringskurvene.
+    "-D":
+      name: "Beskrivelse"
+      tooltip_title: "Beskrivelse (-D)"
+      tooltip_body: |-
+        Angir en lesbar beskrivelse som bygges inn i .cal-filen.
+        Kun informativ — påvirker ikke kalibreringskurvene.
+    "-C":
+      name: "Opphavsrett"
+      tooltip_title: "Opphavsrett (-C)"
+      tooltip_body: |-
+        Angir opphavsrettsteksten som bygges inn i .cal-filen.
+        Kun informativ — påvirker ikke kalibreringskurvene.
+  applycal:
+    "-v":
+      name: "Utfyllende"
+      tooltip_title: "Utfyllende (-v)"
+      tooltip_body: |-
+        Viser detaljert informasjon om kalibreringen som brukes,
+        inkludert kurvestatistikk per kanal.

@@ -1,0 +1,1119 @@
+# Swedish overlay for data/parameters.yaml — merged in translate_parameters()
+parameters:
+  targen:
+    "-d":
+      name: "Enhetstyp"
+      tooltip_title: "Enhetstyp (-d)"
+      tooltip_body: |-
+        Definierar färgmedelskombinationen för din utdataenhet.
+
+        Tryckrymder är subtraktiva: enhetsvärde 0 = vitt (inget bläck),
+        max = svart (fullt bläck).  Video-/skärmrymder är additiva:
+        enhetsvärde 0 = svart, max = vitt.
+
+        Vanliga val:
+          • Tryck grå (-d 0)   — enkanals gråskaleskrivare
+          • Video grå (-d 1)   — enkanals bildskärm/monitor
+          • Tryck RGB (-d 2)   — vanlig RGB-bläckstråle (standard, rekommenderas)
+          • Video RGB (-d 3)   — RGB-bildskärm/monitor
+          • CMYK (-d 4)        — fyrfärgsbläckstråle eller offsetpress
+          • CMY (-d 5)         — trefärgs, utan separat svartkanal
+
+        Alternativ 6–15 är för speciella flerkanalsbläckstråleskrivare med
+        extra bläck (ljus cyan/magenta, orange, grön, violett osv.).
+        Använd -D (expert) för att finjustera färgmedelsuppsättningen vid
+        behov.
+      labels:
+        - "Tryck grå"
+        - "Video grå"
+        - "Tryck RGB (rekommenderas)"
+        - "Video RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + ljus CM"
+        - "CMYK + ljus CMK"
+        - "CMYK + röd + blå"
+        - "CMYK + orange + grön"
+        - "CMYK + röd + grön + blå"
+        - "CMYK + orange + grön + violett"
+        - "CMYK + orange + grön + blå"
+        - "CMYK + ljus CMK + ljus ljus K"
+        - "CMYK + orange + grön + ljus CM"
+        - "CMYK + ljus CM + mellan-CM"
+    "-D":
+      name: "Färgmedel +/−"
+      tooltip_title: "Lägg till/ta bort färgmedel (-D)"
+      tooltip_body: |-
+        Ändrar färgmedelsuppsättningen från enhetstypen (-d) genom att lägga
+        till eller ta bort ett enskilt färgmedel.  Finns det valda färgmedlet
+        redan i uppsättningen tas det bort; saknas det läggs det till.
+
+        Typisk användning:
+          • Lägg till orange (-D 5) i standard-CMYK för vidare gamut
+          • Lägg till ljus cyan (-D 11) / ljus magenta (-D 12) i CMYK
+            för mjukare övergångar i högdagrarna
+
+        Aktivera flera positioner för att stapla fler färgmedel (varje
+        aktiverad position visar nästa, upp till 11 ändringar totalt).
+
+        Låt vara avstängt för standard-enhetstyperna 0–5.
+      labels:
+        - "Additiv"
+        - "Cyan"
+        - "Magenta"
+        - "Gul"
+        - "Svart"
+        - "Orange"
+        - "Röd"
+        - "Grön"
+        - "Blå"
+        - "Violett"
+        - "Vit"
+        - "Ljus cyan"
+        - "Ljus magenta"
+        - "Ljus gul"
+        - "Ljus svart"
+        - "Mellancyan"
+        - "Mellanmagenta"
+        - "Mellangul"
+        - "Mellansvart"
+        - "Ljus ljus svart"
+    "-f":
+      name: "Totalt fältantal"
+      tooltip_title: "Totalt fältantal (-f)"
+      tooltip_body: |-
+        Anger totalt antal färgfält.  Fler fält = noggrannare profil, men
+        längre utskrifts- och mättid.
+        Typiska intervall för RGB-bläckstråle:
+          • Snabbtest: 400–600
+          • Standard:  800–1200
+          • Hög kvalitet: 1500–2000
+          • Mycket hög: 2500–3000
+
+        Auto (bredvid talrutan): ibockat beräknas fältantalet löpande från
+        valt papper, instrument, double density, vänsterkant, fältskala,
+        marginal och sid-talrutan i printtarg-avsnittet — det största värdet
+        som fyller exakt så många ark utan tomrum.  Talrutan är nedtonad
+        medan Auto är på och visar aktuell uppskattning.  Vid egna layouter
+        (annan fältskala eller marginal) kör Auto en kort binärsökning mot
+        targen — värdet kan då ta en sekund att uppdateras.
+
+        I guidat läge beräknas detta automatiskt från fält-per-sida-
+        databasen × valt sidantal.
+        Sätt till 0 i guidat läge för automatisk beräkning.
+    "-e":
+      name: "Vita fält"
+      tooltip_title: "Vita fält (-e)"
+      tooltip_body: |-
+        Hur många rent pappersvita fält som läggs till diagrammet.
+        Instrumentet mäter dessa för att lära sig exakt hur vitt ditt papper
+        är — det förankrar profilens ljusa ände. 4 är en bra standard;
+        mycket glättade papper kan gynnas av några fler.
+
+        Auto (kryssruta):
+        Slå på "Auto" så väljer ChromIQ talet åt dig, utifrån hur många
+        fält hela diagrammet rymmer — ett litet ensidesdiagram får några få
+        vitfält och ett stort flersidesdiagram fler, utan att du behöver
+        tänka på det.
+
+        Så beräknas Auto-talet:
+          • Ett diagram på cirka 560 fält får 4 vitfält.
+          • Varje gång diagrammet ungefär fördubblas växer antalet
+            med 50 % (4 → 6 → 8 …).
+          • Det går aldrig över 8 (mer slösar bara utrymme)
+            och aldrig under 2.
+
+        Med Auto på är rutan nedtonad och visar "Auto". Stäng av när som
+        helst för att skriva in ett eget tal.
+    "-B":
+      name: "Svarta fält"
+      tooltip_title: "Svarta fält (-B)"
+      tooltip_body: |-
+        Hur många fält med maximalt bläck (enhetssvart) som läggs till
+        diagrammet. Instrumentet mäter dessa för att lära sig den mörkaste
+        ton din skrivare kan göra — det förankrar profilens skuggände.
+        4 är en bra standard för RGB-skrivare.
+
+        Auto (kryssruta):
+        Slå på "Auto" så väljer ChromIQ talet åt dig, utifrån hur många
+        fält hela diagrammet rymmer — ett litet diagram får några få
+        svartfält, ett stort diagram fler.
+
+        Så beräknas Auto-talet:
+          • Ett diagram på cirka 560 fält får 4 svartfält.
+          • Varje gång diagrammet ungefär fördubblas växer antalet
+            med 50 % (4 → 6 → 8 …).
+          • Det går aldrig över 8 och aldrig under 2.
+
+        Med Auto på är rutan nedtonad och visar "Auto". Stäng av när som
+        helst för att skriva in ett eget tal.
+    "-g":
+      name: "Gråaxelsteg"
+      tooltip_title: "Gråaxelsteg (-g)"
+      tooltip_body: |-
+        Extra neutralgrå fält jämnt fördelade från vitt till svart.
+        De hjälper profilen att återge gråtoner rent, utan färgstick —
+        viktigt för svartvita foton och neutrala toner.
+        Tumregel vid manuell inställning: 0 för en snabb profil,
+        50–100 för en standard, 128+ för hög kvalitet.
+
+        Auto (kryssruta):
+        Slå på "Auto" så väljer ChromIQ talet åt dig, skalat efter hur
+        många fält hela diagrammet rymmer — ett större diagram får en
+        längre, finare gråtrappa.
+
+        Så beräknas Auto-talet:
+          • Ett diagram på cirka 560 fält får 32 grå steg.
+          • Varje gång diagrammet ungefär fördubblas fördubblas
+            stegen också (32 → 64 → 128).
+          • Det går aldrig över 128 och aldrig under 8.
+
+        Med Auto på är rutan nedtonad och visar "Auto". Stäng av när som
+        helst för att skriva in ett eget tal.
+
+        (Guidat läge ställer alltid in detta automatiskt enligt samma idé.)
+    "-G":
+      name: "Grundlig optimering (långsam)"
+      tooltip_title: "Grundlig optimering (-G)"
+      tooltip_body: |-
+        Låter targen lägga extra tid på att placera fälten så jämnt som
+        möjligt över skrivarens färggamut. Fältuppsättningen är av samma
+        slag (OFPS — Optimised Farthest Point Sampling, standard-
+        fördelningen) oavsett; detta växlar bara från "snabbt" till "bra"
+        läge.
+
+        Rekommenderas PÅ för varje diagram du faktiskt ska skriva ut och
+        mäta: några sekunder extra datortid vid genereringen ger en mätbart
+        bättre profil.
+
+        Stäng AV bara om du snabbt itererar på diagraminställningar och
+        inte bryr dig om absolut fältkvalitet (t.ex. testning av
+        utskriftslayouter före det slutliga diagrammet).
+
+        Har ingen effekt när "Fältfördelning" står på något annat än OFPS —
+        de alternativa fördelningarna (slumpmässig, kvasislumpmässig,
+        BCC, …) ignorerar denna flagga.
+    "-s":
+      name: "Enkanalssteg"
+      tooltip_title: "Enkanalssteg (-s)"
+      tooltip_body: |-
+        Lägger till extra enkanals-rampfält (R, G, B var för sig).
+        Användbart för att karakterisera enskilda bläcks beteende.
+        Typiskt: 0 för snabbt, 20–50 för standard, 50–100 för högt.
+    "-c":
+      name: "Förkonditioneringsprofil"
+      tooltip_title: "Förkonditioneringsprofil (-c)"
+      tooltip_body: |-
+        En befintlig ICC-profil för denna skrivar- och papperskombination,
+        som används för att förkonditionera fältfördelningen i perceptuell
+        rymd.  En tidigare profil här ger fält som är jämnare fördelade i
+        utgångsgamuten — och därmed bättre noggrannhet i en andra
+        profileringsomgång.  Lämna tom för en förstagångsprofil.
+    "-C":
+      name: "Kalibrerings-åsidosättning"
+      tooltip_title: "Kalibrerings-åsidosättning (-C)"
+      tooltip_body: |-
+        Valfri .cal-fil vars kalibreringskurvor tillämpas när bläckgränsen
+        för fältgenerering uppskattas.  Åsidosätter en eventuell .cal
+        inbäddad i ICC-mål-.ti3-filen från en tidigare profileringsomgång.
+
+        Använd detta när du har en validerad enhetskalibrering (t.ex. från
+        printcal/applycal) och targen ska ta hänsyn till den när antalet
+        fält i skuggområdet beräknas.
+
+        Skriv "none" i fältet (utan citattecken) för att uttryckligen
+        hindra att någon .cal används, även om en finns inbäddad i .ti3.
+
+        Lämna tom i de flesta arbetsflöden — behövs bara när du hanterar en
+        separat kalibreringskurva oberoende av profilen.
+    "-n":
+      name: "Neutralaxelsteg"
+      tooltip_title: "Neutralaxelsteg (-n)"
+      tooltip_body: |-
+        Lägger till extra kilformade fält längs den perceptuellt sanna
+        neutralaxeln hos din skrivare + papper, så som den definieras av
+        förkonditioneringsprofilen inläst via -c.
+
+        Skillnaden mot -g (gråaxelsteg):
+          • -g går igenom RGB-enhetsvärden (R = G = B): 0/0/0, 32/32/32,
+            64/64/64 … Det förutsätter att lika enhetsvärden trycks som
+            neutralgrått — vilket bara stämmer på en perfekt lineariserad
+            skrivare.  På en riktig skrivare har "enhets-gråtrappan"
+            oftast ett färgstick.
+          • -n frågar den angivna profilen: "vilka RGB-värden behöver DEN
+            HÄR skrivaren faktiskt för att återge ett neutralt L*a*b*-fält
+            (a* = b* = 0) vid varje ljushetssteg?"  De (typiskt olika)
+            RGB-värdena läggs till som fält.
+
+        Skillnaden mot -N (neutralaxelvikt):
+          • -N är ett reglage 0–1 som böjer den befintliga OFPS-fält-
+            fördelningen mot neutralzonen.  Det lägger inte till namngivna
+            steg.
+          • -n lägger till explicita, profilhärledda neutralfält utöver
+            vad resten av fördelningen ger.
+
+        När du bör använda det:
+          • Du har redan en ICC-profil från första omgången för detta
+            papper och bygger ett förbättringsdiagram.  Läs in den profilen
+            under Förkonditioneringsprofil (-c) och sätt -n till 32–64 för
+            att tätt sampla den korrigerade neutralaxeln.
+          • För ett förstagångsdiagram utan -c: låt stå på 0 — utan
+            förkonditioneringsprofil finns ingen "sann" neutralaxel att
+            sampla från, och -g täcker redan enhetsrymdens ramp.
+
+        Typiska förbättringsvärden: 32 för vanligt arbete, 64 för
+        fine-art / provtryck där neutralitet är kritisk.
+
+        Kräver att -c är angiven; har annars ingen effekt.
+    "-N":
+      name: "Neutralaxelvikt"
+      tooltip_title: "Neutralaxelvikt (-N)"
+      tooltip_body: |-
+        Styr hur starkt fält klungar sig kring neutralaxeln.
+        0.0 = ingen vikt, 1.0 = maximal klungning kring grått.
+        Standarden 0.5 passar de flesta skrivare.
+    "-V":
+      name: "Skuggområdesvikt"
+      tooltip_title: "Skuggområdesvikt (-V)"
+      tooltip_body: |-
+        Lägger till extra fält i mörka (skugg)områden av gamuten.
+        1.0 = ingen vikt (standard).  Öka till 2.0–3.0 för skrivare med
+        komplicerat skuggbeteende (t.ex. matta fine-art-papper).
+    "-l":
+      name: "Total bläckgräns (%)"
+      tooltip_title: "Total bläckgräns (-l)"
+      tooltip_body: |-
+        Den maximala totala mängd bläck skrivaren får lägga på papperet,
+        som procent. 100 % = ett fullt bläcklager, 200 % = två fulla lager
+        (t.ex. 100C + 100K), och så vidare.
+
+        Varför det spelar roll (särskilt för CMYK / CMYK+N):
+        Utan gräns genererar targen glatt fält som 100C + 100M + 100Y +
+        100K = 400 %. Så mycket vått bläck kan bilda pölar, torka långsamt,
+        flamma eller till och med riva papperet — och profilen byggd av
+        sådana fält förutsäger färger skrivaren faktiskt inte kan göra.
+
+        Så väljer du ett värde:
+          • De flesta CMYK-bläckstråle:   260 – 320 %
+          • Bestruket / glättat papper:   320 – 360 %
+          • Tidningspapper, låg kvalitet: 220 – 260 %
+          • Utökad gamut (CMYKOGV):       400 – 500 %  (fler bläck delar
+                                           på totalbudgeten)
+
+        Vid osäkerhet: kolla skrivarens dokumentation eller pappersprofil-
+        vägledning, eller mät: skriv ut en liten bläckgräns-testkil och
+        välj det högsta värde som torkar rent utan att flyta ut.
+
+        För RGB-arbetsflöden: låt vanligen vara avstängt — RGB-bläckstråle-
+        skrivare sköter sin bläckbegränsning internt, så targen behöver
+        inte budgetera över kanaler.
+
+        Bocka i rutan för att aktivera.
+    "__targen_distribution__":
+      name: "Fältfördelning"
+      tooltip_title: "Fältfördelning (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |-
+        Hur targen avgör var varje färgfält placeras i skrivarens gamut.
+        Olika algoritmer ger olika avvägningar mellan täckning, jämnhet
+        och hastighet.
+
+        Välj EN. De utesluter varandra — att välja någon av dem ersätter
+        standard-OFPS-placeringen helt.
+
+        OFPS (standard, rekommenderas):
+        Optimised Farthest Point Sampling. Placerar varje nytt fält
+        iterativt så långt som möjligt från varje befintligt fält — den
+        jämnaste täckningen av alla algoritmer här. Långsammare än
+        alternativen, men guldstandarden för profilkvalitet. Kombinera
+        med "Grundlig optimering (-G)" för bästa resultat.
+
+        Incremental Far Point (-t):
+        En enklare fjärrpunktsmetod. Snabbare än OFPS, något mindre jämn.
+        Använd när OFPS är för långsam vid mycket stora fältantal och du
+        accepterar en liten kvalitetsförlust.
+
+        Slumpmässig — enhetsrymd (-r):
+        Likformigt slumpade fält i råa enhetsvärden (t.ex. RGB). Snabbast
+        möjligt, men täckningen i *upplevd* färg är ojämn — slösar fält i
+        områden ögat knappt skiljer på.
+
+        Slumpmässig — perceptuell rymd (-R):
+        Likformigt slumpad i upplevd färg (Lab). Bättre än -r om det måste
+        vara slumpmässigt, eftersom fälten sprids jämnt efter vad ögat ser.
+        Fortfarande mindre optimal än OFPS för samma antal.
+
+        Kvasislumpmässig rymdfyllande (-q / -Q):
+        Lågdiskrepanssekvenser (Sobol-liknande) som fyller rymden jämnare
+        än äkta slump, utan OFPS iterativa kostnad.
+        -q i enhetsrymd, -Q i perceptuell rymd. En bra medelväg när OFPS
+        är för långsam.
+
+        Kubiskt rymdcentrerat gitter (-i / -I):
+        Ett fast regelbundet gitter (varje fält omgivet av 8 grannar i ett
+        kubmönster). Deterministiskt och mycket jämnt, men oflexibelt —
+        bara vissa fältantal passar gittret. -i i enhetsrymd,
+        -I i perceptuell rymd.
+
+        De flesta bör låta detta stå på OFPS.
+      labels:
+        - "OFPS — optimerad fjärrpunkt (rekommenderas)"
+        - "Incremental Far Point (-t) — snabbare, mindre jämn"
+        - "Jämnt slumpad — enhetsrymd (-r)"
+        - "Jämnt slumpad — perceptuell (-R)"
+        - "Kvasislumpad fyllande — enhetsrymd (-q)"
+        - "Kvasislumpad fyllande — perceptuell (-Q)"
+        - "BCC-gitter — enhetsrymd (-i)"
+        - "BCC-gitter — perceptuell (-I)"
+    "-A":
+      name: "OFPS-adaption"
+      tooltip_title: "OFPS-adaption (-A)"
+      tooltip_body: |-
+        Hur starkt OFPS böjer sin regel om jämn täckning för att följa
+        formen hos en förkonditioneringsprofil (-c). Bara meningsfullt när
+        OFPS är vald fältfördelning OCH en -c-profil är angiven.
+
+        0.0 = ignorera profilen helt — ren jämn täckning i enhetsrymd,
+              som om ingen -c gavs.
+        1.0 = följ profilen fullt ut — koncentrera fält där profilen säger
+              att skrivarens gamut är intressant (dvs. formen hos den
+              faktiska färgrymden).
+
+        targen-standarden är 0.10 (mild) för en första omgång och 1.0 när
+        -c är angiven; ChromIQ låter detta stå på 0.10 om du inte
+        uttryckligen ändrar det — så slipper du en överraskande
+        beteendeväxling.
+
+        Öka mot 1.0 i förbättringsomgångar där du litar på den första
+        profilen och vill att det andra diagrammet tätt ska sampla
+        skrivarens verkliga gamut i stället för tomma hörn av enhetsrymden.
+
+        Bocka i rutan för att aktivera.
+    "-m":
+      name: "Kubinre steg"
+      tooltip_title: "Kubinre steg (-m)"
+      tooltip_body: |-
+        Lägger till ett regelbundet rutnät av fält *inuti* skrivarens
+        färgkub — N steg längs varje axel (N×N×N för RGB osv.). De kommer
+        *utöver* fälten du valt med -f, -g, -s och de andra räknarna.
+
+        Sätt till 0 (standard) för att hoppa över — nästan alltid rätt
+        val. OFPS täcker redan kubens inre effektivare.
+
+        När du bör använda det:
+          • Repeterbarhet mellan maskiner: ett fast rutnät är likadant
+            varje gång, oavsett vilka OFPS-placeringar targen valde —
+            det underlättar jämförelser av profiler mellan körningar.
+          • Diagnosdiagram med förutsägbara, namngivna kubpositioner.
+
+        Typiska värden vid användning: 3 – 6 (steg per axel). Talen växer
+        snabbt — 6 steg i RGB är 216 fält, 8 är 512.
+
+        Bocka i rutan för att aktivera.
+    "-M":
+      name: "Kubytssteg"
+      tooltip_title: "Kubytssteg (-M)"
+      tooltip_body: |-
+        Lägger till ett regelbundet rutnät av fält på *ytan* av skrivarens
+        färgkub — N steg per yta. Fälten hamnar på utsidan (primär- och
+        sekundärfärger, gamutkanten), inte i det inre.
+
+        Sätt till 0 (standard) för att hoppa över.
+
+        När du bör använda det:
+          • Du vill specifikt spika gamutgränsen och primär-/sekundär-
+            hörnen utan -m:s inre kostnad.
+          • Jämförelser av hur olika bläck/papper förskjuter gamuthöljet —
+            ytfält påverkas mest.
+
+        Typiska värden vid användning: 4 – 8 steg per yta.
+
+        Bocka i rutan för att aktivera.
+    "-b":
+      name: "BCC-gittersteg"
+      tooltip_title: "BCC-gittersteg (-b)"
+      tooltip_body: |-
+        Lägger till fält på ett kubiskt rymdcentrerat (BCC-)gitter — tätare
+        än ett vanligt kubrutnät eftersom punkter ligger både på kubhörnen
+        och i kubcentrumen. N är antalet indelningar per axel.
+
+        Sätt till 0 (standard) för att hoppa över — detta är en nischratt.
+
+        När du bör använda det:
+          • Du vill ha regelbundna, gitterjusterade fältpositioner men med
+            bättre packning än -m ger, utan att gå hela vägen till OFPS.
+          • Forsknings-/repeterbarhetsscenarier där själva BCC-strukturen
+            är poängen.
+
+        Obs: detta är *stegräknar*-formen (lägger till i din fältlista);
+        för ett diagram vars *hela* fördelning är BCC, använd väljaren
+        "Fältfördelning" ovan och välj BCC-alternativet där.
+
+        Bocka i rutan för att aktivera.
+  printtarg:
+    "-i":
+      name: "Mätinstrument"
+      tooltip_title: "Mätinstrument (-i)"
+      tooltip_body: |-
+        Berättar för diagramgeneratorn vilken spektrofotometer du ska läsa
+        det utskrivna diagrammet med. Fältrutnätet byggs runt instrumentets
+        remsbredd, fältstorlek och avstånd — att ställa in detta rätt är
+        därför avgörande.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — handhållen remsläsare, det
+             vanligaste valet. Läser en kolumn fält i ett svep.
+
+          •  i1Pro 3 Plus — version av i1Pro 3 med större mätöppning.
+             Läser större fält, så betydligt färre ryms per ark (~5×
+             färre än vanlig i1Pro).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — instegsenhet.
+             Läser ett fält i taget på egen hand; med den valfria
+             mätskenan två och två (se Double density).
+
+          •  SpectroScan — XY-flatbäddsskanner. En motoriserad arm läser
+             varje fält individuellt och packar därmed betydligt fler
+             färger per ark än någon remsläsare.
+
+          •  i1iSis (via i1Profiler) — automatisk arkmatad diagramläsare.
+             ChromIQ kan inte styra denna enhet direkt: i stället sparas
+             fältlistan i i1Profilers eget format bredvid diagrammet, och
+             du slutför arbetsflödet där (skriv ut, skanna, bygg profil).
+             ChromIQs flikar Skriv ut och Mät används inte för denna enhet.
+
+        Fel instrument ger ett diagram din enhet inte kan rikta in sig mot
+        eller läsa tillförlitligt — du ser \"patches not found\" eller
+        inriktningsfel vid mätning. I guidat läge anpassas layouten
+        automatiskt efter detta val.
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (flatbädd)"
+        - "i1iSis (via i1Profiler)"
+    "-h":
+      name: "Double density"
+      tooltip_title: "Double density (-h)"
+      tooltip_body: |-
+        Ändrar fälttätheten per remsa i printtarg-layouten.
+        Den exakta innebörden beror på aktivt instrument:
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — fördubblar
+             antalet fält som ryms i varje mätremsa.
+             KRÄVER det fysiska mätskenetillbehöret; utan det kan enheten
+             inte träffa det tätare avståndet och läser fel.
+
+          •  SpectroScan — byter diagramlayouten från rektangulära till
+             sexkantiga fält. Sexkanter packas tätare, så ~14 % fler fält
+             per ark. Ingen extra hårdvara behövs.
+
+        Har ingen effekt på i1Pro eller i1Pro 3 Plus och är normalt dolt
+        när någon av dem är vald.
+    "-p":
+      name: "Pappersstorlek"
+      tooltip_title: "Pappersstorlek (-p)"
+      tooltip_body: |-
+        Anger måtten på varje ark i det utskrivna diagrammet. Diagrammet
+        fyller alltid sidan kant till kant — större papper rymmer fler
+        fält, vilket ger en mer detaljerad profil från färre ark.
+
+        Välj samma storlek du faktiskt ska skriva ut på, inklusive
+        orienteringen. Remsläsare (i1Pro-familjen) läser uppifrån och ner,
+        så:
+
+          •  Stående — längre remsor, färre till antalet. Standardvalet.
+
+          •  Liggande (A4R, LetterR, 420×297…) — kortare remsor, fler till
+             antalet. Använd detta när skrivaren matar liggande mer
+             tillförlitligt, eller när ett stående ark skulle placera
+             sista remsan för nära papperskanten.
+
+        Välj "Anpassad" för att ange exakt bredd och höjd i millimeter när
+        ingen av de namngivna storlekarna passar ditt papper.
+
+        Ändrar du pappersstorlek uppdateras fältantal och sidantal i
+        kommandoförhandsvisningen automatiskt.
+      labels:
+        - "A2 stående (420 × 594 mm)"
+        - "A2 liggande (594 × 420 mm)"
+        - "A3+ stående (329 × 483 mm)"
+        - "A3+ liggande (483 × 329 mm)"
+        - "A3 stående (297 × 420 mm)"
+        - "A3 liggande (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 stående (210 × 297 mm)"
+        - "A4 liggande (297 × 210 mm)"
+        - "Letter stående (8,5 × 11\")"
+        - "Letter liggande (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Anpassad (ange mått)"
+    "-t":
+      name: "TIFF-utdata-DPI"
+      tooltip_title: "TIFF-upplösning (-t)"
+      tooltip_body: |-
+        Utdataupplösning för TIFF-rasterdiagramfilerna.
+        300 DPI rekommenderas för remsläsande instrument och ger en bra
+        balans mellan filstorlek och fältskärpa.
+        Använd 200 DPI för mycket stora diagram för att minska
+        filstorleken.
+        Högre värden (600+) behövs sällan och ger stora filer.
+    "-L":
+      name: "Undertryck vänster klämkant"
+      tooltip_title: "Undertryck vänster klämkant (-L)"
+      tooltip_body: |-
+        Tar bort klämkantremsan på vänster sida och vinner ~15 mm
+        sidbredd för extra fältkolumner.
+        Aktivera om du inte använder en fysisk pappersklämma.
+        Alla värden i fältdatabasen förutsätter att detta är PÅ.
+    "-a":
+      name: "Fältstorleksskala"
+      tooltip_title: "Fältstorleksskala (-a)"
+      tooltip_body: |-
+        Skalar fält- och mellanfältsmåtten likformigt.
+        1.0 är standard (instrumentoptimerad storlek).
+        Öka till 1.5–2.0 på grova / texturerade papper där instrumentet
+        behöver en större mätyta.
+        Under 1.0 ryms fler fält per sida, men det kan ge läsfel på vissa
+        instrument.
+        Obs: ett annat värde än standard utlöser en löpande binärsöknings-
+        omberäkning i stället för det snabba tabelluppslaget.
+    "-m":
+      name: "Marginal (mm)"
+      tooltip_title: "Marginal (-m / -M)"
+      tooltip_body: |-
+        Anger marginalen i millimeter för både utskriftsytan (-m) och
+        TIFF-filmåtten (-M).  Båda hålls synkroniserade.
+        6 mm matchar de flesta skrivares minimimarginaler.  Minska bara om
+        din skrivare klarar kantlös utskrift.
+
+        Att välja en i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus höjer detta
+        automatiskt till 10 mm, så att remsläsaroptiken inte glider ut på
+        den bara papperskanten (fel som "not enough patches read").
+        Byte till ColorMunki / SpectroScan återställer den till 6 mm.
+        Ett eget värde (annat än 6 eller 10) bevaras vid instrumentbyten.
+
+        Fält-per-sida-uppslagstabeller finns bara för 6 och 10 mm — andra
+        värden utlöser en löpande binärsökningsomberäkning.
+    "-r":
+      name: "Behåll fältordning (blanda inte)"
+      tooltip_title: "Ingen randomisering (-r)"
+      tooltip_body: |-
+        Som standard randomiserar printtarg fältpositionerna för att
+        minska driftartefakter från instrumentet.  Aktivera denna flagga
+        bara om du testar en specifik fältsekvens eller om ditt instrument
+        kräver ordnade fält.
+    "-b":
+      name: "Tvinga S/V-mellanfält"
+      tooltip_title: "Tvinga S/V-mellanfält (-b)"
+      tooltip_body: |-
+        Tvingar mellanfälten mellan remsorna att vara svartvita i stället
+        för färgade.  Påverkar inte fältantalet eller layoutgeometrin.
+
+        Har ingen effekt när "Inga mellanfält" (-n) är aktiverat — detta
+        alternativ är då nedtonat och utelämnas ur printtarg-kommandot.
+    "-P":
+      name: "Begränsa inte remslängd"
+      tooltip_title: "Begränsa inte remslängd (-P)"
+      tooltip_body: |-
+        Som standard begränsar printtarg remslängden så att varje remsa
+        ryms inom papperet utan spill.  Denna flagga tar bort gränsen och
+        tillåter mycket långa remsor.
+        Användbart för smalt rullpapper eller när du vill ha så få remsor
+        som möjligt för ett givet fältantal.
+        Varning: vid högt fältantal kan remsor sträcka sig utanför
+        papperskanten — kontrollera den genererade TIFF-filen före
+        utskrift.
+    "-N":
+      name: "N-kanals-TIFF (>4 bläck)"
+      tooltip_title: "N-kanals-TIFF (-N)"
+      tooltip_body: |-
+        För skrivare med fler än 4 bläckkanaler (t.ex. CMYK plus extra
+        dekorfärger): standard-TIFF stöder bara upp till 4 kanaler.  Denna
+        flagga får printtarg att koda de extra kanalerna i TIFF:ens
+        alfakanalplatser, så att alla bläckvärden bevaras i en enda fil.
+
+        Aktivera bara om din skrivardrivrutin eller RIP förväntar sig en
+        flerkanals-TIFF.  För vanlig RGB- eller CMYK-profilering behöver
+        du inte detta alternativ.
+    "-K":
+      name: "Använd kalibreringsfil"
+      tooltip_title: "Använd kalibrering på fälten (-K)"
+      tooltip_body: |-
+        Använd detta när din skrivare saknar inbyggt kalibreringssystem —
+        dvs. skrivardrivrutinen eller RIP:en kan inte själv tillämpa en
+        kalibreringskurva.
+
+        Du kör först Argylls printcal för att skapa en .cal-fil som
+        beskriver hur skrivaren lineariseras.  Den .cal-filen anger du
+        här: printtarg räknar varje fältfärgvärde genom kalibrerings-
+        kurvorna innan diagrammet genereras, så att det utskrivna
+        diagrammet redan återspeglar kalibrerat enhetsbeteende.
+        .cal-filen bäddas också in i .ti2-filen så att colprof kan
+        referera till den när ICC-profilen byggs.
+
+        Typisk användning: skrivbordsbläckstråleskrivare utan inbyggd
+        linearisering, styrda direkt från en TIFF utan mellanliggande RIP.
+
+        Utesluter "Bädda in kalibrering" (-I) — bara ett kalibrerings-
+        alternativ kan vara aktivt åt gången.
+    "-I":
+      name: "Bädda endast in kalibrering"
+      tooltip_title: "Bädda in kalibrering utan att använda den (-I)"
+      tooltip_body: |-
+        Använd detta när din skrivare eller RIP redan tillämpar en
+        kalibreringskurva själv — till exempel en produktions-RIP med egen
+        lineariserings-LUT, eller en skrivare med inbyggd densitets-
+        kalibrering.
+
+        I så fall vill du inte att printtarg räknar om fältvärdena (det
+        sköter skrivaren själv), men du vill att colprof känner till
+        kalibreringen.  -I bäddar in .cal-filen i .ti2-utdata enbart som
+        metadata och lämnar alla fältvärden orörda.
+
+        Typisk användning: professionella bläckstråle-RIP:ar (t.ex. EFI
+        Fiery, Wasatch, ColorBurst) eller skrivare med inbyggd
+        linearisering som är aktiv under profileringsutskriften.
+
+        Utesluter "Använd kalibrering" (-K) — bara ett kalibrerings-
+        alternativ kan vara aktivt åt gången.
+    "-C":
+      name: "Stäng av TIFF-komprimering"
+      tooltip_title: "Stäng av TIFF-komprimering (-C)"
+      tooltip_body: |-
+        Skriver okomprimerade TIFF-filer i stället för standard-LZW-
+        komprimeringen.  Okomprimerade filer är större men universellt
+        kompatibla med alla RIP:ar och skrivardrivrutiner.
+        Aktivera om ditt utskriftsflöde vägrar eller förstör komprimerade
+        TIFF-filer.
+    "-D":
+      name: "8-bit dithering från 16-bit"
+      tooltip_title: "Dithra 8-bit-utdata (-D)"
+      tooltip_body: |-
+        Använder feldiffusions-dithering vid generering av en 8-bit-TIFF
+        för att skala ner från intern 16-bit-precision.  Det minskar
+        ränder (banding) i mjuka övergångar som annars skulle uppstå av
+        kvantisering.
+        Har bara effekt när 8-bit-TIFF-utdata är valt.
+    "-U":
+      name: "Undertryck CUPS-färghanteringshuvud"
+      tooltip_title: "Undertryck CUPS-CMM-huvud (-U)"
+      tooltip_body: |-
+        Tar bort kommentaren 'cupsJobTicket: cups-disable-cmm' från
+        PostScript- och EPS-utdatafiler.  Vissa CUPS-versioner reagerar
+        olika på denna kommentar.
+        Alternativet gäller bara PS-/EPS-utdata och påverkar inte TIFF-
+        filer.  Aktivera bara om oväntad färghantering tillämpas vid
+        utskrift.
+    "-R":
+      name: "Randomiseringsfrö"
+      tooltip_title: "Randomiseringsfrö (-R)"
+      tooltip_body: |-
+        Anger startvärdet (fröet) för fältrandomiserings-algoritmen.
+        Samma frö med samma fältantal ger alltid samma diagramlayout —
+        diagram blir därmed helt reproducerbara.
+        Användbart för forskning eller när du senare behöver återskapa
+        ett identiskt diagram.
+        Har ingen effekt när "Behåll fältordning" (-r) är aktiverat.
+    "-Q":
+      name: "Kvantiseringsbitar"
+      tooltip_title: "Kvantisera fältvärden (-Q)"
+      tooltip_body: |-
+        Avrundar alla fältfärgvärden till angivet bitdjup innan diagrammet
+        genereras.  Till exempel avrundar -Q 8 alla värden till 8-bitars
+        precision (256 nivåer).
+        Använd detta när din skrivarkedja ger banding vid ett visst
+        bitdjup och du vill testa på exakt den precisionsnivån.
+    "-A":
+      name: "Mellanfältsskala"
+      tooltip_title: "Endast-mellanfältsskala (-A)"
+      tooltip_body: |-
+        Tillämpar en extra skalfaktor enbart på mellanfältsstaplarna, utan
+        att ändra fältmåtten som satts med -a.
+        Värden över 1.0 gör mellanfälten bredare; under 1.0 smalare.
+        Användbart för instrument som behöver extra avstånd mellan remsor,
+        eller för att vinna utrymme genom att smalna av mellanfälten medan
+        fältstorleken hålls konstant.
+
+        Har ingen effekt när "Inga mellanfält" (-n) är aktiverat — detta
+        alternativ är då nedtonat och utelämnas ur printtarg-kommandot.
+    "-n":
+      name: "Inga mellanfält"
+      tooltip_title: "Inga mellanfält (-n)"
+      tooltip_body: |-
+        Tar bort alla mellanfältsstaplar mellan fält och remsor.
+        Mellanfält hjälper normalt instrumentet att känna igen remsgränser
+        och -riktning.
+        Stäng av dem bara om ditt mätarbetsflöde uttryckligen inte bygger
+        på dem (t.ex. vissa flatbäddsskanner-uppsättningar).
+
+        När aktiverat stängs "Tvinga S/V-mellanfält" (-b) och
+        "Mellanfältsskala" (-A) av automatiskt — båda gäller ju bara
+        mellanfält.
+    "-c":
+      name: "Tvinga färgade mellanfält"
+      tooltip_title: "Tvinga färgade mellanfält (-c)"
+      tooltip_body: |-
+        Tvingar mellanfältsytorna mellan fälten att ritas i färg i stället
+        för standarden (som beroende på instrumentprofilen kan vara
+        svartvit).  Kan förbättra remsidentifieringen på vissa färgbläck-
+        stråleskrivare där svarta mellanfält har låg kontrast mot mörka
+        fält.
+  chartread:
+    "-B":
+      name: "Dubbelriktad remsläsning av"
+      tooltip_title: "Dubbelriktad läsning av (-B)"
+      tooltip_body: |-
+        Hindrar chartread från att automatiskt upptäcka om du skannade en
+        remsa framåt eller bakåt. ChromIQ låter detta vara av som standard,
+        så att instrumentet kan läsa remsor i båda riktningarna.
+
+        Slå på bara om instrumentet rapporterar falska remsriktningsfel
+        under mätning.
+    "-b":
+      name: "Tvinga dubbelriktad läsning"
+      tooltip_title: "Tvinga dubbelriktad läsning (-b)"
+      tooltip_body: |-
+        Tvingar chartread att godta en remsa skannad i valfri riktning.
+
+        Normalt upptäcker chartread remsriktningen automatiskt bara på
+        randomiserade diagram; på ett diagram med fast ordning läser det
+        bara en riktning och avvisar remsor skannade baklänges. Slå på
+        detta för att tvinga upptäckten oavsett — användbart för i1 Pro-
+        familjen, som läser åt båda hållen. Detta är motsatsen till -B;
+        bara en kan gälla.
+    "-S":
+      name: "Undertryck varningar"
+      tooltip_title: "Undertryck varningar (-S)"
+      tooltip_body: |-
+        Undertrycker icke-fatala mätvarningsdialoger från chartread.
+        Rekommenderas för obevakade eller batchmätsessioner.
+        Fel som skulle hindra profilgenerering rapporteras ändå.
+    "-N":
+      name: "Stäng av startkalibrering"
+      tooltip_title: "Stäng av startkalibrering (-N)"
+      tooltip_body: |-
+        Hoppar över den automatiska vitplattekalibreringen vid start.
+        Använd bara om du redan kalibrerat instrumentet i den här
+        sessionen och vill mäta fler diagram utan att kalibrera om.
+    "-p":
+      name: "Fält-för-fält-läge"
+      tooltip_title: "Fält-för-fält-läge (-p)"
+      tooltip_body: |-
+        Byter från remsläsning till mätning av enskilda fält.
+        Användbart för handhållna enstaka mätningar eller om remsläsning
+        misslyckas på ett visst papper.  Betydligt långsammare för stora
+        diagram.
+    "-H":
+      name: "Spektralläge i hög upplösning"
+      tooltip_title: "Högupplöst spektrum (-H)"
+      tooltip_body: |-
+        Aktiverar spektral sampling i hög upplösning på instrument som
+        stöder det (t.ex. i1Pro 2/3).  Ger noggrannare Lab-värden men ökar
+        mättiden något.
+    "-T":
+      name: "Fältkonsistens-tolerans"
+      tooltip_title: "Fält-toleransfaktor (-T)"
+      tooltip_body: |-
+        En multiplikator på chartreads inbyggda tröskel för fältkonsistens
+        — inte ett delta-E-värde. chartread läser om varje fält och avvisar
+        remsor där avläsningarna skiljer sig mer än tröskeln × detta tal.
+
+        Lägre = strängare. En sträng inställning fångar verkliga problem
+        tidigt: igensatta bläckmunstycken, lite bläck, smutsiga trumvalsar,
+        drivande lasertoner. På en frisk skrivare-spektrofotometer-kombo
+        ger standarden 0.7 god marginal; erfarna användare på
+        printerknowledge.com kör 0.4 med i1 Pro 2 / 3.
+
+        Höj till 0.8–1.5 om du får falska \"inconsistent patch\"-fel på
+        texturerade, matta eller fine-art-papper — själva ytan bidrar med
+        verklig varians där. Värden över 2 maskerar mest äkta problem;
+        behöver du dem, laga skrivaren först.
+    "-l":
+      name: "Spara D50-L*a*b*-värden"
+      tooltip_title: "Spara L*a*b* i stället för XYZ (-l)"
+      tooltip_body: |-
+        Sparar mätdata som D50-L*a*b*-värden i stället för XYZ.
+        De flesta arbetsflöden använder XYZ (standard).  Aktivera bara om
+        efterföljande verktyg specifikt kräver L*a*b*-indata.
+    "-X":
+      name: "Kolorimeterkorrektion"
+      tooltip_title: "Kolorimeter-korrektionsmatris (-X)"
+      tooltip_body: |-
+        Tillämpar en kolorimeter-korrektionsmatris (.ccmx) eller en
+        spektral kalibreringsuppsättning (.ccss) för att förbättra
+        kolorimeterns noggrannhet.
+        Endast relevant för kolorimetrar (inte spektrofotometrar).
+        Hämta rätt fil från instrumenttillverkaren eller skapa den med
+        ArgyllCMS ccss-/ccmx-verktyg.
+  colprof:
+    "-D":
+      name: "Profilbeskrivning"
+      tooltip_title: "Profilbeskrivning (-D)"
+      tooltip_body: |-
+        Namnet som bäddas in i ICC-profilen — visas i färghanterings-
+        menyerna i program som Photoshop, Lightroom och Förhandsvisning.
+
+        Använd ett konsekvent format som identifierar skrivare, papper,
+        bläcktyp och datum, så att rätt profil är lätt att hitta senare:
+
+          Skrivare · Papper · Bläcktyp · Datum
+          t.ex. "Epson P900 · Canson Baryta · Chromatic · 2026-04"
+
+        Utdatafilen namnges efter din .ti3-fil — håll det namnet konsekvent
+        med beskrivningen, med understreck i stället för mellanslag:
+          t.ex. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+    "-a":
+      name: "Profilalgoritm"
+      tooltip_title: "Profilalgoritm (-a)"
+      tooltip_body: |-
+        Väljer färgtransformsalgoritmen:
+        • Lab-cLUT (-al): bäst noggrannhet för skrivarprofiler.
+          Använder en fullständig 3D-uppslagstabell i L*a*b*-rymd.
+          Rekommenderas.
+        • XYZ-cLUT (-ax): som Lab men i XYZ-rymd.
+          Ger ibland mjukare neutrala övergångar.
+        • Matris/gamma (-ag, -as): enklare modell — mindre exakt för
+          komplicerat skrivarbeteende, men snabbare att beräkna.
+        Använd alltid Lab-cLUT (-al) för förstagångsprofiler av RGB-
+        skrivare.
+      labels:
+        - "l — Lab-cLUT (rekommenderas för RGB-skrivare)"
+        - "x — XYZ-cLUT"
+        - "X — XYZ-cLUT (absolut)"
+        - "g — gamma + matris (snabb, mindre exakt)"
+        - "G — gamma + matris (tvingad)"
+        - "s — enkel gamma + matris"
+        - "S — enkel gamma + matris (tvingad)"
+        - "m — endast matris"
+        - "M — endast matris (tvingad)"
+    "-q":
+      name: "Profilkvalitet"
+      tooltip_title: "Profilkvalitet (-q)"
+      tooltip_body: |-
+        Styr cLUT-rutnätsupplösningen och utjämningsiterationerna:
+        • Låg: 17³-rutnät — snabbtest, inte för produktion
+        • Medel: 33³-rutnät — bra balans, rekommenderad standard
+        • Hög: 45³-rutnät — produktionskvalitet
+        • Ultra: 65³-rutnät — maximal noggrannhet, mycket långsam
+        Medel räcker för det mesta bläckstrålearbetet.
+        Använd Hög för fine-art- eller kontraktsprovtryck.
+      labels:
+        - "l — låg (snabb, ~30 s)"
+        - "m — medel (rekommenderas, ~2 min)"
+        - "h — hög (~10 min)"
+        - "u — ultra (~30+ min)"
+    "-b":
+      name: "B2A-tabellkvalitet"
+      tooltip_title: "B2A-tabellkvalitet (-b)"
+      tooltip_body: |-
+        Styr oberoende kvaliteten på B2A-tabellerna (enhet→PCS) för
+        indatatransformer (t.ex. skärmkorrektur).
+        Lämna tom för att följa huvudinställningen -q.
+        Använd "n" för att utelämna B2A-tabeller och minska profilfilens
+        storlek (endast-utdata-profiler behöver inte B2A).
+      labels:
+        - "Samma som profilkvalitet (standard)"
+        - "l — låg"
+        - "m — medel"
+        - "h — hög"
+        - "u — ultra"
+        - "n — ingen (utelämna B2A-tabeller)"
+    "-r":
+      name: "Utjämning/brus (% ΔE)"
+      tooltip_title: "Genomsnittligt enhetsbrus (-r)"
+      tooltip_body: |-
+        Uppskattat genomsnittligt mät- eller enhetsbrus som procent ΔE.
+        Högre värden ökar profilutjämningen och minskar effekten av
+        avvikande fält.
+        • 0,5 %: rena mätningar, välskött skrivare
+        • 1,0–2,0 %: brusiga mätningar eller texturerat papper
+        • 3,0–5,0 %: mycket brusigt; ökar utjämningen avsevärt
+    "-s":
+      name: "Gamutkälla (perceptuell)"
+      tooltip_title: "Perceptuell gamutmappningskälla (-s)"
+      tooltip_body: |-
+        Käll-ICC-profil som används för att beräkna gamutmappnings-
+        tabellerna för den perceptuella återgivningsavsikten (A2B / B2A
+        perceptuell).
+        Utan denna använder den perceptuella avsikten de kolorimetriska
+        data direkt (ingen gamutkompression).
+        Sätts typiskt till en standard-RGB-arbetsrymd som AdobeRGB eller
+        ProPhoto RGB.
+        Både .icc- och .icm-filer godtas — ICM är bara Microsofts namn på
+        ICC-profilformatet; de är identiska.
+    "-S":
+      name: "Gamutkälla (P+M)"
+      tooltip_title: "Källa perceptuell + mättnad (-S)"
+      tooltip_body: |-
+        Som -s, men tillämpar gamutmappningen på både den perceptuella och
+        den mättnadsbaserade återgivningsavsikten.
+    "-A":
+      name: "Tillverkare"
+      tooltip_title: "Tillverkartext (-A)"
+      tooltip_body: |-
+        Tillverkartext som bäddas in i ICC-profilhuvudet.
+        Valfri — används för identifiering i profilväljargränssnitt.
+    "-M":
+      name: "Modell"
+      tooltip_title: "Modelltext (-M)"
+      tooltip_body: |-
+        Modelltext som bäddas in i ICC-profilhuvudet.
+    "-C":
+      name: "Upphovsrätt"
+      tooltip_title: "Upphovsrättstext (-C)"
+      tooltip_body: |-
+        Upphovsrättsnotering som bäddas in i ICC-profilen.
+    "-ni":
+      name: "Inga indata-formningskurvor"
+      tooltip_title: "Inga indata-formningskurvor (-ni)"
+      tooltip_body: |-
+        Stänger av 1D-indata-tonkurvorna som förbehandlar enhetsvärden
+        före 3D-cLUT:en.  Dessa kurvor förbättrar normalt profilens
+        noggrannhet.  Stäng av endast för diagnos.
+    "-no":
+      name: "Inga utdata-formningskurvor"
+      tooltip_title: "Inga utdata-formningskurvor (-no)"
+      tooltip_body: |-
+        Stänger av 1D-utdata-formningskurvorna som tillämpas efter
+        3D-cLUT:en.  Stäng av endast för diagnos.
+    "-V":
+      name: "Skugg-rutnätsvikt"
+      tooltip_title: "Rutnätsvikt i mörka områden (-V)"
+      tooltip_body: |-
+        Lägger till extra cLUT-rutnätspunkter i mörka (skugg)områden.
+        1.0 = jämnt rutnät (standard).  Öka till 1.5–2.0 för skrivare med
+        komplicerat skuggbeteende eller igensatta svärtor.
+  profcheck:
+    "-v":
+      name: "Detaljnivå"
+      tooltip_title: "Detaljnivå (-v)"
+      tooltip_body: |-
+        Per-fält-läget ger varje fälts individuella ΔE-värde — vilket
+        krävs för remsanalys och guidad förbättring.  Sammanfattnings-
+        läget visar bara medel- och toppfel.
+      labels:
+        - "2 — per fält (krävs för remsanalys)"
+        - "1 — endast sammanfattning"
+    "-I":
+      name: "Återgivningsavsikt"
+      tooltip_title: "Återgivningsavsikt (-I)"
+      tooltip_body: |-
+        Absolut kolorimetrisk kontrollerar absolut färgnoggrannhet
+        inklusive vitpunkt — standarden för skrivarprofilering.
+        Relativ kolorimetrisk normaliserar till mediets vitpunkt.
+      labels:
+        - "a — absolut kolorimetrisk (standard)"
+        - "r — relativ kolorimetrisk"
+    "-s":
+      name: "Värsta ΔE först"
+      tooltip_title: "Sortera efter ΔE (-s)"
+      tooltip_body: |-
+        Sorterar profcheck-utdata så att fälten med sämst resultat visas
+        först.  Användbart för att snabbt hitta problemområden.
+        Fungerar bara när detaljnivån står på per fält.
+    "-i":
+      name: "Ljuskälla"
+      tooltip_title: "Ljuskälla (-i)"
+      tooltip_body: |-
+        Väljer ljuskällan som används när spektrala mätningar konverteras
+        till färgvärden.  Endast relevant om din .ti3 innehåller spektral-
+        data.  D50 är standarden för utskriftsprofilering.
+      labels:
+        - "D50 (standard)"
+        - "D50M2 (D50 + UV-filter)"
+        - "D65 (dagsljus 6500 K)"
+        - "A (glödlampa)"
+        - "C (dagsljussimulering, äldre)"
+        - "F5 (fluorescerande CWF)"
+        - "F8 (fluorescerande D50-sim.)"
+        - "F10 (fluorescerande Ultralume)"
+    "-o":
+      name: "CIE-observatör"
+      tooltip_title: "CIE-observatör (-o)"
+      tooltip_body: |-
+        Definierar standardobservatörsmodellen för kolorimetriska
+        beräkningar.  1931 2°-observatören är ICC-standarden för
+        utskriftsprofilering.  Låt stå på standard om inte annat krävs
+        specifikt.
+      labels:
+        - "1931 2° (standard)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+    "-P":
+      name: "Rensa på ΔE ≤"
+      tooltip_title: "Begränsa .ti3 till ΔE ≤ (-P)"
+      tooltip_body: |-
+        Skapar en bantad kopia av din .ti3-fil som bara innehåller fält
+        vars färgfel ligger på eller under tröskeln du anger.
+        Användbart om dåligt mätta fält drar ner profilen.
+        Aktivera alternativet och ange högsta godtagbara ΔE-värde.
+    "-w":
+      name: "Skapa X3DOM-3D-visualisering"
+      tooltip_title: "X3DOM-visualisering (-w)"
+      tooltip_body: |-
+        Genererar en interaktiv 3D-HTML-visualisering av profilens
+        färgfel.  Öppna den resulterande .x3d.html-filen i en modern
+        webbläsare för att utforska vilka delar av färggamuten som har de
+        största felen.
+  printcal:
+    "-v":
+      name: "Detaljnivå"
+      tooltip_title: "Detaljnivå (-v)"
+      tooltip_body: |-
+        Styr hur mycket utdata printcal skriver under kalibreringen.
+          0 = tyst
+          1 = grundläggande förlopp (standard)
+          2 = detaljerad per-kanal-info
+          3 = felsökningsutdata
+    "-s":
+      name: "Kurvutjämning"
+      tooltip_title: "Kurvutjämning (-s)"
+      tooltip_body: |-
+        Styr hur mycket extra utjämning som tillämpas på kalibrerings-
+        kurvorna.  Högre värden ger mjukare men mindre exakta kurvor.
+
+        Standard: 1.0 — bra för de flesta skrivare.
+        Öka (t.ex. 2.0–5.0) om skrivarens tonrespons ser oregelbunden ut
+        eller kalibreringskurvorna ser taggiga ut.
+    "-z":
+      name: "Kurvupplösning"
+      tooltip_title: "Kurvupplösning (-z)"
+      tooltip_body: |-
+        Antal steg i utdata-kalibreringskurvtabellerna.
+        Högre värden ger finare upplösning men större .cal-filer.
+        Standarden (256) passar i stort sett alla skrivare.
+    "-A":
+      name: "Tillverkare"
+      tooltip_title: "Tillverkare (-A)"
+      tooltip_body: |-
+        Anger tillverkarbeskrivningen som bäddas in i .cal-filen.
+        Enbart informativ — påverkar inte kalibreringskurvorna.
+    "-M":
+      name: "Modell"
+      tooltip_title: "Modell (-M)"
+      tooltip_body: |-
+        Anger skrivarmodellbeskrivningen som bäddas in i .cal-filen.
+        Enbart informativ — påverkar inte kalibreringskurvorna.
+    "-D":
+      name: "Beskrivning"
+      tooltip_title: "Beskrivning (-D)"
+      tooltip_body: |-
+        Anger en läsbar beskrivning som bäddas in i .cal-filen.
+        Enbart informativ — påverkar inte kalibreringskurvorna.
+    "-C":
+      name: "Upphovsrätt"
+      tooltip_title: "Upphovsrätt (-C)"
+      tooltip_body: |-
+        Anger upphovsrättstexten som bäddas in i .cal-filen.
+        Enbart informativ — påverkar inte kalibreringskurvorna.
+  applycal:
+    "-v":
+      name: "Utförlig"
+      tooltip_title: "Utförlig (-v)"
+      tooltip_body: |-
+        Visar detaljerad information om kalibreringen som tillämpas,
+        inklusive kurvstatistik per kanal.

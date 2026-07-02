@@ -1,0 +1,1171 @@
+# Italian overlay for data/parameters.yaml — merged in translate_parameters()
+parameters:
+  targen:
+    "-d":
+      name: "Tipo dispositivo"
+      tooltip_title: "Tipo dispositivo (-d)"
+      tooltip_body: |-
+        Definisce la combinazione di coloranti del tuo dispositivo di output.
+
+        Gli spazi di stampa sono sottrattivi: valore dispositivo 0 = bianco
+        (niente inchiostro), massimo = nero (inchiostro pieno).  Gli spazi
+        video/schermo sono additivi: valore 0 = nero, massimo = bianco.
+
+        Scelte comuni:
+          • Stampa grigio (-d 0)  — stampante in scala di grigi monocanale
+          • Video grigio (-d 1)   — schermo/monitor monocanale
+          • Stampa RGB (-d 2)     — inkjet RGB standard (predefinito,
+                                    consigliato)
+          • Video RGB (-d 3)      — schermo/monitor RGB
+          • CMYK (-d 4)           — inkjet quadricromia o macchina offset
+          • CMY (-d 5)            — tre colori, senza canale nero separato
+
+        Le opzioni 6–15 sono per inkjet multicanale speciali con inchiostri
+        aggiuntivi (ciano/magenta chiaro, arancio, verde, viola, ecc.).
+        Usa -D (esperti) per affinare il set di coloranti se necessario.
+      labels:
+        - "Stampa grigio"
+        - "Video grigio"
+        - "Stampa RGB (consigliato)"
+        - "Video RGB"
+        - "CMYK"
+        - "CMY"
+        - "CMYK + CM chiaro"
+        - "CMYK + CMK chiaro"
+        - "CMYK + rosso + blu"
+        - "CMYK + arancio + verde"
+        - "CMYK + rosso + verde + blu"
+        - "CMYK + arancio + verde + viola"
+        - "CMYK + arancio + verde + blu"
+        - "CMYK + CMK chiaro + K chiarissimo"
+        - "CMYK + arancio + verde + CM chiaro"
+        - "CMYK + CM chiaro + CM medio"
+    "-D":
+      name: "Colorante +/−"
+      tooltip_title: "Aggiungi/rimuovi colorante (-D)"
+      tooltip_body: |-
+        Modifica il set di coloranti stabilito dal Tipo dispositivo (-d)
+        aggiungendo o rimuovendo un singolo colorante.  Se il colorante
+        scelto è già nel set viene rimosso; se è assente viene aggiunto.
+
+        Usi tipici:
+          • Aggiungere arancio (-D 5) al CMYK standard per un gamut esteso
+          • Aggiungere ciano chiaro (-D 11) / magenta chiaro (-D 12) al
+            CMYK per gradienti più morbidi nelle alte luci
+
+        Attiva più posizioni per impilare coloranti aggiuntivi (ogni
+        posizione attivata rivela la successiva, fino a 11 modifiche totali).
+
+        Lascia disattivato per i tipi dispositivo standard 0–5.
+      labels:
+        - "Additivo"
+        - "Ciano"
+        - "Magenta"
+        - "Giallo"
+        - "Nero"
+        - "Arancio"
+        - "Rosso"
+        - "Verde"
+        - "Blu"
+        - "Viola"
+        - "Bianco"
+        - "Ciano chiaro"
+        - "Magenta chiaro"
+        - "Giallo chiaro"
+        - "Nero chiaro"
+        - "Ciano medio"
+        - "Magenta medio"
+        - "Giallo medio"
+        - "Nero medio"
+        - "Nero chiarissimo"
+    "-f":
+      name: "Numero totale tasselli"
+      tooltip_title: "Numero totale tasselli (-f)"
+      tooltip_body: |-
+        Imposta il numero totale di tasselli colorati.  Più tasselli =
+        profilo più preciso, ma tempi di stampa e misurazione più lunghi.
+        Intervalli tipici per inkjet RGB:
+          • Test rapido: 400–600
+          • Standard:    800–1200
+          • Alta qualità: 1500–2000
+          • Altissima:   2500–3000
+
+        Auto (accanto alla casella numerica): se spuntato, il numero di
+        tasselli viene calcolato in tempo reale da carta, strumento, double
+        density, bordo sinistro, scala tasselli, margine e dalla casella
+        Pagine nella sezione printtarg — scegliendo il valore più grande
+        che riempie esattamente quel numero di fogli senza spazi vuoti.  La
+        casella è disattivata finché Auto è attivo e mostra la stima
+        corrente.  Per layout personalizzati (scala tasselli o margine non
+        predefiniti) Auto esegue una breve ricerca binaria con targen — il
+        valore può richiedere un secondo per aggiornarsi.
+
+        In modalità guidata viene calcolato automaticamente dal database
+        tasselli-per-pagina × il numero di pagine scelto.
+        In modalità guidata imposta 0 per il calcolo automatico.
+    "-e":
+      name: "Tasselli bianchi"
+      tooltip_title: "Tasselli bianchi (-e)"
+      tooltip_body: |-
+        Quanti tasselli di puro bianco carta aggiungere al grafico. Lo
+        strumento li misura per imparare esattamente quanto è bianca la tua
+        carta — ancorando l'estremo chiaro del profilo. 4 è un buon
+        predefinito; carte molto lucide possono trarre vantaggio da qualche
+        tassello in più.
+
+        Auto (casella):
+        Attiva "Auto" e ChromIQ sceglie il numero per te, in base a quanti
+        tasselli contiene l'intero grafico — un piccolo grafico monopagina
+        riceve pochi tasselli bianchi e un grande grafico multipagina di
+        più, senza che tu debba pensarci.
+
+        Come viene calcolato il numero Auto:
+          • Un grafico di circa 560 tasselli riceve 4 tasselli bianchi.
+          • Ogni volta che il grafico circa raddoppia, il numero cresce
+            del 50 % (4 → 6 → 8 …).
+          • Non supera mai 8 (di più spreca solo spazio) e non scende
+            mai sotto 2.
+
+        Con Auto attivo la casella è disattivata e mostra \"Auto\".
+        Disattivalo in qualsiasi momento per inserire il tuo numero.
+    "-B":
+      name: "Tasselli neri"
+      tooltip_title: "Tasselli neri (-B)"
+      tooltip_body: |-
+        Quanti tasselli a inchiostro massimo (nero dispositivo) aggiungere
+        al grafico. Lo strumento li misura per imparare il tono più scuro
+        che la stampante può produrre — ancorando l'estremo scuro del
+        profilo. 4 è un buon predefinito per stampanti RGB.
+
+        Auto (casella):
+        Attiva "Auto" e ChromIQ sceglie il numero per te, in base a quanti
+        tasselli contiene l'intero grafico — un grafico piccolo riceve
+        pochi tasselli neri, uno grande di più.
+
+        Come viene calcolato il numero Auto:
+          • Un grafico di circa 560 tasselli riceve 4 tasselli neri.
+          • Ogni volta che il grafico circa raddoppia, il numero cresce
+            del 50 % (4 → 6 → 8 …).
+          • Non supera mai 8 e non scende mai sotto 2.
+
+        Con Auto attivo la casella è disattivata e mostra \"Auto\".
+        Disattivalo in qualsiasi momento per inserire il tuo numero.
+    "-g":
+      name: "Passi asse grigi"
+      tooltip_title: "Passi asse grigi (-g)"
+      tooltip_body: |-
+        Tasselli grigi neutri extra distribuiti uniformemente dal bianco al
+        nero. Aiutano il profilo a riprodurre i grigi in modo pulito, senza
+        dominanti di colore — importante per foto in bianco e nero e toni
+        neutri. Guida approssimativa se lo imposti a mano: 0 per un profilo
+        rapido, 50–100 per uno standard, 128+ per alta qualità.
+
+        Auto (casella):
+        Attiva "Auto" e ChromIQ sceglie il numero per te, in scala con
+        quanti tasselli contiene l'intero grafico — un grafico più grande
+        riceve una scala di grigi più lunga e fine.
+
+        Come viene calcolato il numero Auto:
+          • Un grafico di circa 560 tasselli riceve 32 passi di grigio.
+          • Ogni volta che il grafico circa raddoppia, anche i passi
+            raddoppiano (32 → 64 → 128).
+          • Non supera mai 128 e non scende mai sotto 8.
+
+        Con Auto attivo la casella è disattivata e mostra \"Auto\".
+        Disattivalo in qualsiasi momento per inserire il tuo numero.
+
+        (La modalità guidata lo imposta sempre automaticamente con la
+        stessa logica.)
+    "-G":
+      name: "Ottimizzazione accurata (lenta)"
+      tooltip_title: "Ottimizzazione accurata (-G)"
+      tooltip_body: |-
+        Fa spendere a targen tempo extra per posizionare i tasselli nel
+        modo più uniforme possibile sul gamut della tua stampante. Il set
+        di tasselli è dello stesso tipo (OFPS — Optimised Farthest Point
+        Sampling, la distribuzione predefinita) in entrambi i casi; questo
+        passa solo dalla modalità \"veloce\" a quella \"accurata\".
+
+        Consigliato ATTIVO per ogni grafico che stamperai e misurerai
+        davvero: pochi secondi di calcolo extra alla generazione danno un
+        profilo misurabilmente migliore.
+
+        Disattivalo solo se stai iterando rapidamente sulle impostazioni
+        del grafico e la qualità assoluta dei tasselli non ti interessa
+        (es. test di layout prima del grafico definitivo).
+
+        Non ha effetto quando \"Distribuzione tasselli\" è impostata su
+        qualcosa di diverso da OFPS — le distribuzioni alternative
+        (casuale, quasi-casuale, reticolo BCC, …) ignorano questa opzione.
+    "-s":
+      name: "Passi a canale singolo"
+      tooltip_title: "Passi a canale singolo (-s)"
+      tooltip_body: |-
+        Aggiunge tasselli extra a rampa per singolo canale (R, G, B
+        separatamente). Utile per caratterizzare il comportamento dei
+        singoli inchiostri.
+        Tipico: 0 per veloce, 20–50 per standard, 50–100 per alto.
+    "-c":
+      name: "Profilo precondizion."
+      tooltip_title: "Profilo di precondizionamento (-c)"
+      tooltip_body: |-
+        Un profilo ICC esistente per questa combinazione stampante/carta,
+        usato per precondizionare la distribuzione dei tasselli nello
+        spazio percettivo.  Usare qui un profilo precedente produce
+        tasselli distribuiti più uniformemente nel gamut di output, con
+        maggiore precisione in un secondo passaggio di profilazione.
+        Lascia vuoto per un primo profilo.
+    "-C":
+      name: "Sostituzione calibrazione"
+      tooltip_title: "Sostituzione calibrazione (-C)"
+      tooltip_body: |-
+        File .cal facoltativo le cui curve di calibrazione vengono
+        applicate nella stima del limite d'inchiostro per la generazione
+        dei tasselli.  Sostituisce qualsiasi .cal incorporato nel file
+        .ti3 target ICC di un passaggio di profilazione precedente.
+
+        Usalo quando hai una calibrazione del dispositivo validata (es. da
+        printcal/applycal) e vuoi che targen ne tenga conto nel calcolare
+        quanti tasselli servono nella zona delle ombre.
+
+        Digita \"none\" nel campo (senza virgolette) per impedire
+        esplicitamente l'uso di qualsiasi .cal, anche se incorporato nel
+        .ti3.
+
+        Lascia vuoto nella maggior parte dei flussi — serve solo quando
+        gestisci una curva di calibrazione separata, indipendente dal
+        profilo.
+    "-n":
+      name: "Passi asse neutro"
+      tooltip_title: "Passi asse neutro (-n)"
+      tooltip_body: |-
+        Aggiunge tasselli a cuneo extra lungo l'asse neutro percettivamente
+        vero della tua stampante + carta, come definito dal profilo di
+        precondizionamento caricato tramite -c.
+
+        Differenza da -g (passi asse grigi):
+          • -g percorre valori RGB del dispositivo (R = G = B): 0/0/0,
+            32/32/32, 64/64/64 … Presuppone che valori uguali stampino un
+            grigio neutro — vero solo su una stampante perfettamente
+            linearizzata.  Su una stampante reale la \"rampa di grigi del
+            dispositivo\" ha di solito una dominante.
+          • -n chiede al profilo fornito: \"quali valori RGB servono
+            davvero a QUESTA stampante per riprodurre un tassello L*a*b*
+            neutro (a* = b* = 0) a ogni passo di luminosità?\"  Quei valori
+            RGB (tipicamente non uguali) vengono aggiunti come tasselli.
+
+        Differenza da -N (enfasi asse neutro):
+          • -N è una manopola 0–1 che inclina la distribuzione OFPS
+            esistente verso la zona neutra.  Non aggiunge passi nominati.
+          • -n aggiunge tasselli neutri espliciti, derivati dal profilo,
+            in aggiunta a quello che il resto della distribuzione produce.
+
+        Quando usarlo:
+          • Hai già un profilo ICC di primo passaggio per questa carta e
+            stai creando un grafico di affinamento.  Carica quel profilo
+            in Profilo di precondizionamento (-c), poi imposta -n a 32–64
+            per caratterizzare densamente l'asse neutro corretto.
+          • Per un primo grafico senza -c, lascialo a 0 — senza profilo di
+            precondizionamento non esiste un asse neutro \"vero\" da
+            campionare, e -g copre già la rampa nello spazio dispositivo.
+
+        Valori tipici di affinamento: 32 per lavoro ordinario, 64 per
+        fine-art / prove colore dove la neutralità è critica.
+
+        Richiede che -c sia impostato; altrimenti non ha effetto.
+    "-N":
+      name: "Enfasi asse neutro"
+      tooltip_title: "Enfasi asse neutro (-N)"
+      tooltip_body: |-
+        Controlla quanto i tasselli si raggruppano vicino all'asse neutro.
+        0.0 = nessuna enfasi, 1.0 = massimo raggruppamento sul grigio.
+        Il predefinito 0.5 va bene per la maggior parte delle stampanti.
+    "-V":
+      name: "Enfasi zone scure"
+      tooltip_title: "Enfasi zone scure (-V)"
+      tooltip_body: |-
+        Aggiunge tasselli extra nelle zone scure (ombre) del gamut.
+        1.0 = nessuna enfasi (predefinito).  Aumenta a 2.0–3.0 per
+        stampanti con comportamento complesso nelle ombre (es. carte
+        fine-art opache).
+    "-l":
+      name: "Limite inchiostro totale (%)"
+      tooltip_title: "Limite inchiostro totale (-l)"
+      tooltip_body: |-
+        La quantità massima totale di inchiostro che la stampante può
+        depositare sulla carta, in percentuale. 100 % = uno strato pieno,
+        200 % = due strati pieni (es. 100C + 100K), e così via.
+
+        Perché conta (soprattutto per CMYK / CMYK+N):
+        Senza limite, targen genera allegramente tasselli come 100C +
+        100M + 100Y + 100K = 400 %. Tanto inchiostro bagnato può formare
+        pozze, asciugare lentamente, chiazzare o perfino strappare la
+        carta — e il profilo costruito da quei tasselli prevede colori che
+        la stampante in realtà non può produrre.
+
+        Come scegliere un valore:
+          • Maggior parte delle inkjet CMYK: 260 – 320 %
+          • Carte patinate / lucide:         320 – 360 %
+          • Carta da giornale, bassa qualità: 220 – 260 %
+          • Gamut esteso (CMYKOGV):          400 – 500 %  (più inchiostri
+                                              condividono il budget totale)
+
+        Nel dubbio: consulta la documentazione della stampante o le linee
+        guida del profilo carta, o misura: stampa un piccolo cuneo di test
+        del limite d'inchiostro e scegli il valore più alto che asciuga
+        pulito senza sbavare.
+
+        Per flussi RGB: di solito lascialo disattivato — le inkjet RGB
+        gestiscono internamente la limitazione dell'inchiostro, quindi
+        targen non deve fare budget tra i canali.
+
+        Spunta la casella per attivare.
+    "__targen_distribution__":
+      name: "Distribuzione tasselli"
+      tooltip_title: "Distribuzione tasselli (-t / -r / -R / -q / -Q / -i / -I)"
+      tooltip_body: |-
+        Come targen decide dove collocare ogni tassello colorato nel gamut
+        della stampante. Algoritmi diversi offrono compromessi diversi tra
+        copertura, uniformità e velocità.
+
+        Scegline UNO. Si escludono a vicenda — selezionarne uno sostituisce
+        completamente il posizionamento OFPS predefinito.
+
+        OFPS (predefinito, consigliato):
+        Optimised Farthest Point Sampling. Posiziona iterativamente ogni
+        nuovo tassello il più lontano possibile da ogni tassello esistente
+        — la copertura più uniforme di tutti gli algoritmi qui elencati.
+        Più lento delle alternative, ma il riferimento per la qualità del
+        profilo. Abbinalo a \"Ottimizzazione accurata (-G)\" per il
+        risultato migliore.
+
+        Incremental Far Point (-t):
+        Un metodo del punto più lontano più semplice. Più veloce di OFPS,
+        leggermente meno uniforme. Usalo quando OFPS è troppo lento con
+        numeri di tasselli molto alti e accetti un piccolo calo di qualità.
+
+        Casuale — spazio dispositivo (-r):
+        Tasselli uniformemente casuali nei valori grezzi del dispositivo
+        (es. RGB). Il più veloce possibile, ma la copertura nel colore
+        *percepito* è disuguale — spreca tasselli in zone che l'occhio
+        distingue appena.
+
+        Casuale — spazio percettivo (-R):
+        Uniformemente casuale nel colore percepito (Lab). Meglio di -r se
+        proprio dev'essere casuale, perché i tasselli sono distribuiti
+        uniformemente secondo ciò che l'occhio vede. Comunque meno ottimale
+        di OFPS a parità di numero.
+
+        Quasi-casuale riempi-spazio (-q / -Q):
+        Sequenze a bassa discrepanza (tipo Sobol) che riempiono lo spazio
+        più uniformemente del vero casuale, senza il costo iterativo di
+        OFPS. -q nello spazio dispositivo, -Q nello spazio percettivo. Un
+        buon compromesso quando OFPS è troppo lento.
+
+        Reticolo cubico a corpo centrato (-i / -I):
+        Un reticolo regolare fisso (ogni tassello circondato da 8 vicini
+        in un motivo cubico). Deterministico e molto uniforme, ma rigido —
+        solo certi numeri di tasselli entrano nel reticolo. -i nello
+        spazio dispositivo, -I nello spazio percettivo.
+
+        La maggior parte degli utenti dovrebbe lasciarlo su OFPS.
+      labels:
+        - "OFPS — ottimizzato (consigliato)"
+        - "Incremental Far Point (-t)"
+        - "Casuale — dispositivo (-r)"
+        - "Casuale — percettivo (-R)"
+        - "Quasi-casuale — dispositivo (-q)"
+        - "Quasi-casuale — percettivo (-Q)"
+        - "Reticolo BCC — dispositivo (-i)"
+        - "Reticolo BCC — percettivo (-I)"
+    "-A":
+      name: "Adattamento OFPS"
+      tooltip_title: "Adattamento OFPS (-A)"
+      tooltip_body: |-
+        Quanto OFPS piega la sua regola di copertura uniforme per seguire
+        la forma di un profilo di precondizionamento (-c). Significativo
+        solo quando OFPS è la distribuzione scelta E un profilo -c è
+        impostato.
+
+        0.0 = ignora completamente il profilo — pura copertura uniforme
+              nello spazio dispositivo, come se -c non fosse fornito.
+        1.0 = segui completamente il profilo — concentra i tasselli dove
+              il profilo dice che il gamut della stampante è interessante
+              (cioè la forma dello spazio colore reale).
+
+        Il predefinito di targen è 0.10 (blando) per un primo passaggio e
+        1.0 quando -c è impostato; ChromIQ lo lascia a 0.10 a meno che tu
+        non lo cambi esplicitamente — così non hai cambi di comportamento
+        a sorpresa.
+
+        Aumenta verso 1.0 nei passaggi di affinamento dove ti fidi del
+        primo profilo e vuoi che il secondo grafico campioni densamente il
+        gamut reale della stampante invece di angoli vuoti dello spazio
+        dispositivo.
+
+        Spunta la casella per attivare.
+    "-m":
+      name: "Passi interni cubo"
+      tooltip_title: "Passi interni cubo (-m)"
+      tooltip_body: |-
+        Aggiunge una griglia regolare di tasselli *dentro* il cubo colore
+        della stampante — N passi lungo ogni asse (N×N×N per RGB, ecc.).
+        Si aggiungono *in più* ai tasselli scelti con -f, -g, -s e gli
+        altri contatori.
+
+        Imposta a 0 (predefinito) per saltare — quasi sempre la scelta
+        giusta. OFPS copre già l'interno del cubo in modo più efficiente.
+
+        Quando usarlo:
+          • Ripetibilità tra macchine: una griglia fissa è uguale ogni
+            volta, indipendentemente dai posizionamenti OFPS scelti da
+            targen — utile per confrontare profili tra esecuzioni.
+          • Grafici diagnostici con posizioni del cubo prevedibili e
+            nominate.
+
+        Valori tipici quando usato: 3 – 6 (passi per asse). I numeri
+        crescono in fretta — 6 passi in RGB sono 216 tasselli, 8 sono 512.
+
+        Spunta la casella per attivare.
+    "-M":
+      name: "Passi superficie cubo"
+      tooltip_title: "Passi superficie cubo (-M)"
+      tooltip_body: |-
+        Aggiunge una griglia regolare di tasselli sulla *superficie* del
+        cubo colore della stampante — N passi per faccia. I tasselli vanno
+        all'esterno (primari, secondari, bordo del gamut), non all'interno.
+
+        Imposta a 0 (predefinito) per saltare.
+
+        Quando usarlo:
+          • Vuoi inchiodare specificamente il confine del gamut e gli
+            angoli primari/secondari senza il sovraccarico interno di -m.
+          • Confrontare come inchiostri/carte diversi spostano l'inviluppo
+            del gamut — i tasselli di superficie sono i più colpiti.
+
+        Valori tipici quando usato: 4 – 8 passi per faccia.
+
+        Spunta la casella per attivare.
+    "-b":
+      name: "Passi reticolo BCC"
+      tooltip_title: "Passi reticolo BCC (-b)"
+      tooltip_body: |-
+        Aggiunge tasselli su un reticolo cubico a corpo centrato (BCC) —
+        più denso di una semplice griglia cubica perché i punti stanno sia
+        sugli angoli che nei centri dei cubi. N è il numero di suddivisioni
+        per asse.
+
+        Imposta a 0 (predefinito) per saltare — è una manopola di nicchia.
+
+        Quando usarlo:
+          • Vuoi posizioni dei tasselli regolari, allineate al reticolo,
+            ma con un impaccamento migliore di -m, senza arrivare a OFPS.
+          • Scenari di ricerca / ripetibilità dove la struttura BCC stessa
+            è il punto.
+
+        Nota: questa è la forma a *contatore di passi* (aggiunge alla tua
+        lista di tasselli); per un grafico la cui *intera* distribuzione è
+        BCC, usa il selettore \"Distribuzione tasselli\" qui sopra e scegli
+        lì l'opzione cubica a corpo centrato.
+
+        Spunta la casella per attivare.
+  printtarg:
+    "-i":
+      name: "Strumento di misura"
+      tooltip_title: "Strumento di misura (-i)"
+      tooltip_body: |-
+        Dice al generatore di grafici con quale spettrofotometro leggerai
+        il grafico stampato. La griglia di tasselli viene costruita attorno
+        a larghezza striscia, dimensione tasselli e spaziatura di quello
+        strumento — impostarlo correttamente è essenziale.
+
+          •  i1Pro / i1Pro 2 / i1Pro 3 — lettore a strisce portatile, la
+             scelta più comune. Legge una colonna di tasselli in una
+             passata.
+
+          •  i1Pro 3 Plus — versione dell'i1Pro 3 con apertura maggiore.
+             Legge tasselli più grandi, quindi ne entrano molti meno per
+             foglio (~5× meno del normale i1Pro).
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — dispositivo
+             entry-level. Da solo legge un tassello alla volta; con la
+             guida di misura facoltativa due insieme (vedi Double density).
+
+          •  SpectroScan — scanner XY a piano. Un braccio motorizzato
+             legge ogni tassello individualmente, stipando molti più
+             colori per foglio di qualsiasi lettore a strisce.
+
+          •  i1iSis (via i1Profiler) — lettore automatico a fogli.
+             ChromIQ non può pilotare direttamente questo dispositivo: al
+             suo posto salva la lista tasselli nel formato proprio di
+             i1Profiler accanto al grafico, e tu completi il flusso là
+             (stampa, scansione, creazione profilo). Le schede Stampa e
+             Misura di ChromIQ non vengono usate per questo dispositivo.
+
+        Scegliere lo strumento sbagliato produce un grafico che il tuo
+        dispositivo non può allineare o leggere in modo affidabile —
+        durante la misura vedrai \"patches not found\" o errori di
+        allineamento. In modalità guidata il layout si adatta
+        automaticamente a questa scelta.
+      labels:
+        - "i1Pro / i1Pro 2 / i1Pro 3"
+        - "i1Pro 3 Plus"
+        - "ColorMunki / i1Studio / ColorChecker Studio"
+        - "SpectroScan (piano)"
+        - "i1iSis (via i1Profiler)"
+    "-h":
+      name: "Double density"
+      tooltip_title: "Double density (-h)"
+      tooltip_body: |-
+        Modifica la densità di tasselli per striscia del layout printtarg.
+        Il significato esatto dipende dallo strumento attivo:
+
+          •  ColorMunki / i1Studio / ColorChecker Studio — raddoppia il
+             numero di tasselli che entrano in ogni striscia di misura.
+             RICHIEDE l'accessorio fisico guida di misura; senza, il
+             dispositivo non riesce ad allinearsi alla spaziatura più
+             fitta e legge male.
+
+          •  SpectroScan — passa il layout del grafico da tasselli
+             rettangolari a esagonali. Gli esagoni si incastrano più
+             fittamente, quindi ~14 % di tasselli in più per foglio.
+             Nessun hardware extra necessario.
+
+        Non ha effetto su i1Pro o i1Pro 3 Plus ed è normalmente nascosto
+        quando uno di essi è selezionato.
+    "-p":
+      name: "Formato carta"
+      tooltip_title: "Formato carta (-p)"
+      tooltip_body: |-
+        Imposta le dimensioni di ogni foglio del grafico stampato. Il
+        grafico riempie sempre la pagina da bordo a bordo — carta più
+        grande significa più tasselli e quindi un profilo più dettagliato
+        da meno fogli.
+
+        Scegli lo stesso formato su cui stamperai davvero, orientamento
+        incluso. I lettori a strisce (famiglia i1Pro) leggono dall'alto
+        verso il basso, quindi:
+
+          •  Verticale — strisce più lunghe, in numero minore. La scelta
+             standard.
+
+          •  Orizzontale (A4R, LetterR, 420×297…) — strisce più corte, in
+             numero maggiore. Usalo quando la stampante alimenta
+             l'orizzontale più affidabilmente, o quando un foglio
+             verticale lascerebbe l'ultima striscia troppo vicina al bordo
+             carta.
+
+        Scegli \"Personalizzato\" per inserire larghezza e altezza esatte
+        in millimetri quando nessun formato nominato corrisponde alla tua
+        carta.
+
+        Se cambi formato carta, il numero di tasselli e di pagine
+        nell'anteprima comandi si aggiorna automaticamente.
+      labels:
+        - "A2 verticale (420 × 594 mm)"
+        - "A2 orizzontale (594 × 420 mm)"
+        - "A3+ verticale (329 × 483 mm)"
+        - "A3+ orizzontale (483 × 329 mm)"
+        - "A3 verticale (297 × 420 mm)"
+        - "A3 orizzontale (420 × 297 mm)"
+        - "Tabloid / 11 × 17\""
+        - "Legal (8,5 × 14\")"
+        - "A4 verticale (210 × 297 mm)"
+        - "A4 orizzontale (297 × 210 mm)"
+        - "Letter verticale (8,5 × 11\")"
+        - "Letter orizzontale (11 × 8,5\")"
+        - "8×10\" (203 × 254 mm)"
+        - "5×7\" (127 × 178 mm)"
+        - "4×6\" (102 × 152 mm)"
+        - "Personalizzato (inserisci misure)"
+    "-t":
+      name: "DPI di uscita TIFF"
+      tooltip_title: "Risoluzione TIFF (-t)"
+      tooltip_body: |-
+        Risoluzione di uscita dei file raster TIFF del grafico.
+        300 DPI è consigliato per gli strumenti a lettura di strisce e dà
+        un buon equilibrio tra dimensione file e nitidezza dei tasselli.
+        Usa 200 DPI per grafici molto grandi per ridurre la dimensione.
+        Valori più alti (600+) servono raramente e producono file grandi.
+    "-L":
+      name: "Sopprimi bordo fermaglio sx"
+      tooltip_title: "Sopprimi bordo fermaglio sinistro (-L)"
+      tooltip_body: |-
+        Rimuove la striscia per fermaglio sul lato sinistro, recuperando
+        ~15 mm di larghezza pagina per colonne di tasselli extra.
+        Attivalo a meno che tu non usi una pinza fermacarta fisica.
+        Tutti i valori del database tasselli presumono questa opzione
+        ATTIVA.
+    "-a":
+      name: "Scala dimensione tasselli"
+      tooltip_title: "Scala dimensione tasselli (-a)"
+      tooltip_body: |-
+        Scala uniformemente le dimensioni di tasselli e spaziatori.
+        1.0 è il predefinito (dimensione ottimizzata per lo strumento).
+        Aumenta a 1.5–2.0 su carte ruvide / testurizzate dove lo strumento
+        ha bisogno di un'area di misura più grande.
+        Sotto 1.0 entrano più tasselli per pagina, ma possono verificarsi
+        errori di lettura su alcuni strumenti.
+        Nota: un valore diverso dal predefinito attiva un ricalcolo con
+        ricerca binaria in tempo reale invece della consultazione rapida
+        in tabella.
+    "-m":
+      name: "Margine (mm)"
+      tooltip_title: "Margine (-m / -M)"
+      tooltip_body: |-
+        Imposta il margine in millimetri sia per l'area stampabile (-m)
+        che per le dimensioni del file TIFF (-M).  I due restano
+        sincronizzati.
+        6 mm corrisponde ai margini minimi della maggior parte delle
+        stampanti.  Riduci solo se la stampante supporta la stampa senza
+        bordi.
+
+        Selezionare un i1Pro / i1Pro 2 / i1Pro 3 / i1Pro 3 Plus alza
+        automaticamente il valore a 10 mm, così l'ottica del lettore a
+        strisce non scivola sul bordo nudo della carta (errori \"not
+        enough patches read\").  Tornare a ColorMunki / SpectroScan lo
+        riporta a 6 mm.  Un valore personalizzato (diverso da 6 o 10)
+        viene preservato nei cambi di strumento.
+
+        Le tabelle tasselli-per-pagina esistono solo per 6 e 10 mm — altri
+        valori attivano un ricalcolo con ricerca binaria in tempo reale.
+    "-r":
+      name: "Mantieni ordine tasselli (no random)"
+      tooltip_title: "Nessuna randomizzazione (-r)"
+      tooltip_body: |-
+        Per impostazione predefinita printtarg randomizza le posizioni dei
+        tasselli per ridurre gli artefatti da deriva dello strumento.
+        Attiva questa opzione solo se stai testando una sequenza specifica
+        di tasselli o se il tuo strumento richiede tasselli ordinati.
+    "-b":
+      name: "Forza spaziatori B/N"
+      tooltip_title: "Forza spaziatori B/N (-b)"
+      tooltip_body: |-
+        Forza gli spaziatori tra le strisce a essere in bianco e nero
+        anziché colorati.  Non influisce sul numero di tasselli né sulla
+        geometria del layout.
+
+        Non ha effetto quando \"Nessuno spaziatore\" (-n) è attivo — in
+        quel caso l'opzione è disattivata ed esclusa dal comando printtarg.
+    "-P":
+      name: "Non limitare lunghezza strisce"
+      tooltip_title: "Non limitare lunghezza strisce (-P)"
+      tooltip_body: |-
+        Per impostazione predefinita printtarg limita la lunghezza delle
+        strisce così che ognuna rientri nella carta senza sbordare.
+        Questa opzione rimuove il limite, consentendo strisce molto lunghe.
+        Utile per carta in rotolo stretta o quando vuoi il minor numero
+        possibile di strisce per un dato numero di tasselli.
+        Attenzione: con molti tasselli le strisce possono estendersi oltre
+        il bordo carta — verifica il TIFF generato prima di stampare.
+    "-N":
+      name: "TIFF N-canale (>4 inchiostri)"
+      tooltip_title: "TIFF N-canale (-N)"
+      tooltip_body: |-
+        Per stampanti con più di 4 canali d'inchiostro (es. CMYK più tinte
+        piatte aggiuntive): il TIFF standard supporta al massimo 4 canali.
+        Questa opzione fa codificare a printtarg i canali extra negli slot
+        del canale alfa del TIFF, così tutti i valori d'inchiostro vengono
+        preservati in un unico file.
+
+        Attivala solo se il driver della stampante o il RIP si aspetta un
+        TIFF multicanale.  Per la normale profilazione RGB o CMYK non ti
+        serve.
+    "-K":
+      name: "Applica file di calibrazione"
+      tooltip_title: "Applica calibrazione ai tasselli (-K)"
+      tooltip_body: |-
+        Usalo quando la stampante non ha alcun sistema di calibrazione
+        integrato — cioè il driver o il RIP non può applicare da sé una
+        curva di calibrazione.
+
+        Prima esegui printcal di Argyll per produrre un file .cal che
+        descrive come linearizzare la stampante.  Poi lo passi qui:
+        printtarg ricalcola ogni valore colore dei tasselli attraverso le
+        curve di calibrazione prima di generare il grafico, così il target
+        stampato riflette già il comportamento calibrato del dispositivo.
+        Il .cal viene anche incorporato nel file .ti2 così che colprof
+        possa farvi riferimento nella creazione del profilo ICC.
+
+        Uso tipico: inkjet desktop senza linearizzazione integrata,
+        pilotate direttamente da un TIFF senza RIP intermedio.
+
+        Si esclude a vicenda con \"Incorpora calibrazione\" (-I) — solo
+        un'opzione di calibrazione può essere attiva alla volta.
+    "-I":
+      name: "Incorpora solo calibrazione"
+      tooltip_title: "Incorpora calibrazione senza applicarla (-I)"
+      tooltip_body: |-
+        Usalo quando la stampante o il RIP applica già una curva di
+        calibrazione in modo nativo — per esempio un RIP inkjet di
+        produzione con la sua LUT di linearizzazione, o una stampante con
+        calibrazione di densità integrata.
+
+        In quel caso non vuoi che printtarg ricalcoli i valori dei
+        tasselli (lo fa la stampante), ma vuoi che colprof sappia della
+        calibrazione.  -I incorpora il file .cal nel .ti2 di output solo
+        come metadati, lasciando tutti i valori intatti.
+
+        Uso tipico: RIP inkjet professionali (es. EFI Fiery, Wasatch,
+        ColorBurst) o stampanti con linearizzazione integrata attiva
+        durante la stampa di profilazione.
+
+        Si esclude a vicenda con \"Applica calibrazione\" (-K) — solo
+        un'opzione di calibrazione può essere attiva alla volta.
+    "-C":
+      name: "Disattiva compressione TIFF"
+      tooltip_title: "Disattiva compressione TIFF (-C)"
+      tooltip_body: |-
+        Produce file TIFF non compressi invece della compressione LZW
+        predefinita.  I file non compressi sono più grandi ma
+        universalmente compatibili con tutti i RIP e i driver.
+        Attivalo se il tuo flusso di stampa rifiuta o danneggia i TIFF
+        compressi.
+    "-D":
+      name: "Dithering 8 bit da 16 bit"
+      tooltip_title: "Dithering uscita 8 bit (-D)"
+      tooltip_body: |-
+        Quando genera un TIFF a 8 bit, usa il dithering a diffusione
+        d'errore per ridurre dalla precisione interna a 16 bit.  Questo
+        riduce il banding nei gradienti morbidi che altrimenti la
+        quantizzazione causerebbe.
+        Ha effetto solo quando l'uscita TIFF a 8 bit è selezionata.
+    "-U":
+      name: "Sopprimi header gestione colore CUPS"
+      tooltip_title: "Sopprimi header CMM CUPS (-U)"
+      tooltip_body: |-
+        Rimuove il commento 'cupsJobTicket: cups-disable-cmm' dai file di
+        output PostScript ed EPS.  Alcune versioni di CUPS reagiscono
+        diversamente a questo commento.
+        L'opzione riguarda solo l'output PS/EPS e non ha effetto sui file
+        TIFF.  Attivala solo se durante la stampa viene applicata una
+        gestione colore inattesa.
+    "-R":
+      name: "Seme di randomizzazione"
+      tooltip_title: "Seme di randomizzazione (-R)"
+      tooltip_body: |-
+        Imposta il seme iniziale dell'algoritmo di randomizzazione dei
+        tasselli.  Lo stesso seme con lo stesso numero di tasselli produce
+        sempre lo stesso layout — i grafici diventano completamente
+        riproducibili.
+        Utile per la ricerca o quando devi rigenerare un grafico identico
+        in seguito.
+        Non ha effetto quando \"Mantieni ordine tasselli\" (-r) è attivo.
+    "-Q":
+      name: "Bit di quantizzazione"
+      tooltip_title: "Quantizza valori tasselli (-Q)"
+      tooltip_body: |-
+        Arrotonda tutti i valori colore dei tasselli alla profondità di
+        bit specificata prima di generare il grafico.  Per esempio, -Q 8
+        arrotonda tutti i valori alla precisione di 8 bit (256 livelli).
+        Usalo quando la tua catena di stampa introduce banding a una
+        specifica profondità di bit e vuoi testare esattamente a quel
+        livello di precisione.
+    "-A":
+      name: "Scala solo spaziatori"
+      tooltip_title: "Scala solo spaziatori (-A)"
+      tooltip_body: |-
+        Applica un fattore di scala aggiuntivo solo alle barre spaziatrici,
+        senza cambiare le dimensioni dei tasselli impostate con -a.
+        Valori sopra 1.0 allargano gli spaziatori; sotto 1.0 li
+        restringono.  Utile per strumenti che hanno bisogno di più
+        separazione tra le strisce, o per recuperare spazio restringendo
+        gli spaziatori mantenendo costante la dimensione dei tasselli.
+
+        Non ha effetto quando \"Nessuno spaziatore\" (-n) è attivo — in
+        quel caso l'opzione è disattivata ed esclusa dal comando printtarg.
+    "-n":
+      name: "Nessuno spaziatore"
+      tooltip_title: "Nessuno spaziatore (-n)"
+      tooltip_body: |-
+        Rimuove tutte le barre spaziatrici tra tasselli e strisce.  Gli
+        spaziatori normalmente aiutano lo strumento a riconoscere i
+        confini e la direzione delle strisce.
+        Disattivali solo se il tuo flusso di misura non vi fa affidamento
+        esplicitamente (es. alcune configurazioni con scanner a piano).
+
+        Quando è attivo, \"Forza spaziatori B/N\" (-b) e \"Scala solo
+        spaziatori\" (-A) vengono disattivati automaticamente — entrambi
+        riguardano solo gli spaziatori.
+    "-c":
+      name: "Forza spaziatori colorati"
+      tooltip_title: "Forza spaziatori colorati (-c)"
+      tooltip_body: |-
+        Forza le aree spaziatrici tra i tasselli a essere disegnate a
+        colori anziché con il predefinito (che a seconda del profilo
+        strumento può essere bianco e nero).  Può migliorare il
+        riconoscimento delle strisce su alcune inkjet a colori dove gli
+        spaziatori neri hanno poco contrasto con i tasselli scuri.
+  chartread:
+    "-B":
+      name: "Lettura bidirezionale off"
+      tooltip_title: "Disattiva lettura bidirezionale (-B)"
+      tooltip_body: |-
+        Impedisce a chartread di rilevare automaticamente se hai
+        scansionato una striscia in avanti o all'indietro. ChromIQ lo
+        lascia disattivato per impostazione predefinita, così lo strumento
+        può leggere le strisce in entrambe le direzioni.
+
+        Attivalo solo se lo strumento segnala falsi errori di direzione
+        striscia durante la misurazione.
+    "-b":
+      name: "Forza lettura bidirezionale"
+      tooltip_title: "Forza lettura bidirezionale (-b)"
+      tooltip_body: |-
+        Costringe chartread ad accettare una striscia scansionata in
+        qualsiasi direzione.
+
+        Normalmente chartread rileva automaticamente la direzione solo su
+        grafici randomizzati; su un grafico a ordine fisso legge in una
+        sola direzione e rifiuta le strisce scansionate al contrario.
+        Attivalo per forzare comunque il rilevamento — utile per la
+        famiglia i1 Pro, che legge volentieri in entrambi i sensi. È
+        l'opposto di -B; solo uno può valere.
+    "-S":
+      name: "Sopprimi avvisi"
+      tooltip_title: "Sopprimi avvisi (-S)"
+      tooltip_body: |-
+        Sopprime le finestre di avviso non fatali di chartread.
+        Consigliato per sessioni di misura non presidiate o in serie.
+        Gli errori che impedirebbero la generazione del profilo vengono
+        comunque segnalati.
+    "-N":
+      name: "Disattiva calibrazione iniziale"
+      tooltip_title: "Disattiva calibrazione iniziale (-N)"
+      tooltip_body: |-
+        Salta la calibrazione automatica sulla piastrella bianca all'avvio.
+        Usalo solo se hai già calibrato lo strumento in questa sessione e
+        vuoi misurare altri grafici senza ricalibrare.
+    "-p":
+      name: "Modalità tassello per tassello"
+      tooltip_title: "Modalità tassello per tassello (-p)"
+      tooltip_body: |-
+        Passa dalla lettura a strisce alla misurazione di singoli tasselli.
+        Utile per misure singole a mano o se la lettura a strisce fallisce
+        su una carta particolare.  Nettamente più lenta su grafici grandi.
+    "-H":
+      name: "Modalità spettrale alta risoluzione"
+      tooltip_title: "Spettro ad alta risoluzione (-H)"
+      tooltip_body: |-
+        Attiva il campionamento spettrale ad alta risoluzione sugli
+        strumenti che lo supportano (es. i1Pro 2/3).  Produce valori Lab
+        più precisi ma aumenta leggermente il tempo di misura.
+    "-T":
+      name: "Tolleranza coerenza"
+      tooltip_title: "Moltiplicatore tolleranza tasselli (-T)"
+      tooltip_body: |-
+        Un moltiplicatore sulla soglia di coerenza tasselli integrata in
+        chartread — non un valore delta-E. chartread rilegge ogni tassello
+        e scarta le strisce le cui letture differiscono di più della
+        soglia × questo numero.
+
+        Più basso = più severo. Un'impostazione severa coglie presto i
+        problemi reali: ugelli intasati, inchiostro scarso, rulli sporchi,
+        toner instabile. Su una combinazione sana stampante +
+        spettrofotometro il predefinito 0.7 lascia un buon margine; gli
+        utenti esperti su printerknowledge.com usano 0.4 con i1 Pro 2 / 3.
+
+        Aumenta a 0.8–1.5 se ottieni falsi errori \"inconsistent patch\"
+        su carte testurizzate, opache o fine-art — lì la superficie stessa
+        contribuisce con variazioni reali. Valori sopra 2 mascherano per
+        lo più problemi veri; se ti servono, sistema prima la stampante.
+    "-l":
+      name: "Salva valori D50 L*a*b*"
+      tooltip_title: "Salva L*a*b* invece di XYZ (-l)"
+      tooltip_body: |-
+        Salva i dati di misura come valori D50 L*a*b* invece di XYZ.
+        La maggior parte dei flussi usa XYZ (predefinito).  Attivalo solo
+        se gli strumenti a valle richiedono specificamente input L*a*b*.
+    "-X":
+      name: "Correzione colorimetro"
+      tooltip_title: "Matrice di correzione colorimetro (-X)"
+      tooltip_body: |-
+        Applica una matrice di correzione colorimetro (.ccmx) o un set
+        spettrale di calibrazione (.ccss) per migliorare la precisione di
+        un colorimetro.
+        Rilevante solo per i colorimetri (non gli spettrofotometri).
+        Procurati il file giusto dal produttore dello strumento o crealo
+        con gli strumenti ccss/ccmx di ArgyllCMS.
+  colprof:
+    "-D":
+      name: "Descrizione profilo"
+      tooltip_title: "Descrizione profilo (-D)"
+      tooltip_body: |-
+        Il nome incorporato nel profilo ICC — mostrato nei menu di
+        gestione colore di app come Photoshop, Lightroom e Anteprima.
+
+        Usa un formato coerente che identifichi stampante, carta, tipo
+        d'inchiostro e data, così il profilo giusto è facile da trovare:
+
+          Stampante · Carta · Tipo inchiostro · Data
+          es. \"Epson P900 · Canson Baryta · Chromatic · 2026-04\"
+
+        Il file di output prende il nome dal tuo file .ti3 — mantieni quel
+        nome coerente con la descrizione usando trattini bassi al posto
+        degli spazi:
+          es. EpsonP900_CansonBaryta_Chromatic_2026-04.icc
+    "-a":
+      name: "Algoritmo profilo"
+      tooltip_title: "Algoritmo profilo (-a)"
+      tooltip_body: |-
+        Seleziona l'algoritmo di trasformazione colore:
+        • Lab cLUT (-al): la migliore precisione per profili di stampanti.
+          Usa una tabella di ricerca 3D completa nello spazio L*a*b*.
+          Consigliato.
+        • XYZ cLUT (-ax): simile a Lab ma nello spazio XYZ.
+          A volte produce gradienti neutri più morbidi.
+        • Matrice/gamma (-ag, -as): modello più semplice — meno preciso
+          per il comportamento complesso delle stampanti, ma più rapido
+          da calcolare.
+        Per i primi profili di stampanti RGB usa sempre Lab cLUT (-al).
+      labels:
+        - "l — Lab cLUT (consigliato per stampanti RGB)"
+        - "x — XYZ cLUT"
+        - "X — XYZ cLUT (assoluto)"
+        - "g — gamma + matrice (veloce, meno preciso)"
+        - "G — gamma + matrice (forzato)"
+        - "s — gamma singola + matrice"
+        - "S — gamma singola + matrice (forzato)"
+        - "m — solo matrice"
+        - "M — solo matrice (forzato)"
+    "-q":
+      name: "Qualità profilo"
+      tooltip_title: "Qualità profilo (-q)"
+      tooltip_body: |-
+        Controlla la risoluzione della griglia cLUT e le iterazioni di
+        levigatura:
+        • Bassa: griglia 17³ — test rapido, non per produzione
+        • Media: griglia 33³ — buon equilibrio, predefinito consigliato
+        • Alta: griglia 45³ — qualità di produzione
+        • Ultra: griglia 65³ — massima precisione, molto lenta
+        La qualità media basta per la maggior parte del lavoro inkjet.
+        Usa Alta per applicazioni fine-art o prove contrattuali.
+      labels:
+        - "l — bassa (veloce, ~30 s)"
+        - "m — media (consigliata, ~2 min)"
+        - "h — alta (~10 min)"
+        - "u — ultra (~30+ min)"
+    "-b":
+      name: "Qualità tabelle B2A"
+      tooltip_title: "Qualità tabelle B2A (-b)"
+      tooltip_body: |-
+        Controlla indipendentemente la qualità delle tabelle B2A
+        (dispositivo→PCS) usate per trasformazioni d'ingresso (es.
+        soft-proofing).
+        Lascia vuoto per allinearti all'impostazione principale -q.
+        Usa \"n\" per omettere le tabelle B2A e ridurre la dimensione del
+        profilo (i profili solo-output non hanno bisogno di B2A).
+      labels:
+        - "Come la qualità del profilo (predefinito)"
+        - "l — bassa"
+        - "m — media"
+        - "h — alta"
+        - "u — ultra"
+        - "n — nessuna (ometti tabelle B2A)"
+    "-r":
+      name: "Levigatura/rumore (% ΔE)"
+      tooltip_title: "Rumore medio dispositivo (-r)"
+      tooltip_body: |-
+        Rumore medio stimato di misura o del dispositivo come percentuale
+        di ΔE.  Valori più alti aumentano la levigatura del profilo,
+        riducendo l'effetto dei tasselli anomali.
+        • 0,5 %: misurazioni pulite, stampante ben mantenuta
+        • 1,0–2,0 %: misurazioni rumorose o carte testurizzate
+        • 3,0–5,0 %: molto rumoroso; aumenta notevolmente la levigatura
+    "-s":
+      name: "Sorgente gamut (percett.)"
+      tooltip_title: "Sorgente mappatura gamut percettiva (-s)"
+      tooltip_body: |-
+        Profilo ICC sorgente usato per calcolare le tabelle di mappatura
+        gamut dell'intento di resa percettivo (A2B / B2A percettivo).
+        Senza, l'intento percettivo usa direttamente i dati colorimetrici
+        (nessuna compressione gamut).
+        Tipicamente impostato su uno spazio di lavoro RGB standard come
+        AdobeRGB o ProPhoto RGB.
+        Sono accettati sia file .icc che .icm — ICM è semplicemente il
+        nome Microsoft del formato profilo ICC; sono identici.
+    "-S":
+      name: "Sorgente gamut (P+S)"
+      tooltip_title: "Sorgente percettivo + saturazione (-S)"
+      tooltip_body: |-
+        Come -s, ma applica la mappatura gamut sia all'intento di resa
+        percettivo che a quello saturazione.
+    "-A":
+      name: "Produttore"
+      tooltip_title: "Stringa produttore (-A)"
+      tooltip_body: |-
+        Stringa produttore incorporata nell'intestazione del profilo ICC.
+        Facoltativa — usata per l'identificazione nei selettori di profili.
+    "-M":
+      name: "Modello"
+      tooltip_title: "Stringa modello (-M)"
+      tooltip_body: |-
+        Stringa modello incorporata nell'intestazione del profilo ICC.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Stringa copyright (-C)"
+      tooltip_body: |-
+        Avviso di copyright incorporato nel profilo ICC.
+    "-ni":
+      name: "Nessuna curva sagomatura ingresso"
+      tooltip_title: "Nessuna curva di sagomatura d'ingresso (-ni)"
+      tooltip_body: |-
+        Disattiva le curve tonali 1D d'ingresso che precondizionano i
+        valori del dispositivo prima della cLUT 3D.  Queste curve di norma
+        migliorano la precisione del profilo.  Disattivale solo a scopo
+        diagnostico.
+    "-no":
+      name: "Nessuna curva sagomatura uscita"
+      tooltip_title: "Nessuna curva di sagomatura d'uscita (-no)"
+      tooltip_body: |-
+        Disattiva le curve di sagomatura 1D d'uscita applicate dopo la
+        cLUT 3D.  Disattivale solo a scopo diagnostico.
+    "-V":
+      name: "Enfasi griglia ombre"
+      tooltip_title: "Enfasi griglia nelle zone scure (-V)"
+      tooltip_body: |-
+        Aggiunge punti extra alla griglia cLUT nelle zone scure (ombre).
+        1.0 = griglia uniforme (predefinito).  Aumenta a 1.5–2.0 per
+        stampanti con comportamento complesso nelle ombre o neri chiusi.
+  profcheck:
+    "-v":
+      name: "Livello di dettaglio"
+      tooltip_title: "Livello di dettaglio (-v)"
+      tooltip_body: |-
+        La modalità per tassello restituisce il valore ΔE individuale di
+        ogni tassello — richiesto per l'analisi a livello di striscia e
+        l'affinamento guidato.  La modalità riepilogo mostra solo errori
+        medi e massimi.
+      labels:
+        - "2 — per tassello (richiesto per analisi strisce)"
+        - "1 — solo riepilogo"
+    "-I":
+      name: "Intento di resa"
+      tooltip_title: "Intento di resa (-I)"
+      tooltip_body: |-
+        Il colorimetrico assoluto verifica la precisione cromatica
+        assoluta del profilo, punto di bianco incluso — lo standard per la
+        profilazione di stampanti.
+        Il colorimetrico relativo normalizza al punto di bianco del
+        supporto.
+      labels:
+        - "a — colorimetrico assoluto (predefinito)"
+        - "r — colorimetrico relativo"
+    "-s":
+      name: "ΔE peggiori per primi"
+      tooltip_title: "Ordina per ΔE (-s)"
+      tooltip_body: |-
+        Ordina l'output di profcheck così che i tasselli con i risultati
+        peggiori appaiano per primi.  Utile per individuare velocemente le
+        zone problematiche.
+        Efficace solo quando il livello di dettaglio è per tassello.
+    "-i":
+      name: "Illuminante"
+      tooltip_title: "Illuminante (-i)"
+      tooltip_body: |-
+        Seleziona la sorgente luminosa usata nella conversione delle
+        misurazioni spettrali in valori colore.  Rilevante solo se il tuo
+        .ti3 contiene dati spettrali.  D50 è lo standard per la
+        profilazione di stampa.
+      labels:
+        - "D50 (predefinito)"
+        - "D50M2 (D50 + filtro UV)"
+        - "D65 (luce diurna 6500 K)"
+        - "A (tungsteno / incandescenza)"
+        - "C (simulazione luce diurna, datato)"
+        - "F5 (fluorescente CWF)"
+        - "F8 (fluorescente simulazione D50)"
+        - "F10 (fluorescente Ultralume)"
+    "-o":
+      name: "Osservatore CIE"
+      tooltip_title: "Osservatore CIE (-o)"
+      tooltip_body: |-
+        Definisce il modello di osservatore standard per i calcoli
+        colorimetrici.  L'osservatore 1931 2° è lo standard ICC per la
+        profilazione di stampa.  Lascia il predefinito a meno che non sia
+        richiesto espressamente altro.
+      labels:
+        - "1931 2° (predefinito)"
+        - "1964 10°"
+        - "2015 2° (Stockman)"
+        - "2015 10° (Stockman)"
+        - "Shaw & Fairchild"
+    "-P":
+      name: "Riduci a ΔE ≤"
+      tooltip_title: "Limita .ti3 a ΔE ≤ (-P)"
+      tooltip_body: |-
+        Crea una copia ridotta del tuo file .ti3 contenente solo i
+        tasselli il cui errore di colore è pari o inferiore alla soglia
+        impostata.
+        Utile se tasselli misurati male trascinano giù il profilo.
+        Attiva l'opzione e imposta il valore ΔE massimo accettabile.
+    "-w":
+      name: "Crea visualizzazione 3D X3DOM"
+      tooltip_title: "Visualizzazione X3DOM (-w)"
+      tooltip_body: |-
+        Genera una visualizzazione 3D HTML interattiva degli errori di
+        colore del tuo profilo.  Apri il file .x3d.html risultante in un
+        browser moderno per esplorare quali parti del gamut hanno gli
+        errori maggiori.
+  printcal:
+    "-v":
+      name: "Livello di dettaglio"
+      tooltip_title: "Livello di dettaglio (-v)"
+      tooltip_body: |-
+        Controlla quanta uscita printcal scrive durante la calibrazione.
+          0 = silenzioso
+          1 = avanzamento di base (predefinito)
+          2 = info dettagliate per canale
+          3 = output di debug
+    "-s":
+      name: "Levigatura curve"
+      tooltip_title: "Levigatura curve (-s)"
+      tooltip_body: |-
+        Controlla quanta levigatura extra viene applicata alle curve di
+        calibrazione.  Valori più alti producono curve più morbide ma meno
+        precise.
+
+        Predefinito: 1.0 — adatto alla maggior parte delle stampanti.
+        Aumenta (es. 2.0–5.0) se la risposta tonale della stampante sembra
+        irregolare o le curve appaiono frastagliate.
+    "-z":
+      name: "Risoluzione curve"
+      tooltip_title: "Risoluzione curve (-z)"
+      tooltip_body: |-
+        Numero di passi nelle tabelle delle curve di calibrazione in
+        uscita.
+        Valori più alti danno risoluzione più fine ma file .cal più
+        grandi.
+        Il predefinito (256) va bene per praticamente tutte le stampanti.
+    "-A":
+      name: "Produttore"
+      tooltip_title: "Produttore (-A)"
+      tooltip_body: |-
+        Imposta la descrizione del produttore incorporata nel file .cal.
+        Puramente informativa — non influisce sulle curve di calibrazione.
+    "-M":
+      name: "Modello"
+      tooltip_title: "Modello (-M)"
+      tooltip_body: |-
+        Imposta la descrizione del modello di stampante incorporata nel
+        file .cal.
+        Puramente informativa — non influisce sulle curve di calibrazione.
+    "-D":
+      name: "Descrizione"
+      tooltip_title: "Descrizione (-D)"
+      tooltip_body: |-
+        Imposta una descrizione leggibile incorporata nel file .cal.
+        Puramente informativa — non influisce sulle curve di calibrazione.
+    "-C":
+      name: "Copyright"
+      tooltip_title: "Copyright (-C)"
+      tooltip_body: |-
+        Imposta la stringa di copyright incorporata nel file .cal.
+        Puramente informativa — non influisce sulle curve di calibrazione.
+  applycal:
+    "-v":
+      name: "Dettagliato"
+      tooltip_title: "Dettagliato (-v)"
+      tooltip_body: |-
+        Mostra informazioni dettagliate sulla calibrazione applicata,
+        incluse statistiche delle curve per canale.
