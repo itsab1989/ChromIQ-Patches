@@ -247,6 +247,7 @@ def main() -> int:
                        | _Qt.WindowType.WindowMinimizeButtonHint
                        | _Qt.WindowType.WindowMaximizeButtonHint
                        | _Qt.WindowType.WindowCloseButtonHint)
+    dlg.setWindowTitle("ChromIQ Patches")
 
     # Standalone wording: there is no Create Chart tab to "apply" to — the
     # footer button saves the chart folder / exports the hand-off files.
@@ -416,6 +417,21 @@ def main() -> int:
         "Sebastian Reiprich designed it together; Sebastian wrote the code "
         "with Claude. The chart engine is shared with ChromIQ "
         "(github.com/itsab1989/ChromIQ).")
+
+    # Masthead wordmark: the editor's title becomes "ChromIQ Patches" with
+    # ChromIQ's brand treatment — "IQ" in Instrument Serif Italic and the
+    # masthead accent (#ff4573, same in both modes; see ui/masthead_header.py).
+    # The italic face is the real InstrumentSerif-Italic.ttf loaded above.
+    for _lbl in dlg.findChildren(QLabel):
+        if _lbl.text() == _tr("Arrange and recolour your patches"):
+            _lbl.setTextFormat(Qt.TextFormat.RichText)
+            _lbl.setText(
+                'Chrom<span style="color:#ff4573; font-style:italic;">IQ</span>'
+                ' Patches')
+            _lbl.setStyleSheet(
+                "background: transparent;"
+                " font-family: 'Instrument Serif'; font-size: 34px;")
+            break
 
     version_lbl = QLabel(f"v{APP_VERSION}", dlg)
 

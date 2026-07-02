@@ -19,8 +19,8 @@ ChromIQ Patches is the chart-design tool from
 [**ChromIQ**](https://github.com/itsab1989/ChromIQ) as a standalone desktop
 app: build a set of colour patches with combinable generators, lay them out on
 the page with a live preview, and export the result for
-**X-Rite/Calibrite i1Profiler** (`.txt` + `.pxf`) or for the ArgyllCMS
-workflow (`.ti1`/`.ti2` + print-ready TIFF pages + `.cht`).
+**X-Rite/Calibrite i1Profiler** (`.txt` + `.pxf`) — alongside the `.ti1`
+patch set, a plain colour list and print-ready TIFF pages.
 
 It grew out of **Knut Georg Larsson's** idea for a patch generator that
 doesn't depend on ArgyllCMS `targen`. Knut and Sebastian Reiprich developed
@@ -46,8 +46,8 @@ who wants the charts without the full profiling suite.
 - **i1Profiler export** — every chart can be exported as `.txt` and `.pxf`
   and imported directly into i1Profiler, so you can design here and measure
   and profile there.
-- **ArgyllCMS export** — the same chart also writes `.ti1`/`.ti2` (and `.cht`
-  where applicable), so the classic `chartread → colprof` route keeps working.
+- **`.ti1` patch set** — the patches also save as an ArgyllCMS `.ti1`, so the
+  same colours can feed a targen/printtarg-based workflow elsewhere.
 - **Built-in presets** — the curated chart line-up from ChromIQ (Knut's
   full-layout setups and the "by Pharmacist" targets) ships in the box.
 
