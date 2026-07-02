@@ -273,6 +273,33 @@ def main() -> int:
 
     dlg._maybe_tag_randomised = _quiet_tag_randomised
 
+    # Standalone deliverable: the page TIFFs (visual reference — rendered by
+    # the built-in engine, no Argyll involved), the .ti1 patch set, the colour
+    # list and the i1Profiler files. ChromIQ's measure-flow artefacts
+    # (<name>.ti2, meta.json, the _spacer_twin render) are dropped after the
+    # vendored writer finishes; the popup's first line is reworded to match.
+    import shutil as _shutil
+    _orig_write_chart = dlg._write_chart_into
+
+    def _standalone_write_chart(target, name):
+        msg = _orig_write_chart(target, name)
+        target = Path(target)
+        _shutil.rmtree(target / "_spacer_twin", ignore_errors=True)
+        for leftover in (target / f"{name}.ti2", target / "meta.json"):
+            try:
+                leftover.unlink()
+            except FileNotFoundError:
+                pass
+        pages = len(list(target.glob(f"{name}_*.tif")))
+        page_word = _tr("{n} page TIFFs").format(n=pages) if pages != 1 \
+            else _tr("1 page TIFF")
+        head = _tr("Saved {name} ({pages} + patch files) to {folder}").format(
+            name=name, pages=page_word, folder=target)
+        rest = [l for l in msg.splitlines()[1:] if l.strip()]
+        return "\n".join([head] + rest)
+
+    dlg._write_chart_into = _standalone_write_chart
+
     # Standalone-only bottom bar: version + attribution + settings gear,
     # appended below the editor's own footer. The vendored dialog stays
     # byte-identical to ChromIQ's (tools/sync_from_chromiq.py), so
