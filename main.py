@@ -216,7 +216,25 @@ def main() -> int:
     _editor_mod._NewChartDialog = _StandaloneNewChartDialog
     _editor_mod._AddPatchesDialog = _StandaloneAddPatchesDialog
 
-    dlg = Ti2RelayoutDialog(runner, settings)
+    # The standalone ALWAYS lays charts out with the built-in engine — TIFFs
+    # without printtarg, so no Argyll is needed to design and save. ChromIQ
+    # gates the engine behind use_chromiq_layout_engine (default OFF, and the
+    # QSettings store is shared with ChromIQ), so pin it at the reading site
+    # with a proxy instead of writing the shared key: everything else reads
+    # and writes straight through.
+    class _ForceEngineSettings:
+        def __init__(self, inner):
+            self._inner = inner
+
+        def get(self, key, default=None):
+            if key == "use_chromiq_layout_engine":
+                return True
+            return self._inner.get(key, default)
+
+        def __getattr__(self, name):
+            return getattr(self._inner, name)
+
+    dlg = Ti2RelayoutDialog(runner, _ForceEngineSettings(settings))
     apply_appearance(app, dlg, settings.get("appearance", "auto"))
 
     # As ChromIQ's tool it runs as a modal-ish QDialog; as THE app window it
