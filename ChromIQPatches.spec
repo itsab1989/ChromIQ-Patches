@@ -15,7 +15,9 @@ OpenBLAS handling and the version plumbing mirror the upstream comments.
 
 import os
 import sys
+import certifi
 from PyInstaller.utils.hooks import collect_all, collect_dynamic_libs
+certifi_where = certifi.where()
 
 _target_arch = os.environ.get("PYINSTALLER_TARGET_ARCH") or None
 
@@ -97,6 +99,7 @@ a = Analysis(
     datas=[
         ('assets',    'assets'),
         ('data/i18n', 'data/i18n'),
+        (certifi_where, 'certifi'),
         *_ic_datas,
         *_we_datas,
     ],

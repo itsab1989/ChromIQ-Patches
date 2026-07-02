@@ -5,3 +5,4 @@ PyYAML>=6.0
 tifffile>=2024.0.0
 numpy>=1.24.0
 imagecodecs>=2024.0.0
+certifi>=2024.0.0

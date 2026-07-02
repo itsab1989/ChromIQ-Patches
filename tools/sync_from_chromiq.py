@@ -39,6 +39,7 @@ REPO = Path(__file__).resolve().parent.parent
 # Python modules copied verbatim from ChromIQ (paths relative to both roots).
 MODULES = [
     "core/__init__.py",
+    "core/argyll_detect.py",
     "core/argyll_runner.py",
     "core/i18n.py",
     "core/logger.py",

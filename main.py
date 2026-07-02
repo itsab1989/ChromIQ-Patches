@@ -153,12 +153,15 @@ def main() -> int:
     apply_appearance(app, dlg, settings.get("appearance", "auto"))
 
     # As ChromIQ's tool it runs as a modal-ish QDialog; as THE app window it
-    # must behave like a normal window — minimizable on macOS, maximizable on
-    # Windows/Linux. Must be set before show().
+    # must behave like a normal top-level window. Replacing the Dialog window
+    # class with Window (not just adding button hints) is what lets macOS
+    # minimize it to the Dock — a Qt.Dialog window ignores the minimize
+    # button there. Must be set before show().
     from PyQt6.QtCore import Qt as _Qt
-    dlg.setWindowFlags(dlg.windowFlags()
+    dlg.setWindowFlags(_Qt.WindowType.Window
                        | _Qt.WindowType.WindowMinimizeButtonHint
-                       | _Qt.WindowType.WindowMaximizeButtonHint)
+                       | _Qt.WindowType.WindowMaximizeButtonHint
+                       | _Qt.WindowType.WindowCloseButtonHint)
 
     # Standalone wording: there is no Create Chart tab to "apply" to — the
     # footer button saves the chart folder / exports the hand-off files.
@@ -166,20 +169,51 @@ def main() -> int:
     if hasattr(dlg, "_apply_btn"):
         dlg._apply_btn.setText(_tr("Save / Export…").replace("&", "&&"))
 
-    # Standalone-only bottom bar: settings gear + attribution, appended below
-    # the editor's own footer. The vendored dialog stays byte-identical to
-    # ChromIQ's (tools/sync_from_chromiq.py), so standalone-only chrome like
-    # this lives here in main.py. Helper-text colour is theme-aware — must
-    # stay legible in BOTH light and dark mode.
+    # Standalone save prompt: a basic non-native save dialog (type a name,
+    # pick a location) instead of ChromIQ's descriptive-prefix prompt. The
+    # instance attribute shadows the vendored _prompt_save_as_name; the chart
+    # is written as <chosen>/<name>.* like before.
+    def _basic_save_prompt() -> "tuple[str, str] | None":
+        from pathlib import Path as _P
+        from PyQt6.QtWidgets import QFileDialog
+        from core.i18n import tr
+        fd = QFileDialog(dlg, tr("Save chart as…"),
+                         str(_P.home() / "ChromIQ"))
+        fd.setOption(QFileDialog.Option.DontUseNativeDialog, True)
+        fd.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        fd.setFileMode(QFileDialog.FileMode.AnyFile)
+        fd.setLabelText(QFileDialog.DialogLabel.FileName, tr("Chart name:"))
+        try:
+            fd.selectFile(dlg._suggest_chart_name())
+        except Exception:
+            pass
+        if fd.exec() != QFileDialog.DialogCode.Accepted or not fd.selectedFiles():
+            return None
+        chosen = _P(fd.selectedFiles()[0])
+        return (chosen.name, str(chosen.parent))
+
+    dlg._prompt_save_as_name = _basic_save_prompt
+
+    # Standalone-only bottom bar: version + attribution + settings gear,
+    # appended below the editor's own footer. The vendored dialog stays
+    # byte-identical to ChromIQ's (tools/sync_from_chromiq.py), so
+    # standalone-only chrome like this lives here in main.py. Helper-text
+    # colour is theme-aware — must stay legible in BOTH light and dark mode.
     from PyQt6.QtCore import Qt, QSize
     from PyQt6.QtWidgets import (
         QDialog, QDialogButtonBox, QFormLayout, QHBoxLayout, QLabel,
-        QToolButton, QVBoxLayout,
+        QLineEdit, QPushButton, QToolButton, QVBoxLayout, QWidget,
     )
     from PyQt6.QtGui import QPixmap
+    from core.argyll_detect import find_argyll_bin_path
     from core.i18n import available_languages, tr
+    from core.platform_paths import default_argyll_bin_dir
+    from pathlib import Path
     from ui.theme import resolve_mode
-    from ui.widgets import NoScrollComboBox
+    from ui.widgets import (
+        NoScrollComboBox, apply_themed_icons, open_dir_dialog,
+        reapply_groupbox_surface, reapply_input_stylesheet,
+    )
 
     credit = QLabel(
         "Based on an original idea by Knut Georg Larsson — "
@@ -192,15 +226,41 @@ def main() -> int:
         "with Claude. The chart engine is shared with ChromIQ "
         "(github.com/itsab1989/ChromIQ).")
 
+    version_lbl = QLabel(f"v{APP_VERSION}", dlg)
+
     def _style_credit() -> None:
         col = "#b8b8b8" if resolve_mode(settings.get("appearance", "auto")) == "dark" else "#4a4a4a"
-        credit.setStyleSheet(f"color: {col}; font-size: 11px; padding-top: 2px;")
+        qss = f"color: {col}; font-size: 11px; padding-top: 2px;"
+        credit.setStyleSheet(qss)
+        version_lbl.setStyleSheet(qss)
+
+    def _apply_dialog_theme(mode_setting: str) -> None:
+        """Mirror MainWindow.apply_theme for the standalone dialog: the global
+        QSS/palette swap alone leaves widget-LOCAL styles stale — most visibly
+        the NoScroll spin/combo boxes, whose input-background rule is
+        snapshotted per-widget at construction (ChromIQ never live-switches
+        the theme with this editor open, so only the standalone hits it)."""
+        mode = apply_appearance(app, dlg, mode_setting)
+        for w in dlg.findChildren(QWidget):
+            fn = getattr(w, "set_appearance", None)
+            if callable(fn):
+                try:
+                    fn(mode)
+                except Exception:
+                    pass
+        apply_themed_icons(dlg)
+        reapply_groupbox_surface(dlg)
+        reapply_input_stylesheet(dlg)
+        _style_credit()
 
     def _open_settings() -> None:
-        """Minimal standalone preferences: language + appearance only —
-        everything else the editor needs lives in the editor itself."""
+        """Minimal standalone preferences: language, appearance and the
+        ArgyllCMS location (only needed for the targen option in New chart /
+        Add patches and for re-rendering printtarg-built charts) — everything
+        else the editor needs lives in the editor itself."""
         sdlg = QDialog(dlg)
         sdlg.setWindowTitle(tr("Preferences"))
+        sdlg.setMinimumWidth(520)
         lay = QVBoxLayout(sdlg)
         form = QFormLayout()
 
@@ -228,6 +288,45 @@ def main() -> int:
         note.setStyleSheet("font-size: 11px;")
         lay.addWidget(note)
 
+        # ArgyllCMS location — same row as ChromIQ's Preferences. Optional:
+        # only the targen patch-set option and printtarg re-rendering use it.
+        argyll_row = QHBoxLayout()
+        argyll_edit = QLineEdit(
+            settings.get("argyll_bin_path", default_argyll_bin_dir()), sdlg)
+        argyll_row.addWidget(argyll_edit, 1)
+        browse_btn = QPushButton(tr("Browse…"), sdlg)
+        browse_btn.clicked.connect(lambda: (
+            (lambda d: argyll_edit.setText(d) if d else None)(
+                open_dir_dialog(sdlg, tr("Select ArgyllCMS bin directory"),
+                                start_dir=argyll_edit.text()
+                                or default_argyll_bin_dir()))))
+        argyll_row.addWidget(browse_btn)
+        detect_btn = QPushButton(tr("Auto-detect"), sdlg)
+        argyll_row.addWidget(detect_btn)
+        argyll_form = QFormLayout()
+        argyll_form.addRow(tr("ArgyllCMS folder:"), argyll_row)
+        lay.addLayout(argyll_form)
+        argyll_status = QLabel(
+            tr("Optional — only needed for the targen option when creating a "
+               "new chart or adding patches."), sdlg)
+        argyll_status.setWordWrap(True)
+        argyll_status.setStyleSheet("font-size: 11px;")
+        lay.addWidget(argyll_status)
+
+        def _auto_detect() -> None:
+            detected = find_argyll_bin_path()
+            if detected:
+                argyll_edit.setText(str(detected))
+                argyll_status.setStyleSheet("color: #4caf50; font-size: 11px;")
+                argyll_status.setText(
+                    tr("Auto-detected at {detected}").format(detected=detected))
+            else:
+                argyll_status.setStyleSheet("color: #ff5252; font-size: 11px;")
+                argyll_status.setText(
+                    tr("ArgyllCMS not found in any known location. "
+                       "Install it or set the path manually."))
+        detect_btn.clicked.connect(_auto_detect)
+
         bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok
                               | QDialogButtonBox.StandardButton.Cancel, sdlg)
         bb.accepted.connect(sdlg.accept)
@@ -237,50 +336,86 @@ def main() -> int:
         if sdlg.exec() != QDialog.DialogCode.Accepted:
             return
         settings.set("language", lang_combo.currentData())
+        new_argyll = argyll_edit.text().strip()
+        if new_argyll != settings.get("argyll_bin_path", ""):
+            settings.set("argyll_bin_path", new_argyll)
+            # The editor snapshots the bin dir at construction — refresh it so
+            # targen/printtarg pick up the new path without a restart.
+            dlg._bin_dir = Path(new_argyll)
         new_mode = mode_combo.currentData()
         if new_mode != settings.get("appearance", "auto"):
             settings.set("appearance", new_mode)
-            apply_appearance(app, dlg, new_mode)
-            _style_credit()
+            _apply_dialog_theme(new_mode)
 
     gear = QToolButton(dlg)
     gear_icon = resource_path("assets/settings_v2.png")
     if gear_icon.exists():
         gear.setIcon(QIcon(QPixmap(str(gear_icon))))
-        gear.setIconSize(QSize(16, 16))
+        gear.setIconSize(QSize(22, 22))
     else:
         gear.setText("⚙")
+    gear.setFixedSize(30, 30)
     gear.setAutoRaise(True)
-    gear.setToolTip(tr("Preferences — language and appearance"))
+    gear.setToolTip(tr("Preferences — language, appearance and ArgyllCMS location"))
     gear.setCursor(Qt.CursorShape.PointingHandCursor)
     gear.clicked.connect(_open_settings)
 
     bottom = QHBoxLayout()
-    bottom.setContentsMargins(6, 0, 6, 2)
-    bottom.addWidget(gear)
+    bottom.setContentsMargins(8, 0, 8, 2)
+    bottom.addWidget(version_lbl)
     bottom.addWidget(credit, 1)
-    # Symmetric invisible spacer so the credit stays visually centred.
-    pad = QLabel(dlg)
-    pad.setFixedWidth(gear.sizeHint().width())
-    bottom.addWidget(pad)
+    bottom.addWidget(gear)
 
     _style_credit()
     dlg.layout().addLayout(bottom)
 
     def _on_system_color_scheme_changed(_scheme=None) -> None:
         if settings.get("appearance", "auto") == "auto":
-            apply_appearance(app, dlg, "auto")
-        _style_credit()
+            _apply_dialog_theme("auto")
 
     app.styleHints().colorSchemeChanged.connect(_on_system_color_scheme_changed)
 
     dlg.show()
+
+    # Update-available popup, same flow as ChromIQ's main window. The vendored
+    # updater/dialog are pointed at this repo's releases by overriding the
+    # module constants — core.updater reads them at call time, and the dialog
+    # module (which binds _RELEASES_PAGE at import) is only imported below,
+    # after the override.
+    import core.updater as _updater
+    _updater._RELEASES_API = ("https://api.github.com/repos/itsab1989/"
+                              "chromiq-patches/releases?per_page=30")
+    _updater._RELEASES_PAGE = "https://github.com/itsab1989/chromiq-patches/releases"
+
+    _update_checker: list = []   # keep a ref so the QObject isn't collected
+
+    def _on_update_available(latest: str) -> None:
+        from ui.dialogs.update_dialog import UpdateAvailableDialog
+        udlg = UpdateAvailableDialog(latest, dlg)
+        # The vendored dialog says "ChromIQ {latest} is available" — brand the
+        # standalone without diverging the vendored file.
+        for lbl in udlg.findChildren(QLabel):
+            if "is available" in lbl.text():
+                lbl.setText(lbl.text().replace("ChromIQ ", "ChromIQ Patches ", 1))
+        udlg.exec()
+        if udlg.disable_notifications:
+            settings.set("update_notify", False)
+
+    def _check_for_updates() -> None:
+        if not settings.get("update_notify", True):
+            return
+        checker = _updater.UpdateChecker(dlg)
+        checker.update_available.connect(_on_update_available)
+        _update_checker.append(checker)
+        checker.check_async()
 
     # Pay QtWebEngine's costly first-init at idle on the main loop, so the
     # on-demand 3D-cube preview never spins Chromium up mid-transition.
     from PyQt6.QtCore import QTimer
     from core.webengine_warmup import warm_up_webengine
     QTimer.singleShot(0, warm_up_webengine)
+
+    QTimer.singleShot(3000, _check_for_updates)
 
     log.info("Event loop starting")
     return app.exec()
