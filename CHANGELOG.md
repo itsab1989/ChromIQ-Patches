@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.2.0
+
+- Optional shuffled copy on save: a checkbox in the save dialog writes a
+  second version of the chart into a "shuffled" subfolder, with the patch
+  order re-arranged for the best possible contrast between neighbouring
+  patches and between strips. Meant for i1Profiler, which measures an
+  imported patch set exactly in file order and has no shuffle of its own.
+  The main save keeps the designed order; the same chart always produces
+  the same shuffled copy.
+- The save prompt is a proper name + location dialog now (with Browse…)
+  instead of a file browser. This fixes re-saving over an existing chart
+  folder — the browser's button turned into "Open" and navigated into the
+  folder instead of saving; now you get an overwrite confirmation. The
+  last-used location is remembered.
+- The save dialog and the main window's checkboxes and inputs use the
+  editor's magenta accent (they fell back to cyan before), and the folder
+  picker's navigation arrows are readable in dark mode.
+- New strings are translated in all 12 languages.
+
 ## v1.1.0
 
 - The "Seed from targen" and "Blank canvas" options are removed from the
